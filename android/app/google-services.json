@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "460946390932",
+    "project_id": "trip-boy-4405f",
+    "storage_bucket": "trip-boy-4405f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:460946390932:android:d014f04c1bff62c30a1981",
+        "android_client_info": {
+          "package_name": "com.example.trip_boy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "460946390932-etttuel36eccv16l1jolfurm5ec98kn8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3knZ-8TDqX-B15HGZrml9ozWsOWe8RQQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "460946390932-etttuel36eccv16l1jolfurm5ec98kn8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
