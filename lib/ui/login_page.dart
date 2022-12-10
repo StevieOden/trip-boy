@@ -4,7 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../services/auth.dart';
-import 'home_page.dart';
+import 'dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: CircularProgressIndicator(),
               );
             } else if (snapshot.hasData) {
-              return HomePage();
+              return DashboardPage();
             } else if (snapshot.hasError) {
               return Center(
                 child: Text("Something went wrong!"),

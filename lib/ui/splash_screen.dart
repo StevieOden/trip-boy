@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'dashboard_page.dart';
 import 'landing_page/landing_page.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -9,18 +11,21 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final user = FirebaseAuth.instance.currentUser;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-      Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(seconds: 2), () {
+      if (user == null) {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>  LandingPage()
-                    ));
-      });
-    
+            context, MaterialPageRoute(builder: (context) => LandingPage()));
+      }else {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => DashboardPage()));
+      }
+    });
   }
 
   @override
