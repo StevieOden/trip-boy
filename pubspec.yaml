@@ -42,6 +42,13 @@ dependencies:
   google_sign_in:
   provider: 
   google_nav_bar:
+  cloud_firestore: 
+  google_fonts:
+  sizer:
+  flutter_spinkit:
+  image_picker:
+  permission_handler:
+  flutter_svg:
 
 dev_dependencies:
   flutter_test:

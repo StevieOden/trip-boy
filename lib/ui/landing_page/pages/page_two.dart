@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_svg/svg.dart';
+
+import '../../../common/app_text_styles.dart';
+import '../../../common/color_values.dart';
 
 class PageTwo extends StatefulWidget {
   PageTwo({Key? key}) : super(key: key);
@@ -19,19 +23,20 @@ class _PageTwoState extends State<PageTwo> {
           children: [
             Expanded(
               flex: 10,
-              child: Image(
-                image: AssetImage('assets/landingPage2.png'),
+              child: SvgPicture.asset(
+                'assets/landingPage2.svg',
               ),
             ),
             Expanded(
+              flex: 2,
               child: Text(
                 AppLocalizations.of(context)!.landing_page2,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                style: AppTextStyles.appTitlew700s20(ColorValues().blackColor),
               ),
             ),
             Text(AppLocalizations.of(context)!.landing_page_desc2,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400))
+                style: AppTextStyles.appTitlew500s16(ColorValues().blackColor))
           ],
         ),
       ),
