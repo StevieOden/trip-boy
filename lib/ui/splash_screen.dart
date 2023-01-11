@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'dashboard_page.dart';
 import 'landing_page/landing_page.dart';
 
@@ -21,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (user == null) {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => LandingPage()));
-      }else {
+      } else {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => DashboardPage()));
       }
@@ -32,10 +33,11 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Image(
-            width: MediaQuery.of(context).size.width * 0.7,
-            height: MediaQuery.of(context).size.height * 0.6,
-            image: AssetImage('assets/logo.png')),
+        child: Image.asset(
+          'assets/logo.png',
+          width: MediaQuery.of(context).size.width * 0.7,
+          height: MediaQuery.of(context).size.height * 0.6,
+        ),
       ),
     );
   }

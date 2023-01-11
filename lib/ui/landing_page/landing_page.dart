@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:sizer/sizer.dart';
+import 'package:trip_boy/common/app_text_styles.dart';
 
 import '../../main.dart';
 import '../login_page.dart';
@@ -18,7 +20,7 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   PageController? _pageController;
-  int? pageIndex;
+  int pageIndex = 0;
   bool showLoginButton = false;
 
   void nextPage() {
@@ -35,7 +37,6 @@ class _LandingPageState extends State<LandingPage> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
-    
   }
 
   @override
@@ -47,7 +48,12 @@ class _LandingPageState extends State<LandingPage> {
         children: [
           buildPageView(),
           buildIndicator(),
-          showLoginButton == true ? buildLoginButton() : Container()
+          showLoginButton == true
+              ? buildLoginButton()
+              : Container(
+                  height: 35.sp,
+                  width: 130.sp,
+                )
         ],
       ),
     ));
@@ -55,8 +61,8 @@ class _LandingPageState extends State<LandingPage> {
 
   Widget buildPageView() {
     return Container(
-      margin: EdgeInsets.only(bottom: 20),
-      height: MediaQuery.of(context).size.height * 0.6,
+      margin: EdgeInsets.only(bottom: 20.sp),
+      height: MediaQuery.of(context).size.height * 0.4.sp,
       child: PageView(
           physics: NeverScrollableScrollPhysics(),
           controller: _pageController,
@@ -85,45 +91,55 @@ class _LandingPageState extends State<LandingPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          InkWell(
-            onTap: (() {
-              setState(() {
-                if (_pageController!.page!.toInt() != 0) {
-                  previousPage();
-                }
-              });
-            }),
-            child: Icon(
-              Icons.arrow_circle_left_rounded,
-              size: 50,
-              color: Color.fromRGBO(111, 56, 197, 1),
+          pageIndex == 0
+              ? Expanded(
+                  child: Container(),
+                )
+              : Expanded(
+                  child: InkWell(
+                    onTap: (() {
+                      setState(() {
+                        previousPage();
+                      });
+                    }),
+                    child: Icon(
+                      Icons.arrow_circle_left_rounded,
+                      size: 50,
+                      color: Color.fromRGBO(111, 56, 197, 1),
+                    ),
+                  ),
+                ),
+          Expanded(
+            child: SmoothPageIndicator(
+              controller: _pageController!,
+              count: 3,
+              effect: ExpandingDotsEffect(
+                activeDotColor: Color.fromRGBO(111, 56, 197, 1),
+                dotColor: Color.fromRGBO(217, 217, 217, 1),
+                dotHeight: 10,
+                dotWidth: 10,
+                spacing: 10,
+              ),
             ),
           ),
-          SmoothPageIndicator(
-            controller: _pageController!,
-            count: 3,
-            effect: ExpandingDotsEffect(
-              activeDotColor: Color.fromRGBO(111, 56, 197, 1),
-              dotColor: Color.fromRGBO(217, 217, 217, 1),
-              dotHeight: 10,
-              dotWidth: 10,
-              spacing: 10,
-            ),
-          ),
-          InkWell(
-            onTap: (() {
-              setState(() {
-                if (_pageController!.page!.toInt() != 2) {
-                  nextPage();
-                }
-              });
-            }),
-            child: Icon(
-              Icons.arrow_circle_right_rounded,
-              size: 50,
-              color: Color.fromRGBO(111, 56, 197, 1),
-            ),
-          ),
+          pageIndex == 2
+              ? Expanded(
+                  child: Container(),
+                )
+              : Expanded(
+                  child: InkWell(
+                    onTap: (() {
+                      setState(() {
+                        nextPage();
+                      });
+                    }),
+                    child: Icon(
+                      Icons.arrow_circle_right_rounded,
+                      size: 50,
+                      color: Color.fromRGBO(111, 56, 197, 1),
+                    ),
+                  ),
+                ),
         ],
       ),
     );
@@ -131,6 +147,8 @@ class _LandingPageState extends State<LandingPage> {
 
   Widget buildLoginButton() {
     return Container(
+      height: 35.sp,
+      width: 130.sp,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: ElevatedButton(
         onPressed: (() {
@@ -139,7 +157,10 @@ class _LandingPageState extends State<LandingPage> {
                 context, MaterialPageRoute(builder: (context) => LoginPage()));
           });
         }),
-        child: Text(AppLocalizations.of(context)!.login_button),
+        child: Text(
+          AppLocalizations.of(context)!.login_button,
+          style: AppTextStyles.appTitlew500s12(Colors.white),
+        ),
         style: ButtonStyle(
           backgroundColor:
               MaterialStateProperty.all<Color>(Color.fromRGBO(111, 56, 197, 1)),
