@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
-  final String role, email, uid, name, phoneNumber, profileImage;
+  final String? role, email, uid, name, phoneNumber, profileImage;
 
   UserModel(
-      {required this.uid,
-      required this.role,
-      required this.email,
-      required this.profileImage,
-      required this.name,
-      required this.phoneNumber});
+      {this.uid,
+      this.role,
+      this.email,
+       this.profileImage,
+       this.name,
+       this.phoneNumber});
 
   UserModel.fromMap(Map<String, Object?> json)
       : this(

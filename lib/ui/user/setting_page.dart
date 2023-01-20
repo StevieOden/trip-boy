@@ -6,7 +6,7 @@ import 'package:trip_boy/component/alert_dialog.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:trip_boy/component/loading.dart';
 
-import '../main.dart';
+import '../../main.dart';
 
 class SettingPage extends StatefulWidget {
   Locale myLocale;

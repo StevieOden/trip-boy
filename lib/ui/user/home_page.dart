@@ -1,0 +1,270 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:trip_boy/component/circle_button.dart';
+import 'package:trip_boy/component/horizontal_card.dart';
+import 'package:trip_boy/component/loading.dart';
+import 'package:trip_boy/component/search_bar.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:sizer/sizer.dart';
+import 'package:trip_boy/component/vertical_card.dart';
+import 'package:trip_boy/models/destination_model.dart';
+import 'package:trip_boy/models/event_model.dart';
+import 'package:trip_boy/models/hotel_model.dart';
+import 'package:trip_boy/models/images_model.dart';
+import 'package:trip_boy/services/database_services.dart';
+import 'package:trip_boy/ui/dashboard_page.dart';
+import '../../common/app_text_styles.dart';
+import '../../common/color_values.dart';
+import '../../models/restaurant_model.dart';
+
+class HomePage extends StatefulWidget {
+  HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  DateFormat format = DateFormat("dd-MM-yyyy");
+  bool _isLoading = true;
+  List<RestaurantModel> restaurantsData = [];
+  List<HotelModel> hotelData = [];
+  List<DestinationModel> destinationData = [];
+  List<EventModel> eventData = [];
+  List allData = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getAllData();
+  }
+
+  Future<void> combineAllList() async {
+    allData.addAll(hotelData);
+    allData.addAll(restaurantsData);
+    allData.addAll(destinationData);
+    allData.sort((a, b) => b.rating.compareTo(a.rating));
+  }
+
+  Future<void> getAllData() async {
+    setLoading(true);
+    restaurantsData = await DatabaseService().getRestaurantData();
+    hotelData = await DatabaseService().getHotelData();
+    destinationData = await DatabaseService().getDestinationData();
+    eventData = await DatabaseService().getEventData();
+    combineAllList();
+    setLoading(false);
+  }
+
+  void setLoading(bool loading) {
+    if (mounted) {
+      setState(() {
+        _isLoading = loading;
+      });
+    } else {
+      _isLoading = loading;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List allDataAfterFilter =
+        allData.where((element) => element.name != "").toList();
+    List<EventModel> listAfterFilter = eventData.where(
+      (element) {
+        return element.name != "";
+      },
+    ).toList();
+    FocusScopeNode currentFocus = FocusScope.of(context);
+    return GestureDetector(
+      onTap: () {
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        body: _isLoading
+            ? Loading()
+            : Container(
+                height: MediaQuery.of(context).size.height.sp,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                          height: 5.h,
+                          margin: EdgeInsets.only(
+                              left: 15.sp, right: 15.sp, top: 10.sp),
+                          width: MediaQuery.of(context).size.width.w,
+                          child: SearchBar()),
+                      Container(
+                        margin:
+                            EdgeInsets.only(left: 15.sp, right: 15.sp, top: 15),
+                        child: _buildCircleButton(),
+                      ),
+                      Container(
+                          margin: EdgeInsets.only(top: 10.sp),
+                          child: _buildHighlightEvent(listAfterFilter)),
+                      Container(
+                          margin: EdgeInsets.only(
+                              left: 12.sp,
+                              top: 10.sp,
+                              right: 12.sp,
+                              bottom: 10.sp),
+                          child: _buildRecommend(allDataAfterFilter)),
+                    ],
+                  ),
+                )),
+      ),
+    );
+  }
+
+  _buildCircleButton() {
+    return Row(
+      children: [
+        CircleButton(
+          icon: Icons.restaurant,
+          title: AppLocalizations.of(context)!.cullinary,
+          onTap: () {
+            setState(() {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DashboardPage(
+                      selectedIndex: 1,
+                      exploreSelectionIndex: 0,
+                    ),
+                  ));
+            });
+          },
+        ),
+        CircleButton(
+          icon: Icons.hotel,
+          title: AppLocalizations.of(context)!.hotel,
+          onTap: () {
+            setState(() {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DashboardPage(
+                      selectedIndex: 1,
+                      exploreSelectionIndex: 1,
+                    ),
+                  ));
+            });
+          },
+        ),
+        CircleButton(
+          icon: Icons.map,
+          title: AppLocalizations.of(context)!.tour,
+          onTap: () {
+            setState(() {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DashboardPage(
+                      selectedIndex: 1,
+                      exploreSelectionIndex: 2,
+                    ),
+                  ));
+            });
+          },
+        ),
+        CircleButton(
+          icon: Icons.event,
+          title: AppLocalizations.of(context)!.event,
+          onTap: () {
+            setState(() {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DashboardPage(
+                      selectedIndex: 1,
+                      exploreSelectionIndex: 3,
+                    ),
+                  ));
+            });
+          },
+        )
+      ],
+    );
+  }
+
+  _buildHighlightEvent(listAfterFilter) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: EdgeInsets.only(
+            left: 15.sp,
+          ),
+          child: Text(
+            AppLocalizations.of(context)!.highlight_event,
+            style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
+          ),
+        ),
+        SizedBox(
+          height: 5.sp,
+        ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 12.sp,
+              right: 12.sp,
+            ),
+            child: Row(
+              children: [
+                for (var i = 0; i < listAfterFilter.length; i++)
+                  HorizontalCard(
+                    title: listAfterFilter[i].name!,
+                    rating: listAfterFilter[i].rating,
+                    heldAt: format.format(listAfterFilter[i].timeHeld),
+                    price: listAfterFilter[i].price!.toString(),
+                    imageUrl: listAfterFilter[i].imageUrl!,
+                  )
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _buildRecommend(allDataAfterFilter) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: EdgeInsets.only(
+            left: 3.sp,
+          ),
+          child: Text(
+            AppLocalizations.of(context)!.recommendation,
+            style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
+          ),
+        ),
+        SizedBox(
+          height: 5.sp,
+        ),
+        Column(
+          children: [
+            for (var i = 0; i < allDataAfterFilter.length; i++)
+              VerticalCard(
+                title: allDataAfterFilter[i].name,
+                subDistrict: allDataAfterFilter[i].alamat.split(', ')[0] == ""
+                    ? allDataAfterFilter[i].alamat.split(', ')[0]
+                    : allDataAfterFilter[i].alamat.split(', ')[3],
+                price: "Rp5.000",
+                rating: allDataAfterFilter[i].rating.toString(),
+                imageUrl: allDataAfterFilter[i].images!.first!.imagesUrl != ""
+                    ? allDataAfterFilter[i].images!.first!.imagesUrl
+                    : "",
+              )
+          ],
+        ),
+      ],
+    );
+  }
+}

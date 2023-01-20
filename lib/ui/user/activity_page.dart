@@ -185,37 +185,43 @@ class _ActivityPageState extends State<ActivityPage> {
 
   processList() {
     return activityList
-            .where((element) => element.status == "Process")
+            .where((element) =>
+                element.status == AppLocalizations.of(context)!.process)
             .toList()
             .isEmpty
         ? noData()
         : ActivityList(
             data: activityList
-                .where((element) => element.status == "Process")
+                .where((element) =>
+                    element.status == AppLocalizations.of(context)!.process)
                 .toList());
   }
 
   doneList() {
     return activityList
-            .where((element) => element.status == "Done")
+            .where((element) =>
+                element.status == AppLocalizations.of(context)!.done)
             .toList()
             .isEmpty
         ? noData()
         : ActivityList(
             data: activityList
-                .where((element) => element.status == "Done")
+                .where((element) =>
+                    element.status == AppLocalizations.of(context)!.done)
                 .toList());
   }
 
   canceledList() {
     return activityList
-            .where((element) => element.status == "Canceled")
+            .where((element) =>
+                element.status == AppLocalizations.of(context)!.canceled)
             .toList()
             .isEmpty
         ? noData()
         : ActivityList(
             data: activityList
-                .where((element) => element.status == "Canceled")
+                .where((element) =>
+                    element.status == AppLocalizations.of(context)!.canceled)
                 .toList());
   }
 }

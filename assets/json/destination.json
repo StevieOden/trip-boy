@@ -1,0 +1,24 @@
+{
+     "name": "",
+     "alamat": "",
+     "description":"",
+     "rating":0.0,
+     "time_closed": "",
+     "time_open": "",
+     "facility":[
+          {
+               "name": ""
+          }
+     ],
+     "images":[
+          {
+               "images_url":""
+          }
+     ],
+     "tickets":[
+          {
+               "name": "regular",
+               "price": 0
+          }
+     ]
+}

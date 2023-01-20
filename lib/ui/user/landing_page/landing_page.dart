@@ -5,7 +5,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 
-import '../../main.dart';
+import '../../../main.dart';
 import '../login_page.dart';
 import 'pages/page_one.dart';
 import 'pages/page_three.dart';

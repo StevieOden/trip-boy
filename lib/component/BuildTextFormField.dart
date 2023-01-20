@@ -223,7 +223,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
             borderRadius: BorderRadius.circular(5.sp),
             borderSide: BorderSide(color: ColorValues().greyColor, width: 2)),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: ColorValues().darkGreyColor, width: 2),
+          borderSide: BorderSide(color: ColorValues().primaryColor, width: 2),
           borderRadius: BorderRadius.circular(5.sp),
         ),
         // errorBorder: errorrTextFieldBorder(),

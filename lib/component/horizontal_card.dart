@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:sizer/sizer.dart';
 
 class HorizontalCard extends StatefulWidget {
-  String title, subDistrict, price;
+  String title, price, imageUrl;
+  String? heldAt;
+  double? rating;
   HorizontalCard(
       {Key? key,
       required this.title,
-      required this.subDistrict,
-      required this.price})
+      this.heldAt,
+      this.rating,
+      required this.price,
+      required this.imageUrl})
       : super(key: key);
 
   @override
@@ -29,11 +34,16 @@ class _HorizontalCardState extends State<HorizontalCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              decoration: BoxDecoration(
-                  color: ColorValues().primaryColor,
-                  borderRadius: BorderRadius.circular(12)),
               width: MediaQuery.of(context).size.width.sp,
               height: 100.sp,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: widget.imageUrl == ""
+                    ? Image.asset("assets/png_image/logo.png",
+                        fit: BoxFit.cover, filterQuality: FilterQuality.high)
+                    : Image.network(widget.imageUrl,
+                        fit: BoxFit.cover, filterQuality: FilterQuality.high),
+              ),
             ),
             SizedBox(
               height: 5.sp,
@@ -46,7 +56,7 @@ class _HorizontalCardState extends State<HorizontalCard> {
               height: 5.sp,
             ),
             Text(
-              widget.subDistrict,
+              widget.heldAt!.isEmpty ? widget.price.toString() : widget.heldAt!,
               style: AppTextStyles.appTitlew400s10(ColorValues().blackColor),
             ),
             SizedBox(
@@ -56,7 +66,7 @@ class _HorizontalCardState extends State<HorizontalCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  widget.price,
+                  "Rp${widget.price}",
                   style:
                       AppTextStyles.appTitlew500s10(ColorValues().primaryColor),
                 ),

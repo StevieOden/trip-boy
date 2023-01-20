@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,8 +13,7 @@ import 'package:trip_boy/ui/login_page.dart';
 import 'package:trip_boy/ui/setting_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../common/shared_code.dart';
-import '../models/user_model.dart';
+import '../../models/user_model.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
@@ -27,11 +28,13 @@ class _ProfilePageState extends State<ProfilePage> {
   String name = "";
   String email = "";
   String profileUrl = "";
+  String phoneNumber = "";
+  String uidGlobal = "";
   User? user = FirebaseAuth.instance.currentUser!;
   Locale? myLocale;
 
   Future<void> getUserData() async {
-    _setLoading(true);
+    setLoading(true);
     final uid = user!.uid;
     if (uid == null) {
       _isAuthenticated = false;
@@ -40,14 +43,16 @@ class _ProfilePageState extends State<ProfilePage> {
       print("authanticated");
       _isAuthenticated = true;
       UserModel userData = await DatabaseService().getUserData(uid);
-      name = userData.name;
-      email = userData.email;
-      profileUrl = userData.profileImage;
+      name = userData.name!;
+      email = userData.email!;
+      phoneNumber = userData.phoneNumber!;
+      profileUrl = userData.profileImage!;
+      uidGlobal = userData.uid!;
     }
-    _setLoading(false);
+    setLoading(false);
   }
 
-  void _setLoading(bool loading) {
+  void setLoading(bool loading) {
     if (mounted) {
       setState(() {
         _isLoading = loading;
@@ -61,6 +66,16 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getUserData();
+  }
+
+  Future<void> _navigateAndDisplaySelection(BuildContext context) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EditProfile(uid: uidGlobal),
+        ));
+    if (!mounted) return;
     getUserData();
   }
 
@@ -143,11 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10))),
           onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditProfile(),
-                ));
+            _navigateAndDisplaySelection(context);
           },
           child: Row(
             children: [
@@ -193,7 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Column(
       children: [
         Text(
-          UserData().name!,
+          name,
           style: TextStyle(
               fontSize: 16,
               color: Color(0xff3A354D),
@@ -203,7 +214,7 @@ class _ProfilePageState extends State<ProfilePage> {
           height: 5,
         ),
         Text(
-          UserData().email!,
+          email,
           style: TextStyle(
               fontSize: 13,
               color: Color(0xff9598A6),
@@ -223,9 +234,15 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       height: 110,
       width: 110,
-      child: CircleAvatar(
-        backgroundImage: NetworkImage(UserData().profileImage!),
-      ),
+      child: profileUrl.endsWith('jpg') ||
+              profileUrl.endsWith('png') ||
+              profileUrl.endsWith('jpeg')
+          ? CircleAvatar(
+              backgroundImage: FileImage(File(profileUrl)),
+            )
+          : CircleAvatar(
+              backgroundImage: NetworkImage(profileUrl),
+            ),
     );
   }
 }

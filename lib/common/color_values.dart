@@ -14,4 +14,6 @@ class ColorValues {
   final greenColor = const Color(0xFFDEFFDF);
   final darkGreenColor = const Color(0xFF0DA000);
   final lightRedColor = const Color(0xFFFF9898);
+  final veryBlackColor = const Color(0xFF000000);
+  final starColor = const Color(0xFFFFD700);
 }

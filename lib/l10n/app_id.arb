@@ -40,5 +40,10 @@
      "payNow": "Bayar Sekarang",
      "upload": "Unggah",
      "added": "Ditambahkan",
-     "noAdded": "Tidak ada yang ditambahkan disini"
+     "noAdded": "Tidak ada yang ditambahkan disini",
+     "save": "Simpan",
+     "name": "Nama",
+     "phoneNumber": "No Hp",
+     "enterName": "Masukkan Nama",
+     "enterPhoneNumber": "Masukkan No Hp"
 }
