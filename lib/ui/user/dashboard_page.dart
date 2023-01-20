@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:trip_boy/component/alert_dialog.dart';
-import 'package:trip_boy/ui/explore/explore_page.dart';
-import 'package:trip_boy/ui/home_page.dart';
-import 'package:trip_boy/ui/profile_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:trip_boy/ui/user/profile_page.dart';
 import 'package:trip_boy/ui/user/upload_page/upload_page.dart';
 
 import 'activity_page.dart';
+import 'explore/explore_page.dart';
+import 'home_page.dart';
 
 class DashboardPage extends StatefulWidget {
   int selectedIndex;

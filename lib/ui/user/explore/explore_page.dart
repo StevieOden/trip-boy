@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:trip_boy/common/shared_code.dart';
-import 'package:trip_boy/component/event_card_item.dart';
-import 'package:trip_boy/component/horizontal_card.dart';
-import 'package:trip_boy/component/loading.dart';
-import 'package:trip_boy/component/vertical_card.dart';
-import 'package:trip_boy/models/event_model.dart';
-import 'package:trip_boy/ui/explore/tab_pages/EventPages.dart';
-import 'package:trip_boy/ui/explore/tab_pages/TabComponent.dart';
+import 'package:trip_boy/ui/user/explore/tab_pages/EventPages.dart';
+import 'package:trip_boy/ui/user/explore/tab_pages/TabComponent.dart';
 
 import '../../../component/search_bar.dart';
 import '../../../component/skeleton.dart';

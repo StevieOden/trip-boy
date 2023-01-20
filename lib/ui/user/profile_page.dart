@@ -8,12 +8,12 @@ import 'package:trip_boy/component/loading.dart';
 import 'package:trip_boy/services/auth.dart';
 import 'package:trip_boy/services/database_services.dart';
 import 'package:sizer/sizer.dart';
-import 'package:trip_boy/ui/edit_profile.dart';
 import 'package:trip_boy/ui/login_page.dart';
-import 'package:trip_boy/ui/setting_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:trip_boy/ui/user/setting_page.dart';
 
 import '../../models/user_model.dart';
+import 'edit_profile.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key}) : super(key: key);
