@@ -10,12 +10,11 @@ import 'package:trip_boy/component/vertical_card.dart';
 import 'package:trip_boy/models/destination_model.dart';
 import 'package:trip_boy/models/event_model.dart';
 import 'package:trip_boy/models/hotel_model.dart';
-import 'package:trip_boy/models/images_model.dart';
 import 'package:trip_boy/services/database_services.dart';
-import 'package:trip_boy/ui/dashboard_page.dart';
 import '../../common/app_text_styles.dart';
 import '../../common/color_values.dart';
 import '../../models/restaurant_model.dart';
+import 'dashboard_page.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);

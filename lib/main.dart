@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/services/auth.dart';
-import 'package:trip_boy/ui/user/splash_screen.dart';
+import 'package:trip_boy/ui/splash_screen.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,23 +53,3 @@ class _MyAppState extends State<MyApp> {
         }));
   }
 }
-
-// class Dashboard extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: [
-//         TextButton(
-//           child: Text("Set locale to Indonesia"),
-//           onPressed: () => MyApp.of(context)!
-//               .setLocale(Locale.fromSubtags(languageCode: 'id')),
-//         ),
-//         TextButton(
-//           child: Text("Set locale to English"),
-//           onPressed: () => MyApp.of(context)!
-//               .setLocale(Locale.fromSubtags(languageCode: 'en')),
-//         ),
-//       ],
-//     );
-//   }
-// }

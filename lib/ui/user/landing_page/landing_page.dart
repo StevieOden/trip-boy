@@ -6,7 +6,7 @@ import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 
 import '../../../main.dart';
-import '../login_page.dart';
+import '../../login_page.dart';
 import 'pages/page_one.dart';
 import 'pages/page_three.dart';
 import 'pages/page_two.dart';

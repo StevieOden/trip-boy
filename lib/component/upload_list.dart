@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
-import 'package:trip_boy/ui/upload_page/upload_detail.dart';
+import '../ui/user/upload_page/upload_detail.dart';
 
 class UploadList extends StatelessWidget {
   List<Map> uploadList;

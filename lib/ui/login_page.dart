@@ -5,11 +5,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:trip_boy/component/loading.dart';
 import 'package:sizer/sizer.dart';
+import 'package:trip_boy/ui/user/dashboard_page.dart';
 
 import '../../common/app_text_styles.dart';
 import '../../common/color_values.dart';
 import '../../services/auth.dart';
-import 'dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder(
+      body: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {

@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'dashboard_page.dart';
-import 'landing_page/landing_page.dart';
+import 'package:trip_boy/ui/user/dashboard_page.dart';
+import 'package:trip_boy/ui/user/landing_page/landing_page.dart';
+
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key? key}) : super(key: key);
