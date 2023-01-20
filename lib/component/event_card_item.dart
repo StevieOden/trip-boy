@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
@@ -37,14 +36,22 @@ class EventCardItem extends StatelessWidget {
                             topLeft: Radius.circular(12),
                             topRight: Radius.circular(12))),
                   )
-                : asset!.endsWith("png")
-                    ? Image(
-                        image: AssetImage(asset!),
-                        fit: BoxFit.fill,
-                        width: MediaQuery.of(context).size.width.sp,
-                        height: 125.sp,
-                      )
-                    : SvgPicture.asset(asset!),
+                : ClipRRect(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12)),
+                    child: Container(
+                      height: 90.sp,
+                      width: MediaQuery.of(context).size.width.sp,
+                      child: asset == ""
+                          ? Image.asset("assets/png_image/logo.png",
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high)
+                          : Image.network(asset!,
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high),
+                    ),
+                  ),
             Container(
               margin: EdgeInsets.only(
                   left: 15.sp, right: 15.sp, top: 5.sp, bottom: 5.sp),

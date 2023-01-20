@@ -39,5 +39,10 @@
      "payNow": "Pay Now",
      "upload": "Upload",
      "added": "Added",
-     "noAdded": "Nothing added here"
+     "noAdded": "Nothing added here",
+     "save": "Save",
+     "name": "Name",
+     "phoneNumber": "Phone Number",
+     "enterName": "Enter Name",
+     "enterPhoneNumber": "Enter Phone Number"
 }

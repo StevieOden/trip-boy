@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
+import 'package:trip_boy/ui/upload_page/upload_detail.dart';
 
 class UploadList extends StatelessWidget {
   List<Map> uploadList;
@@ -21,30 +22,39 @@ class UploadList extends StatelessWidget {
             );
           },
           itemBuilder: (context, index) {
-            return Container(
-              height: 125.sp,
-              width: MediaQuery.of(context).size.width.sp,
-              padding: EdgeInsets.only(left: 15.sp),
-              margin: EdgeInsets.only(bottom: 10.sp),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      ColorValues().primaryColor,
-                      ColorValues().primaryColor.withOpacity(0.25),
-                    ],
-                  )),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(uploadList[index]["title"],
-                      style: AppTextStyles.appTitlew700s16(
-                        Colors.white,
-                      )),
-                  SvgPicture.asset(uploadList[index]["image"])
-                ],
+            return InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UploadDetail(index: index,),
+                    ));
+              },
+              child: Container(
+                height: 125.sp,
+                width: MediaQuery.of(context).size.width.sp,
+                padding: EdgeInsets.only(left: 15.sp),
+                margin: EdgeInsets.only(bottom: 10.sp),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        ColorValues().primaryColor,
+                        ColorValues().primaryColor.withOpacity(0.25),
+                      ],
+                    )),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(uploadList[index]["title"],
+                        style: AppTextStyles.appTitlew700s16(
+                          Colors.white,
+                        )),
+                    SvgPicture.asset(uploadList[index]["image"])
+                  ],
+                ),
               ),
             );
           },

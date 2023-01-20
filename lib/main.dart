@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/services/auth.dart';
-import 'package:trip_boy/ui/splash_screen.dart';
+import 'package:trip_boy/ui/user/splash_screen.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();

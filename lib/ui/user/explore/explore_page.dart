@@ -13,8 +13,8 @@ import 'package:trip_boy/models/event_model.dart';
 import 'package:trip_boy/ui/explore/tab_pages/EventPages.dart';
 import 'package:trip_boy/ui/explore/tab_pages/TabComponent.dart';
 
-import '../../component/search_bar.dart';
-import '../../component/skeleton.dart';
+import '../../../component/search_bar.dart';
+import '../../../component/skeleton.dart';
 
 class ExplorePage extends StatefulWidget {
   int exploreSelectionIndex;
@@ -27,17 +27,6 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
-  bool _isLoading = true;
-  List<EventModel> event = [
-    EventModel(
-        imageUrl: 'assets/eventImage.png',
-        title: 'Street Food Festival : Poncobudoyo',
-        description: "",
-        price: 15000,
-        ticketType: 'online',
-        generatedAt: DateTime.now(),
-        heldAt: DateTime(2022, 2, 13))
-  ];
 
   @override
   void initState() {
@@ -45,11 +34,6 @@ class _ExplorePageState extends State<ExplorePage>
     super.initState();
     _tabController = TabController(
         length: 4, vsync: this, initialIndex: widget.exploreSelectionIndex);
-    Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
   }
 
   @override
@@ -93,42 +77,23 @@ class _ExplorePageState extends State<ExplorePage>
                 ),
               ]),
         ),
-        body: _isLoading
-            ? ListView.separated(
-                itemCount: 5,
-                itemBuilder: (context, index) => const NewsCardSkelton(),
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 16),
-              )
-            : TabBarView(controller: _tabController, children: [
-                TabComponent(
-                  isLoading: _isLoading,
+        body: TabBarView(controller: _tabController, children: [
+         TabComponent(
                   tabController: _tabController!,
-                  imageUrl:
-                      'https://lh5.googleusercontent.com/p/AF1QipNGovUkHJz80U4GBl5pKppZIr5Hy4z0ZhQhJDV6=w253-h337-k-no',
-                  title: "",
-                  rating: 0,
+                  
                 ),
-                TabComponent(
-                  isLoading: _isLoading,
+          TabComponent(
                   tabController: _tabController!,
-                  imageUrl:
-                      'https://lh5.googleusercontent.com/p/AF1QipNGovUkHJz80U4GBl5pKppZIr5Hy4z0ZhQhJDV6=w253-h337-k-no',
-                  title: "",
-                  rating: 0,
+                 
                 ),
-                TabComponent(
-                  isLoading: _isLoading,
+          TabComponent(
                   tabController: _tabController!,
-                  imageUrl:
-                      'https://lh5.googleusercontent.com/p/AF1QipNGovUkHJz80U4GBl5pKppZIr5Hy4z0ZhQhJDV6=w253-h337-k-no',
-                  title: "",
-                  rating: 0,
+                 
                 ),
-                EventPages(
-                  list: event,
+          EventPages(
+                 
                 )
-              ]),
+        ]),
       ),
     );
   }

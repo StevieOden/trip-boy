@@ -5,9 +5,9 @@ import 'package:sizer/sizer.dart';
 import 'package:trip_boy/component/loading.dart';
 import 'package:trip_boy/component/vertical_card.dart';
 
-import '../common/app_text_styles.dart';
-import '../common/color_values.dart';
-import '../component/upload_list.dart';
+import '../../../common/app_text_styles.dart';
+import '../../../common/color_values.dart';
+import '../../../component/upload_list.dart';
 
 class UploadPage extends StatefulWidget {
   UploadPage({Key? key}) : super(key: key);
@@ -38,19 +38,19 @@ class _UploadPageState extends State<UploadPage> {
     uploadList = [
       {
         "title": AppLocalizations.of(context)!.cullinary,
-        "image": "assets/uploadRestaurant.svg"
+        "image": "assets/svg_image/uploadRestaurant.svg"
       },
       {
         "title": AppLocalizations.of(context)!.tour,
-        "image": "assets/uploadDestination.svg"
+        "image": "assets/svg_image/uploadDestination.svg"
       },
       {
         "title": AppLocalizations.of(context)!.hotel,
-        "image": "assets/uploadHotel.svg"
+        "image": "assets/svg_image/uploadHotel.svg"
       },
       {
         "title": AppLocalizations.of(context)!.event,
-        "image": "assets/uploadEvent.svg"
+        "image": "assets/svg_image/uploadEvent.svg"
       }
     ];
     listAdded = [
@@ -138,7 +138,7 @@ class _UploadPageState extends State<UploadPage> {
           child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset("assets/noDataActivity.svg"),
+          SvgPicture.asset("assets/svg_image/noDataActivity.svg"),
           Text(
             AppLocalizations.of(context)!.noAdded,
             style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
@@ -165,6 +165,8 @@ class _UploadPageState extends State<UploadPage> {
               child: ListView.builder(
                 itemCount: listAdded.length,
                 itemBuilder: (context, index) => VerticalCard(
+                    imageUrl:
+                        'https://lh5.googleusercontent.com/p/AF1QipNGovUkHJz80U4GBl5pKppZIr5Hy4z0ZhQhJDV6=w253-h337-k-no',
                     title: listAdded[index]["title"],
                     subDistrict: listAdded[index]["subDistrict"],
                     price: "Rp${listAdded[index]["price"]}",

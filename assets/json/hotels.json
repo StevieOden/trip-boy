@@ -1,0 +1,23 @@
+{
+     "name": "",
+     "alamat": "",
+     "description":"",
+     "rating":0,
+     "facility":[
+          {
+               "name": ""
+          }
+     ],
+     "images":[
+          {
+               "images_url":""
+          }
+     ],
+     "rooms":[
+          {
+               "size_room": "regular",
+               "price_room": 0,
+               "description": ""
+          }
+     ]
+}

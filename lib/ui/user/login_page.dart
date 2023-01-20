@@ -6,10 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:trip_boy/component/loading.dart';
 import 'package:sizer/sizer.dart';
 
-import '../common/app_text_styles.dart';
-import '../common/color_values.dart';
-import '../services/auth.dart';
-import '../services/database_services.dart';
+import '../../common/app_text_styles.dart';
+import '../../common/color_values.dart';
+import '../../services/auth.dart';
 import 'dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -72,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
           Expanded(
             flex: 10,
             child: SvgPicture.asset(
-              'assets/loginPage.svg',
+              'assets/svg_image/loginPage.svg',
             ),
           ),
           Text(
@@ -117,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                     Image(
                         width: 20,
                         height: 20,
-                        image: AssetImage('assets/google.png')),
+                        image: AssetImage('assets/png_image/google.png')),
                     SizedBox(width: 15),
                     Text(
                       AppLocalizations.of(context)!.login_google,

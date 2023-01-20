@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:trip_boy/common/app_text_styles.dart';
+import 'package:trip_boy/common/color_values.dart';
 
-import '../../../common/app_text_styles.dart';
-import '../../../common/color_values.dart';
-
-class PageTwo extends StatefulWidget {
-  PageTwo({Key? key}) : super(key: key);
+class PageOne extends StatefulWidget {
+  PageOne({Key? key}) : super(key: key);
 
   @override
-  State<PageTwo> createState() => _PageTwoState();
+  State<PageOne> createState() => _PageOneState();
 }
 
-class _PageTwoState extends State<PageTwo> {
+class _PageOneState extends State<PageOne> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,18 +22,17 @@ class _PageTwoState extends State<PageTwo> {
           children: [
             Expanded(
               flex: 10,
-              child: SvgPicture.asset(
-                'assets/landingPage2.svg',
+              child: SvgPicture.asset('assets/svg_image/landingPage1.svg',
               ),
             ),
             Expanded(
               flex: 2,
               child: Text(
-                AppLocalizations.of(context)!.landing_page2,
+                AppLocalizations.of(context)!.landing_page1,
                 style: AppTextStyles.appTitlew700s20(ColorValues().blackColor),
               ),
             ),
-            Text(AppLocalizations.of(context)!.landing_page_desc2,
+            Text(AppLocalizations.of(context)!.landing_page_desc1,
                 textAlign: TextAlign.center,
                 style: AppTextStyles.appTitlew500s16(ColorValues().blackColor))
           ],

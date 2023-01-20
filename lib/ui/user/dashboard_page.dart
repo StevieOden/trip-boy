@@ -1,15 +1,14 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:trip_boy/component/alert_dialog.dart';
-import 'package:trip_boy/ui/activity_page.dart';
 import 'package:trip_boy/ui/explore/explore_page.dart';
 import 'package:trip_boy/ui/home_page.dart';
 import 'package:trip_boy/ui/profile_page.dart';
-import 'package:trip_boy/ui/upload_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:trip_boy/ui/user/upload_page/upload_page.dart';
+
+import 'activity_page.dart';
 
 class DashboardPage extends StatefulWidget {
   int selectedIndex;
@@ -38,9 +37,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      HomePage(
-          selectedIndex: widget.selectedIndex,
-          selectedTabIndex: widget.exploreSelectionIndex),
+      HomePage(),
       ExplorePage(exploreSelectionIndex: widget.exploreSelectionIndex),
       ActivityPage(),
       UploadPage(),

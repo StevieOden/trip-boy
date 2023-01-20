@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/models/activity_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../common/color_values.dart';
 import '../common/shared_code.dart';
@@ -77,25 +78,29 @@ class ActivityList extends StatelessWidget {
                       Container(
                           padding: EdgeInsets.all(5),
                           decoration: BoxDecoration(
-                              color: data[index].status == "Process"
+                              color: data[index].status ==
+                                      AppLocalizations.of(context)!.process
                                   ? ColorValues().yellowColor
-                                  : data[index].status == "Done"
+                                  : data[index].status ==
+                                          AppLocalizations.of(context)!.done
                                       ? ColorValues().greenColor
                                       : ColorValues().lightRedColor,
                               borderRadius: BorderRadius.circular(15)),
                           child: Text(data[index].status,
                               style: TextStyle(
                                 fontSize: 9,
-                                color: data[index].status == "Process"
+                                color: data[index].status ==
+                                        AppLocalizations.of(context)!.process
                                     ? ColorValues().orangeColor
-                                    : data[index].status == "Done"
+                                    : data[index].status ==
+                                            AppLocalizations.of(context)!.done
                                         ? ColorValues().darkGreenColor
                                         : ColorValues().redColor,
                               ))),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text("Bayar Sekarang",
+                          Text(AppLocalizations.of(context)!.payNow,
                               style: TextStyle(
                                   fontSize: 12,
                                   color: ColorValues().primaryColor)),

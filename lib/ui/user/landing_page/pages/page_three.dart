@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../../common/app_text_styles.dart';
-import '../../../common/color_values.dart';
+import '../../../../common/app_text_styles.dart';
+import '../../../../common/color_values.dart';
 
 class PageThree extends StatefulWidget {
   PageThree({Key? key}) : super(key: key);
@@ -23,7 +23,7 @@ class _PageThreeState extends State<PageThree> {
           children: [
             Expanded(
               flex: 10,
-              child: SvgPicture.asset('assets/landingPage3.svg',
+              child: SvgPicture.asset('assets/svg_image/landingPage3.svg',
               ),
             ),
             Expanded(

@@ -4,13 +4,14 @@ import 'package:trip_boy/common/color_values.dart';
 import 'package:sizer/sizer.dart';
 
 class VerticalCard extends StatefulWidget {
-  String title, subDistrict, price, rating;
+  String title, subDistrict, price, rating, imageUrl;
   VerticalCard(
       {Key? key,
       required this.title,
       required this.subDistrict,
       required this.price,
-      required this.rating,})
+      required this.rating,
+      required this.imageUrl})
       : super(key: key);
 
   @override
@@ -35,11 +36,14 @@ class _VerticalCardState extends State<VerticalCard> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Container(
-              decoration: BoxDecoration(
-                  color: ColorValues().primaryColor,
-                  borderRadius: BorderRadius.circular(12)),
-              width: 60.sp,
-              height: MediaQuery.of(context).size.height.sp,
+              width: 80,
+              height: 80,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: widget.imageUrl == ""?Image.asset("assets/png_image/logo.png",
+                    fit: BoxFit.cover, filterQuality: FilterQuality.high): Image.network(widget.imageUrl,
+                    fit: BoxFit.cover, filterQuality: FilterQuality.high),
+              ),
             ),
             SizedBox(
               width: 10.sp,
@@ -72,10 +76,28 @@ class _VerticalCardState extends State<VerticalCard> {
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: ColorValues().primaryColor,
-              size: 12.sp,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.star,
+                      color: ColorValues().starColor,
+                      size: 12.sp,
+                    ),
+                    Text(widget.rating,
+                        style: AppTextStyles.appTitlew500s12(
+                            ColorValues().blackColor))
+                  ],
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: ColorValues().primaryColor,
+                  size: 12.sp,
+                ),
+              ],
             )
           ],
         ),
