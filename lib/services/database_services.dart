@@ -63,10 +63,14 @@ class DatabaseService {
     }
   }
 
-  Future<List<RestaurantModel>> getRestaurantData() async {
+  Future<List<RestaurantModel>> getRestaurantData(
+      bool isUpload, String uid) async {
     List<RestaurantModel> restaurantsData = [];
     QuerySnapshot snapshot = await restaurants.get();
-    for (var data in snapshot.docs) {
+    QuerySnapshot snapshot2 =
+        await restaurants.where("user", isEqualTo: uid).get();
+    var snap = isUpload ? snapshot2 : snapshot;
+    for (var data in snap.docs) {
       Map<String, dynamic> mapData = data.data() as Map<String, dynamic>;
       RestaurantModel restaurantModel = RestaurantModel.fromJson(mapData);
       restaurantsData.add(restaurantModel);
@@ -74,10 +78,12 @@ class DatabaseService {
     return restaurantsData;
   }
 
-  Future<List<HotelModel>> getHotelData() async {
+  Future<List<HotelModel>> getHotelData(bool isUpload, String uid) async {
     List<HotelModel> hotelData = [];
     QuerySnapshot snapshot = await hotels.get();
-    for (var data in snapshot.docs) {
+    QuerySnapshot snapshot2 = await hotels.where("user", isEqualTo: uid).get();
+    var snap = isUpload ? snapshot2 : snapshot;
+    for (var data in snap.docs) {
       Map<String, dynamic> mapData = data.data() as Map<String, dynamic>;
       HotelModel hotelModel = HotelModel.fromJson(mapData);
       hotelData.add(hotelModel);
@@ -85,10 +91,14 @@ class DatabaseService {
     return hotelData;
   }
 
-  Future<List<DestinationModel>> getDestinationData() async {
+  Future<List<DestinationModel>> getDestinationData(
+      bool isUpload, String uid) async {
     List<DestinationModel> destinationData = [];
     QuerySnapshot snapshot = await destination.get();
-    for (var data in snapshot.docs) {
+    QuerySnapshot snapshot2 =
+        await destination.where("user", isEqualTo: uid).get();
+    var snap = isUpload ? snapshot2 : snapshot;
+    for (var data in snap.docs) {
       Map<String, dynamic> mapData = data.data() as Map<String, dynamic>;
       DestinationModel destinationModel = DestinationModel.fromJson(mapData);
       destinationData.add(destinationModel);
@@ -96,10 +106,12 @@ class DatabaseService {
     return destinationData;
   }
 
-  Future<List<EventModel>> getEventData() async {
+  Future<List<EventModel>> getEventData(bool isUpload, String uid) async {
     List<EventModel> eventData = [];
     QuerySnapshot snapshot = await events.get();
-    for (var data in snapshot.docs) {
+    QuerySnapshot snapshot2 = await events.where("user", isEqualTo: uid).get();
+    var snap = isUpload ? snapshot2 : snapshot;
+    for (var data in snap.docs) {
       Map<String, dynamic> mapData = data.data() as Map<String, dynamic>;
       EventModel eventModel = EventModel.fromJson(mapData);
       eventData.add(eventModel);
@@ -115,6 +127,7 @@ class DatabaseService {
       List<ImageModel> imageList,
       String name,
       String googleMapsLink,
+      String latlongtude,
       List<Room> roomsList) async {
     HotelModel data = HotelModel(
         type: "hotel",
@@ -205,7 +218,7 @@ class DatabaseService {
       facility: facilities,
       images: images,
       name: name,
-      googleMapLink: googleMapsLink,
+      googleMapsLink: googleMapsLink,
       rating: rating,
       tickets: tickets,
       timeClosed: timeClosed,

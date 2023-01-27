@@ -44,6 +44,7 @@ class BuildTextFormField extends StatefulWidget {
   final bool? editFile;
   final bool? isTitle;
   final bool? isFlag;
+  final bool? noTitle;
   final List<DropdownMenuItem<String>>? customDropdownItems;
   final String? customSelectedValue;
 
@@ -81,6 +82,7 @@ class BuildTextFormField extends StatefulWidget {
       this.editFile = false,
       this.isTitle = true,
       this.isFlag = false,
+      this.noTitle = false,
       this.customDropdownItems,
       this.customSelectedValue,
       super.key});
@@ -160,9 +162,11 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
                 style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
               )
             : const SizedBox.shrink(),
-        SizedBox(
-          height: 5.sp,
-        ),
+        widget.noTitle!
+            ? SizedBox()
+            : SizedBox(
+                height: 5.sp,
+              ),
         if (widget.isDropDown == true) ...[
           buildDropDownForm()
         ] else if (widget.isDateForm == true) ...[

@@ -27,7 +27,7 @@ class UploadList extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => UploadDetail(index: index,),
+                      builder: (context) => UploadDetail(index: index,hintTextType: uploadList[index]["title"],),
                     ));
               },
               child: Container(

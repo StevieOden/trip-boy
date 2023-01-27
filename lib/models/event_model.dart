@@ -18,12 +18,14 @@ class EventModel {
       this.ticketType,
       required this.timeHeld,
       this.terms,
+      this.userId,
       required this.type});
 
   String? name;
   String? imageUrl;
   String? description;
   String? meetLinks;
+  String? userId;
   double? rating;
   int? price;
   String? ticketType;
@@ -35,13 +37,14 @@ class EventModel {
     Timestamp timeHeld = json["time_held"];
     return EventModel(
       name: json["name"],
-      imageUrl: json["image_url"] == null ? "":json["image_url"],
+      imageUrl: json["image_url"] == null ? "" : json["image_url"],
       description: json["description"],
       meetLinks: json["meet_links"],
       rating: json["rating"].toDouble(),
       price: json["price"] == null ? 0 : json["price"],
       ticketType: json["ticket_type"],
       type: json["type"],
+      userId: json["user"],
       timeHeld: timeHeld.toDate(),
       terms: json["terms"] == null
           ? []
@@ -58,6 +61,7 @@ class EventModel {
         "price": price,
         "ticket_type": ticketType,
         "type": type,
+        "user":userId,
         "time_held": Timestamp.fromDate(
           DateTime(timeHeld.year, timeHeld.month, timeHeld.day),
         ),

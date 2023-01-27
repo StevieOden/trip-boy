@@ -57,7 +57,7 @@ class _ExplorePageState extends State<ExplorePage>
               controller: _tabController,
               tabs: [
                 Tab(
-                  text: AppLocalizations.of(context)!.cullinary,
+                  text: AppLocalizations.of(context)!.restaurant,
                 ),
                 Tab(
                   text: AppLocalizations.of(context)!.hotel,
@@ -71,21 +71,16 @@ class _ExplorePageState extends State<ExplorePage>
               ]),
         ),
         body: TabBarView(controller: _tabController, children: [
-         TabComponent(
-                  tabController: _tabController!,
-                  
-                ),
           TabComponent(
-                  tabController: _tabController!,
-                 
-                ),
+            tabController: _tabController!,
+          ),
           TabComponent(
-                  tabController: _tabController!,
-                 
-                ),
-          EventPages(
-                 
-                )
+            tabController: _tabController!,
+          ),
+          TabComponent(
+            tabController: _tabController!,
+          ),
+          EventPages()
         ]),
       ),
     );

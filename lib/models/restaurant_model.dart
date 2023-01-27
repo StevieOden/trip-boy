@@ -1,7 +1,4 @@
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
-
 import 'images_model.dart';
 
 RestaurantModel? restaurantModelFromJson(String str) =>
@@ -11,18 +8,18 @@ String restaurantModelToJson(RestaurantModel? data) =>
     json.encode(data!.toJson());
 
 class RestaurantModel {
-  RestaurantModel({
-    this.name,
-    this.alamat,
-    this.description,
-    this.rating,
-    this.timeClosed,
-    this.timeOpen,
-    this.menus,
-    this.googleMapsLink,
-    this.images,
-    required this.type
-  });
+  RestaurantModel(
+      {this.name,
+      this.alamat,
+      this.description,
+      this.rating,
+      this.timeClosed,
+      this.timeOpen,
+      this.menus,
+      this.googleMapsLink,
+      this.images,
+      this.userId,
+      required this.type});
 
   String? name;
   String? alamat;
@@ -31,23 +28,26 @@ class RestaurantModel {
   String? timeClosed;
   String? timeOpen;
   String? googleMapsLink;
+  String? userId;
   String type;
   List<Menu?>? menus;
   List<ImageModel?>? images;
 
   factory RestaurantModel.fromJson(Map<String, dynamic> json) =>
       RestaurantModel(
-        name: json["name"] == null ?"":json["name"],
-        alamat: json["alamat"] == null ? "":json["alamat"],
-        description: json["description"] == null ?"":json["description"],
-        rating: json["rating"]==null?"":json["rating"].toDouble(),
-        timeClosed: json["time_closed"] == null ? "" :json["time_closed"],
-        timeOpen: json["time_open"] == null ? "":json["time_open"],
-        googleMapsLink: json["google_maps_link"] == null ? "":json["google_maps_link"],
-        type: json["type"] == null ? "":json["type"],
-        menus: json["menus"] == null
+        name: json["name"] == null ? "" : json["name"],
+        alamat: json["alamat"] == null ? "" : json["alamat"],
+        description: json["description"] == null ? "" : json["description"],
+        rating: json["rating"] == null ? "" : json["rating"].toDouble(),
+        timeClosed: json["time_closed"] == null ? "" : json["time_closed"],
+        timeOpen: json["time_open"] == null ? "" : json["time_open"],
+        googleMapsLink:
+            json["google_maps_link"] == null ? "" : json["google_maps_link"],
+        type: json["type"] == null ? "" : json["type"],
+        userId: json["user"],
+        menus: json["menu"] == null
             ? []
-            : List<Menu?>.from(json["menus"]!.map((x) => Menu.fromJson(x))),
+            : List<Menu?>.from(json["menu"]!.map((x) => Menu.fromJson(x))),
         images: json["images"] == null
             ? []
             : List<ImageModel?>.from(
@@ -62,8 +62,9 @@ class RestaurantModel {
         "time_closed": timeClosed,
         "time_open": timeOpen,
         "googleMapsLink": googleMapsLink,
-        "type":type,
-        "menus": menus == null
+        "type": type,
+        "user":userId,
+        "menu": menus == null
             ? []
             : List<dynamic>.from(menus!.map((x) => x!.toJson())),
         "images": images == null

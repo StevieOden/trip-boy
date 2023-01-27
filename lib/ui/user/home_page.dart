@@ -9,10 +9,13 @@ import 'package:sizer/sizer.dart';
 import 'package:trip_boy/component/vertical_card.dart';
 import 'package:trip_boy/models/destination_model.dart';
 import 'package:trip_boy/models/event_model.dart';
+import 'package:trip_boy/models/facility_model.dart';
 import 'package:trip_boy/models/hotel_model.dart';
 import 'package:trip_boy/services/database_services.dart';
+import 'package:trip_boy/ui/user/detail_page.dart';
 import '../../common/app_text_styles.dart';
 import '../../common/color_values.dart';
+import '../../common/user_data.dart';
 import '../../models/restaurant_model.dart';
 import 'dashboard_page.dart';
 
@@ -48,10 +51,12 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> getAllData() async {
     setLoading(true);
-    restaurantsData = await DatabaseService().getRestaurantData();
-    hotelData = await DatabaseService().getHotelData();
-    destinationData = await DatabaseService().getDestinationData();
-    eventData = await DatabaseService().getEventData();
+    restaurantsData =
+        await DatabaseService().getRestaurantData(false, UserData().uid);
+    hotelData = await DatabaseService().getHotelData(false, UserData().uid);
+    destinationData =
+        await DatabaseService().getDestinationData(false, UserData().uid);
+    eventData = await DatabaseService().getEventData(false, UserData().uid);
     combineAllList();
     setLoading(false);
   }
@@ -124,7 +129,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         CircleButton(
           icon: Icons.restaurant,
-          title: AppLocalizations.of(context)!.cullinary,
+          title: AppLocalizations.of(context)!.restaurant,
           onTap: () {
             setState(() {
               Navigator.pushReplacement(
@@ -250,16 +255,91 @@ class _HomePageState extends State<HomePage> {
         Column(
           children: [
             for (var i = 0; i < allDataAfterFilter.length; i++)
-              VerticalCard(
-                title: allDataAfterFilter[i].name,
-                subDistrict: allDataAfterFilter[i].alamat.split(', ')[0] == ""
-                    ? allDataAfterFilter[i].alamat.split(', ')[0]
-                    : allDataAfterFilter[i].alamat.split(', ')[3],
-                price: "Rp5.000",
-                rating: allDataAfterFilter[i].rating.toString(),
-                imageUrl: allDataAfterFilter[i].images!.first!.imagesUrl != ""
-                    ? allDataAfterFilter[i].images!.first!.imagesUrl
-                    : "",
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailPage(
+                          facilityList: allDataAfterFilter[i].type == "hotel" ||
+                                  allDataAfterFilter[i].type == "destination"
+                              ? allDataAfterFilter[i].facility
+                              : [],
+                          price: allDataAfterFilter[i].type == "restaurant"
+                              ? allDataAfterFilter[i]
+                                  .menus
+                                  .first
+                                  .price
+                                  .toString()
+                              : allDataAfterFilter[i].type == "hotel"
+                                  ? allDataAfterFilter[i]
+                                      .rooms
+                                      .first
+                                      .priceRoom
+                                      .toString()
+                                  : allDataAfterFilter[i].tickets,
+                          roomList: allDataAfterFilter[i].type == "hotel"
+                              ? allDataAfterFilter[i].rooms
+                              : [],
+                          googleMapsUrl: allDataAfterFilter[i].googleMapsLink,
+                          type: allDataAfterFilter[i].type,
+                          imageUrl: allDataAfterFilter[i]
+                                      .images!
+                                      .first!
+                                      .imagesUrl !=
+                                  ""
+                              ? allDataAfterFilter[i].images!.first!.imagesUrl
+                              : "",
+                          name: allDataAfterFilter[i].name,
+                          rating: allDataAfterFilter[i].rating,
+                          location:
+                              allDataAfterFilter[i].alamat.split(', ')[0] == ""
+                                  ? allDataAfterFilter[i].alamat.split(', ')[0]
+                                  : allDataAfterFilter[i]
+                                      .alamat
+                                      .split(', ')[3]
+                                      .split('. ')[1],
+                          fullLocation: allDataAfterFilter[i].alamat,
+                          timeClose: allDataAfterFilter[i].type ==
+                                      "restaurant" ||
+                                  allDataAfterFilter[i].type == "destination"
+                              ? allDataAfterFilter[i].timeClosed
+                              : "",
+                          timeOpen: allDataAfterFilter[i].type ==
+                                      "restaurant" ||
+                                  allDataAfterFilter[i].type == "destination"
+                              ? allDataAfterFilter[i].timeOpen
+                              : "",
+                          description: allDataAfterFilter[i].description,
+                          imageList: allDataAfterFilter[i].images!.isNotEmpty
+                              ? allDataAfterFilter[i].images!
+                              : [],
+                        ),
+                      ));
+                },
+                child: VerticalCard(
+                  title: allDataAfterFilter[i].name,
+                  subDistrict: allDataAfterFilter[i].alamat.split(', ')[0] == ""
+                      ? allDataAfterFilter[i].alamat.split(', ')[0]
+                      : allDataAfterFilter[i].alamat.split(', ')[3],
+                  price: allDataAfterFilter[i].type == "restaurant"
+                      ? allDataAfterFilter[i].menus.first.price.toString()
+                      : allDataAfterFilter[i].type == "hotel"
+                          ? allDataAfterFilter[i]
+                              .rooms
+                              .first
+                              .priceRoom
+                              .toString()
+                          : allDataAfterFilter[i]
+                              .tickets
+                              .first
+                              .price
+                              .toString(),
+                  rating: allDataAfterFilter[i].rating.toString(),
+                  imageUrl: allDataAfterFilter[i].images!.isNotEmpty
+                      ? allDataAfterFilter[i].images!.first!.imagesUrl
+                      : "",
+                ),
               )
           ],
         ),

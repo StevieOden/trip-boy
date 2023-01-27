@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
+import 'package:trip_boy/common/user_data.dart';
 import 'package:trip_boy/component/loading.dart';
 import 'package:trip_boy/component/vertical_card.dart';
 
 import '../../../common/app_text_styles.dart';
 import '../../../common/color_values.dart';
 import '../../../component/upload_list.dart';
+import '../../../models/destination_model.dart';
+import '../../../models/event_model.dart';
+import '../../../models/hotel_model.dart';
+import '../../../models/restaurant_model.dart';
+import '../../../services/database_services.dart';
 
 class UploadPage extends StatefulWidget {
   UploadPage({Key? key}) : super(key: key);
@@ -18,26 +24,55 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
   int tabIndex = 0;
-  bool isLoading = true;
+  bool _isLoading = true;
   List<Map> uploadList = [];
-  List<Map> listAdded = [];
+  List<RestaurantModel> restaurantsData = [];
+  List<HotelModel> hotelData = [];
+  List<DestinationModel> destinationData = [];
+  List<EventModel> eventData = [];
+  List allData = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(const Duration(seconds: 1), () {
+    getAllData();
+  }
+
+  Future<void> combineAllList() async {
+    allData.addAll(hotelData);
+    allData.addAll(restaurantsData);
+    allData.addAll(destinationData);
+    allData.sort((a, b) => b.rating.compareTo(a.rating));
+  }
+
+  Future<void> getAllData() async {
+    setLoading(true);
+    restaurantsData =
+        await DatabaseService().getRestaurantData(true, UserData().uid);
+    hotelData = await DatabaseService().getHotelData(true, UserData().uid);
+    destinationData =
+        await DatabaseService().getDestinationData(true, UserData().uid);
+    eventData = await DatabaseService().getEventData(true, UserData().uid);
+    combineAllList();
+    setLoading(false);
+  }
+
+  void setLoading(bool loading) {
+    if (mounted) {
       setState(() {
-        isLoading = false;
+        _isLoading = loading;
       });
-    });
+    } else {
+      _isLoading = loading;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     uploadList = [
       {
-        "title": AppLocalizations.of(context)!.cullinary,
+        "title": AppLocalizations.of(context)!.restaurant,
         "image": "assets/svg_image/uploadRestaurant.svg"
       },
       {
@@ -51,13 +86,6 @@ class _UploadPageState extends State<UploadPage> {
       {
         "title": AppLocalizations.of(context)!.event,
         "image": "assets/svg_image/uploadEvent.svg"
-      }
-    ];
-    listAdded = [
-      {
-        "title": "Mountain View Residence Pool",
-        "subDistrict": "Bae",
-        "price": 25000,
       }
     ];
     return Scaffold(
@@ -149,7 +177,7 @@ class _UploadPageState extends State<UploadPage> {
   }
 
   buildUploadList() {
-    return isLoading
+    return _isLoading
         ? Expanded(child: Loading())
         : UploadList(
             uploadList: uploadList,
@@ -157,20 +185,27 @@ class _UploadPageState extends State<UploadPage> {
   }
 
   addedList() {
-    return listAdded.isEmpty
+    return allData.isEmpty
         ? noData()
         : Expanded(
             child: Container(
               margin: EdgeInsets.only(left: 15.sp, right: 15.sp),
               child: ListView.builder(
-                itemCount: listAdded.length,
+                itemCount: allData.length,
                 itemBuilder: (context, index) => VerticalCard(
-                    imageUrl:
-                        'https://lh5.googleusercontent.com/p/AF1QipNGovUkHJz80U4GBl5pKppZIr5Hy4z0ZhQhJDV6=w253-h337-k-no',
-                    title: listAdded[index]["title"],
-                    subDistrict: listAdded[index]["subDistrict"],
-                    price: "Rp${listAdded[index]["price"]}",
-                    rating: ""),
+                    imageUrl: allData[index].images!.first!.imagesUrl != ""
+                        ? allData[index].images!.first!.imagesUrl
+                        : "",
+                    title: allData[index].name,
+                    subDistrict: allData[index].alamat.split(', ')[0] == ""
+                        ? allData[index].alamat.split(', ')[0]
+                        : allData[index].alamat.split(', ')[3].split('. ')[1],
+                    price: allData[index].type == "restaurant"
+                        ? allData[index].menus.first.price.toString()
+                        : allData[index].type == "hotel"
+                            ? allData[index].rooms.first.priceRoom.toString()
+                            : allData[index].tickets.first.price.toString(),
+                    rating: allData[index].rating.toString()),
               ),
             ),
           );
