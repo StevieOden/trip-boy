@@ -57,7 +57,8 @@ class _LoginPageState extends State<LoginPage> {
               return FutureBuilder(
                   future: getUserData(),
                   builder: (context, snapshot) {
-                    return snapshot == "user_customer"
+                    print(snapshot.data);
+                    return snapshot.data == "user_customer"
                         ? DashboardPage()
                         : DashboardAdmin();
                   });
