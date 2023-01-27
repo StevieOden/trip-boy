@@ -169,7 +169,7 @@ class _ActivityPageState extends State<ActivityPage> {
           child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset("assets/noDataActivity.svg"),
+          SvgPicture.asset("assets/svg_image/noDataActivity.svg"),
           Text(
             AppLocalizations.of(context)!.noDataActivity,
             style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),

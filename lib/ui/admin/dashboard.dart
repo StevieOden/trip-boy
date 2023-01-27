@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../services/auth.dart';
 
 class DashboardAdmin extends StatefulWidget {
   const DashboardAdmin({super.key});
@@ -10,6 +13,18 @@ class DashboardAdmin extends StatefulWidget {
 class _DashboardAdminState extends State<DashboardAdmin> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: Center(
+        child: ElevatedButton(
+            onPressed: () {
+              setState(() {
+                final provider =
+                    Provider.of<AuthService>(context, listen: false);
+                provider.logout();
+              });
+            },
+            child: Text("Log out")),
+      ),
+    );
   }
 }

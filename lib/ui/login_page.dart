@@ -5,11 +5,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:trip_boy/component/loading.dart';
 import 'package:sizer/sizer.dart';
+import 'package:trip_boy/ui/admin/dashboard.dart';
 import 'package:trip_boy/ui/user/dashboard_page.dart';
 
 import '../../common/app_text_styles.dart';
 import '../../common/color_values.dart';
 import '../../services/auth.dart';
+import '../models/user_model.dart';
+import '../services/database_services.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -19,18 +22,27 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool _isLoading = false;
+  bool _isLoading = true;
 
-  Future<void> _login() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {} catch (e) {
-      print(e.toString());
+  String role = "";
+
+  Future<String> getUserData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    final uid = user!.uid;
+
+    UserModel userData = await DatabaseService().getUserData(uid);
+    role = userData.role!;
+    return role;
+  }
+
+  void setLoading(bool loading) {
+    if (mounted) {
+      setState(() {
+        _isLoading = loading;
+      });
+    } else {
+      _isLoading = loading;
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   @override
@@ -42,21 +54,25 @@ class _LoginPageState extends State<LoginPage> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: Loading());
             } else if (snapshot.hasData) {
-              return DashboardPage();
+              return FutureBuilder(
+                  future: getUserData(),
+                  builder: (context, snapshot) {
+                    return snapshot == "user_customer"
+                        ? DashboardPage()
+                        : DashboardAdmin();
+                  });
             } else if (snapshot.hasError) {
               return Center(
                 child: Text("Something went wrong!"),
               );
             } else {
-              return _isLoading
-                  ? Loading()
-                  : Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [buildImage(), buildButton()],
-                      ),
-                    );
+              return Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [buildImage(), buildButton()],
+                ),
+              );
             }
           }),
     );

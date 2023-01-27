@@ -1,15 +1,13 @@
+import 'package:flutter/material.dart';
+
 class Facility {
-  Facility({
-    this.name,
-  });
+  Facility({this.name});
 
   String? name;
 
   factory Facility.fromJson(Map<String, dynamic> json) => Facility(
-        name: json["name"],
-      );
+      name: json["name"],
+);
 
-  Map<String, dynamic> toJson() => {
-        "name": name,
-      };
+  Map<String, dynamic> toJson() => {"name": name};
 }

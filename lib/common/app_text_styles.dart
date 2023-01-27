@@ -83,6 +83,22 @@ class AppTextStyles {
     );
   }
 
+  static appTitlew400s16(Color color) {
+    return GoogleFonts.poppins(
+      fontWeight: FontWeight.w400,
+      fontSize: 16,
+      color: color,
+    );
+  }
+
+  static appTitlew400s18(Color color) {
+    return GoogleFonts.poppins(
+      fontWeight: FontWeight.w400,
+      fontSize: 18,
+      color: color,
+    );
+  }
+
   static appTitlew500s8(Color color) {
     return GoogleFonts.poppins(
       fontWeight: FontWeight.w500,
@@ -119,6 +135,22 @@ class AppTextStyles {
     return GoogleFonts.poppins(
       fontWeight: FontWeight.w500,
       fontSize: 16.0,
+      color: color,
+    );
+  }
+
+  static appTitlew500s18(Color color) {
+    return GoogleFonts.poppins(
+      fontWeight: FontWeight.w500,
+      fontSize: 18.0,
+      color: color,
+    );
+  }
+
+  static appTitlew500s20(Color color) {
+    return GoogleFonts.poppins(
+      fontWeight: FontWeight.w500,
+      fontSize: 20.0,
       color: color,
     );
   }

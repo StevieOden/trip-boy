@@ -26,31 +26,34 @@ class DestinationModel {
       this.facility,
       this.images,
       this.tickets,
-      this.googleMapLink,
+      this.googleMapsLink,
+      this.userId,
       required this.type});
 
   String? name;
   String? alamat;
   String? description;
-  String? googleMapLink;
+  String? googleMapsLink;
   String type;
   double? rating;
   String? timeClosed;
   String? timeOpen;
+  String? userId;
   List<Facility?>? facility;
   List<ImageModel?>? images;
   List<Ticket?>? tickets;
 
   factory DestinationModel.fromJson(Map<String, dynamic> json) =>
       DestinationModel(
-        name: json["name"],
-        alamat: json["alamat"],
-        description: json["description"],
-        rating: json["rating"],
-        timeClosed: json["time_closed"],
-        timeOpen: json["time_open"],
-        googleMapLink: json["google_maps_link"],
-        type: json["type"],
+        name: json["name"] == null?"":json["name"],
+        alamat: json["alamat"] == null?"":json["alamat"],
+        description: json["description"] == null?"":json["description"],
+        rating: json["rating"] == null?0:json["rating"],
+        timeClosed: json["time_closed"] == null ? "": json["time_closed"],
+        timeOpen: json["time_open"] == null ? "":json["time_open"],
+        googleMapsLink: json["google_maps_link"] == null ? "":json["google_maps_link"],
+        type: json["type"] == null ? "" : json["type"],
+        userId: json["user"] == null ? "": json["user"],
         facility: json["facility"] == null
             ? []
             : List<Facility?>.from(
@@ -72,8 +75,9 @@ class DestinationModel {
         "rating": rating,
         "time_closed": timeClosed,
         "time_open": timeOpen,
-        "google_maps_link": googleMapLink,
+        "google_maps_link": googleMapsLink,
         "type": type,
+        "user": userId,
         "facility": facility == null
             ? []
             : List<dynamic>.from(facility!.map((x) => x!.toJson())),

@@ -4,6 +4,7 @@ import 'package:sizer/sizer.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../common/app_text_styles.dart';
 import '../../../../common/color_values.dart';
+import '../../../../common/user_data.dart';
 import '../../../../component/skeleton.dart';
 import '../../../../component/vertical_card.dart';
 import '../../../../models/destination_model.dart';
@@ -38,10 +39,9 @@ class _TabComponentState extends State<TabComponent> {
 
   Future<void> getAllData() async {
     setLoading(true);
-    restaurantsData = await DatabaseService().getRestaurantData();
-    hotelData = await DatabaseService().getHotelData();
-    destinationData = await DatabaseService().getDestinationData();
-    // DatabaseService().addEventData();
+    restaurantsData = await DatabaseService().getRestaurantData(false, UserData().uid);
+    hotelData = await DatabaseService().getHotelData(false, UserData().uid);
+    destinationData = await DatabaseService().getDestinationData(false, UserData().uid);
     setLoading(false);
   }
 
@@ -252,7 +252,7 @@ class _TabComponentState extends State<TabComponent> {
           ),
           child: Text(
             widget.tabController.index == 0
-                ? AppLocalizations.of(context)!.allCullinary
+                ? AppLocalizations.of(context)!.allRestaurant
                 : widget.tabController.index == 1
                     ? AppLocalizations.of(context)!.allHotel
                     : widget.tabController.index == 2
@@ -272,7 +272,7 @@ class _TabComponentState extends State<TabComponent> {
                 subDistrict: listData[i].alamat.split(', ')[0] == ""
                     ? listData[i].alamat.split(', ')[0]
                     : listData[i].alamat.split(', ')[3],
-                price: "Rp5.000",
+                price: "5000",
                 rating: listData[i].rating!.toString(),
                 imageUrl: listData[i].images!.first!.imagesUrl!,
               )

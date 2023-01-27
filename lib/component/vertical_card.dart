@@ -4,14 +4,17 @@ import 'package:trip_boy/common/color_values.dart';
 import 'package:sizer/sizer.dart';
 
 class VerticalCard extends StatefulWidget {
-  String title, subDistrict, price, rating, imageUrl;
+  String title, subDistrict, rating, imageUrl;
+  String price;
+  bool isShowRating;
   VerticalCard(
       {Key? key,
       required this.title,
       required this.subDistrict,
       required this.price,
       required this.rating,
-      required this.imageUrl})
+      required this.imageUrl,
+      this.isShowRating = true})
       : super(key: key);
 
   @override
@@ -40,9 +43,11 @@ class _VerticalCardState extends State<VerticalCard> {
               height: 80,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: widget.imageUrl == ""?Image.asset("assets/png_image/logo.png",
-                    fit: BoxFit.cover, filterQuality: FilterQuality.high): Image.network(widget.imageUrl,
-                    fit: BoxFit.cover, filterQuality: FilterQuality.high),
+                child: widget.imageUrl == ""
+                    ? Image.asset("assets/png_image/logo.png",
+                        fit: BoxFit.cover, filterQuality: FilterQuality.high)
+                    : Image.network(widget.imageUrl,
+                        fit: BoxFit.cover, filterQuality: FilterQuality.high),
               ),
             ),
             SizedBox(
@@ -69,7 +74,7 @@ class _VerticalCardState extends State<VerticalCard> {
                     ],
                   ),
                   Text(
-                    widget.price,
+                    "Rp${widget.price.toString()}",
                     style: AppTextStyles.appTitlew700s12(
                         ColorValues().primaryColor),
                   )
@@ -79,19 +84,21 @@ class _VerticalCardState extends State<VerticalCard> {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.star,
-                      color: ColorValues().starColor,
-                      size: 12.sp,
-                    ),
-                    Text(widget.rating,
-                        style: AppTextStyles.appTitlew500s12(
-                            ColorValues().blackColor))
-                  ],
-                ),
+                widget.isShowRating
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.star,
+                            color: ColorValues().starColor,
+                            size: 12.sp,
+                          ),
+                          Text(widget.rating,
+                              style: AppTextStyles.appTitlew500s12(
+                                  ColorValues().blackColor))
+                        ],
+                      )
+                    : Container(),
                 Icon(
                   Icons.arrow_forward_ios,
                   color: ColorValues().primaryColor,

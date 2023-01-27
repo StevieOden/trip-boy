@@ -13,34 +13,38 @@ HotelModel? hotelModelFromJson(String str) =>
 String hotelModelToJson(HotelModel? data) => json.encode(data!.toJson());
 
 class HotelModel {
-  HotelModel(
-      {this.name,
-      this.alamat,
-      this.description,
-      this.rating,
-      this.facility,
-      this.images,
-      this.rooms,
-      this.googleMapsLink,
-      required this.type});
+  HotelModel({
+    this.name,
+    this.alamat,
+    this.description,
+    this.rating,
+    this.facility,
+    this.images,
+    this.rooms,
+    this.googleMapsLink,
+    this.userId,
+    required this.type,
+  });
 
   String? name;
   String? alamat;
   String? description;
   String? googleMapsLink;
   String type;
+  String? userId;
   double? rating;
   List<Facility?>? facility;
   List<ImageModel?>? images;
   List<Room?>? rooms;
 
   factory HotelModel.fromJson(Map<String, dynamic> json) => HotelModel(
-        name: json["name"],
-        alamat: json["alamat"],
-        description: json["description"],
-        rating: json["rating"],
+        name: json["name"] == null ? "" : json["name"],
+        alamat: json["alamat"] == null ? "" : json["alamat"],
+        description: json["description"] == null ? "" : json["description"],
+        rating: json["rating"] == null ? 0 : json["rating"],
         googleMapsLink: json["google_maps_link"],
-        type: json["type"],
+        type: json["type"] == null ? "" : json["type"],
+        userId: json["user"] == null ? "" : json["user"],
         facility: json["facility"] == null
             ? []
             : List<Facility?>.from(
@@ -61,6 +65,7 @@ class HotelModel {
         "rating": rating,
         "type": type,
         "google_maps_link": googleMapsLink,
+        "user": userId,
         "facility": facility == null
             ? []
             : List<dynamic>.from(facility!.map((x) => x!.toJson())),
@@ -78,21 +83,24 @@ class Room {
     this.sizeRoom,
     this.priceRoom,
     this.description,
+    this.image,
   });
 
   String? sizeRoom;
   int? priceRoom;
-  String? description;
+  String? description, image;
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
         sizeRoom: json["size_room"],
-        priceRoom: json["price_room"],
+        priceRoom: json["price"],
         description: json["description"],
+        image: json["image"],
       );
 
   Map<String, dynamic> toJson() => {
         "size_room": sizeRoom,
-        "price_room": priceRoom,
+        "price": priceRoom,
         "description": description,
+        "image": image,
       };
 }

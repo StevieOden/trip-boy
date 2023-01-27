@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:trip_boy/component/alert_dialog.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:trip_boy/ui/admin/dashboard.dart';
 import 'package:trip_boy/ui/user/profile_page.dart';
 import 'package:trip_boy/ui/user/upload_page/upload_page.dart';
 
+import '../../models/user_model.dart';
+import '../../services/database_services.dart';
 import 'activity_page.dart';
 import 'explore/explore_page.dart';
 import 'home_page.dart';
@@ -21,6 +25,9 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  User? user = FirebaseAuth.instance.currentUser!;
+  String role = "";
+
   Future<bool> _onWillPop(BuildContext context) async {
     bool? exitResult = await showDialog(
       context: context,

@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:trip_boy/ui/user/dashboard_page.dart';
 import 'package:trip_boy/ui/user/landing_page/landing_page.dart';
 
-
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key? key}) : super(key: key);
 

@@ -3,6 +3,7 @@ import 'package:sizer/sizer.dart';
 import 'package:trip_boy/models/event_model.dart';
 
 import '../../../../common/shared_code.dart';
+import '../../../../common/user_data.dart';
 import '../../../../component/event_card_item.dart';
 import '../../../../services/database_services.dart';
 
@@ -19,8 +20,7 @@ class _EventPagesState extends State<EventPages> {
 
   Future<void> getAllData() async {
     setLoading(true);
-    eventData = await DatabaseService().getEventData();
-
+    eventData = await DatabaseService().getEventData(false,  UserData().uid);
     print(eventData.first.name);
     setLoading(false);
   }
