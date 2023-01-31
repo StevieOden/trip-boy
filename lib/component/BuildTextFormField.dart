@@ -180,13 +180,15 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
         ] else ...[
           buildRegularTextForm()
         ],
-        widget.isFlag == true
-            ? SizedBox(
-                height: 5.sp,
-              )
-            : SizedBox(
-                height: 10.sp,
-              ),
+        widget.noTitle!
+            ? SizedBox()
+            : widget.isFlag == true
+                ? SizedBox(
+                    height: 5.sp,
+                  )
+                : SizedBox(
+                    height: 10.sp,
+                  ),
       ],
     );
   }
@@ -221,7 +223,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
         helperText: widget.helperText,
         hintStyle: AppTextStyles.appTitlew400s12(
             ColorValues().darkGreyColor.withOpacity(0.5)),
-        contentPadding: EdgeInsets.symmetric(vertical: 8.sp, horizontal: 10.sp),
+        contentPadding: EdgeInsets.symmetric(vertical: 0.sp, horizontal: 10.sp),
         // enabledBorder: textFieldfocused(),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(5.sp),
@@ -422,7 +424,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
                   height: 25.h,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(10.sp)),
-                      color: Colors.black,
+                      color: ColorValues().primaryColor.withOpacity(0.2),
                       image: DecorationImage(
                           fit: BoxFit.cover,
                           colorFilter: ColorFilter.mode(
@@ -448,12 +450,12 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
               )
             ],
             widget.uploadFile != true
-                ? const SizedBox(
+                ? SizedBox(
                     child: Padding(
                     padding: EdgeInsets.all(10.0),
                     child: Icon(
                       Icons.edit,
-                      color: Colors.white,
+                      color: ColorValues().primaryColor,
                       size: 25,
                     ),
                   ))

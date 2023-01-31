@@ -11,6 +11,7 @@ import '../../../../models/destination_model.dart';
 import '../../../../models/hotel_model.dart';
 import '../../../../models/restaurant_model.dart';
 import '../../../../services/database_services.dart';
+import '../../detail_page.dart';
 
 class TabComponent extends StatefulWidget {
   TabController tabController;
@@ -39,9 +40,11 @@ class _TabComponentState extends State<TabComponent> {
 
   Future<void> getAllData() async {
     setLoading(true);
-    restaurantsData = await DatabaseService().getRestaurantData(false, UserData().uid);
+    restaurantsData =
+        await DatabaseService().getRestaurantData(false, UserData().uid);
     hotelData = await DatabaseService().getHotelData(false, UserData().uid);
-    destinationData = await DatabaseService().getDestinationData(false, UserData().uid);
+    destinationData =
+        await DatabaseService().getDestinationData(false, UserData().uid);
     setLoading(false);
   }
 
@@ -99,56 +102,111 @@ class _TabComponentState extends State<TabComponent> {
               crossAxisCount: 2,
               children: List.generate(
                 listData.length,
-                (index) => ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      listData[index].images!.first!.imagesUrl! == ""
-                          ? Image.asset("assets/png_image/logo.png",
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.high)
-                          : Image.network(
-                              listData[index].images!.first!.imagesUrl!,
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.high),
-                      Container(
-                        padding:
-                            EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                        alignment: Alignment.bottomCenter,
-                        decoration: BoxDecoration(
-                          color: ColorValues().veryBlackColor.withOpacity(0.45),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: Text(listData[index].name!,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyles.appTitlew500s12(
-                                      Colors.white)),
-                            ),
-                            Expanded(
-                              child: Wrap(
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.star,
-                                    color: ColorValues().starColor,
-                                  ),
-                                  Text(listData[index].rating.toString(),
-                                      style: AppTextStyles.appTitlew500s12(
-                                          Colors.white)),
-                                ],
+                (index) => InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailPage(
+                            facilityList: listData[index].type == "hotel" ||
+                                    listData[index].type == "destination"
+                                ? listData[index].facility
+                                : [],
+                            price: listData[index].type == "restaurant"
+                                ? listData[index].menus.first.price.toString()
+                                : listData[index].type == "hotel"
+                                    ? listData[index]
+                                        .rooms
+                                        .first
+                                        .priceRoom
+                                        .toString()
+                                    : listData[index].tickets,
+                            roomList: listData[index].type == "hotel"
+                                ? listData[index].rooms
+                                : [],
+                            googleMapsUrl: listData[index].googleMapsLink,
+                            type: listData[index].type,
+                            imageUrl:
+                                listData[index].images!.first!.imagesUrl != ""
+                                    ? listData[index].images!.first!.imagesUrl
+                                    : "",
+                            name: listData[index].name,
+                            rating: listData[index].rating,
+                            location:
+                                listData[index].alamat.split(', ')[0] == ""
+                                    ? listData[index].alamat.split(', ')[0]
+                                    : listData[index]
+                                        .alamat
+                                        .split(', ')[3]
+                                        .split('. ')[1],
+                            fullLocation: listData[index].alamat,
+                            timeClose: listData[index].type == "restaurant" ||
+                                    listData[index].type == "destination"
+                                ? listData[index].timeClosed
+                                : "",
+                            timeOpen: listData[index].type == "restaurant" ||
+                                    listData[index].type == "destination"
+                                ? listData[index].timeOpen
+                                : "",
+                            description: listData[index].description,
+                            imageList: listData[index].images!.isNotEmpty
+                                ? listData[index].images!
+                                : [],
+                          ),
+                        ));
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        listData[index].images!.first!.imagesUrl! == ""
+                            ? Image.asset("assets/png_image/logo.png",
+                                fit: BoxFit.cover,
+                                filterQuality: FilterQuality.high)
+                            : Image.network(
+                                listData[index].images!.first!.imagesUrl!,
+                                fit: BoxFit.cover,
+                                filterQuality: FilterQuality.high),
+                        Container(
+                          padding:
+                              EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                          alignment: Alignment.bottomCenter,
+                          decoration: BoxDecoration(
+                            color:
+                                ColorValues().veryBlackColor.withOpacity(0.45),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Text(listData[index].name!,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTextStyles.appTitlew500s12(
+                                        Colors.white)),
                               ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
+                              Expanded(
+                                child: Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.star,
+                                      color: ColorValues().starColor,
+                                    ),
+                                    Text(listData[index].rating.toString(),
+                                        style: AppTextStyles.appTitlew500s12(
+                                            Colors.white)),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -182,59 +240,114 @@ class _TabComponentState extends State<TabComponent> {
               ],
             ),
             childrenDelegate: SliverChildBuilderDelegate(
-                (context, index) => ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          list[index].images!.first!.imagesUrl! == ""
-                              ? Image.asset("assets/png_image/logo.png",
-                                  fit: BoxFit.cover,
-                                  filterQuality: FilterQuality.high)
-                              : Image.network(
-                                  list[index].images!.first!.imagesUrl!,
-                                  fit: BoxFit.cover,
-                                  filterQuality: FilterQuality.high),
-                          Container(
-                            padding: EdgeInsets.only(
-                                left: 10, right: 10, bottom: 10),
-                            alignment: Alignment.bottomCenter,
-                            decoration: BoxDecoration(
-                              color: ColorValues()
-                                  .veryBlackColor
-                                  .withOpacity(0.45),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(list[index].name!,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: AppTextStyles.appTitlew500s12(
-                                          Colors.white)),
-                                ),
-                                Expanded(
-                                  child: Wrap(
-                                    crossAxisAlignment:
-                                        WrapCrossAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: ColorValues().starColor,
-                                      ),
-                                      Text(list[index].rating!.toString(),
-                                          style: AppTextStyles.appTitlew500s12(
-                                              Colors.white)),
-                                    ],
+                (context, index) => InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailPage(
+                                facilityList: list[index].type == "hotel" ||
+                                        list[index].type == "destination"
+                                    ? list[index].facility
+                                    : [],
+                                price: list[index].type == "restaurant"
+                                    ? list[index].menus.first.price.toString()
+                                    : list[index].type == "hotel"
+                                        ? list[index]
+                                            .rooms
+                                            .first
+                                            .priceRoom
+                                            .toString()
+                                        : list[index].tickets,
+                                roomList: list[index].type == "hotel"
+                                    ? list[index].rooms
+                                    : [],
+                                googleMapsUrl: list[index].googleMapsLink,
+                                type: list[index].type,
+                                imageUrl:
+                                    list[index].images!.first!.imagesUrl != ""
+                                        ? list[index].images!.first!.imagesUrl
+                                        : "",
+                                name: list[index].name,
+                                rating: list[index].rating,
+                                location:
+                                    list[index].alamat.split(', ')[0] == ""
+                                        ? list[index].alamat.split(', ')[0]
+                                        : list[index]
+                                            .alamat
+                                            .split(', ')[3]
+                                            .split('. ')[1],
+                                fullLocation: list[index].alamat,
+                                timeClose: list[index].type == "restaurant" ||
+                                        list[index].type == "destination"
+                                    ? list[index].timeClosed
+                                    : "",
+                                timeOpen: list[index].type == "restaurant" ||
+                                        list[index].type == "destination"
+                                    ? list[index].timeOpen
+                                    : "",
+                                description: list[index].description,
+                                imageList: list[index].images!.isNotEmpty
+                                    ? list[index].images!
+                                    : [],
+                              ),
+                            ));
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            list[index].images!.first!.imagesUrl! == ""
+                                ? Image.asset("assets/png_image/logo.png",
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high)
+                                : Image.network(
+                                    list[index].images!.first!.imagesUrl!,
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high),
+                            Container(
+                              padding: EdgeInsets.only(
+                                  left: 10, right: 10, bottom: 10),
+                              alignment: Alignment.bottomCenter,
+                              decoration: BoxDecoration(
+                                color: ColorValues()
+                                    .veryBlackColor
+                                    .withOpacity(0.45),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(list[index].name!,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppTextStyles.appTitlew500s12(
+                                            Colors.white)),
                                   ),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
+                                  Expanded(
+                                    child: Wrap(
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                          color: ColorValues().starColor,
+                                        ),
+                                        Text(list[index].rating!.toString(),
+                                            style:
+                                                AppTextStyles.appTitlew500s12(
+                                                    Colors.white)),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                 childCount: list.length > 3 ? 3 : list.length),
@@ -267,14 +380,66 @@ class _TabComponentState extends State<TabComponent> {
         Column(
           children: [
             for (var i = 0; i < listData.length; i++)
-              VerticalCard(
-                title: "Wisata Alam Sutera",
-                subDistrict: listData[i].alamat.split(', ')[0] == ""
-                    ? listData[i].alamat.split(', ')[0]
-                    : listData[i].alamat.split(', ')[3],
-                price: "5000",
-                rating: listData[i].rating!.toString(),
-                imageUrl: listData[i].images!.first!.imagesUrl!,
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailPage(
+                          facilityList: listData[i].type == "hotel" ||
+                                  listData[i].type == "destination"
+                              ? listData[i].facility
+                              : [],
+                          price: listData[i].type == "restaurant"
+                              ? listData[i].menus.first.price.toString()
+                              : listData[i].type == "hotel"
+                                  ? listData[i].rooms.first.priceRoom.toString()
+                                  : listData[i].tickets,
+                          roomList: listData[i].type == "hotel"
+                              ? listData[i].rooms
+                              : [],
+                          googleMapsUrl: listData[i].googleMapsLink,
+                          type: listData[i].type,
+                          imageUrl: listData[i].images!.first!.imagesUrl != ""
+                              ? listData[i].images!.first!.imagesUrl
+                              : "",
+                          name: listData[i].name,
+                          rating: listData[i].rating,
+                          location: listData[i].alamat.split(', ')[0] == ""
+                              ? listData[i].alamat.split(', ')[0]
+                              : listData[i]
+                                  .alamat
+                                  .split(', ')[3]
+                                  .split('. ')[1],
+                          fullLocation: listData[i].alamat,
+                          timeClose: listData[i].type == "restaurant" ||
+                                  listData[i].type == "destination"
+                              ? listData[i].timeClosed
+                              : "",
+                          timeOpen: listData[i].type == "restaurant" ||
+                                  listData[i].type == "destination"
+                              ? listData[i].timeOpen
+                              : "",
+                          description: listData[i].description,
+                          imageList: listData[i].images!.isNotEmpty
+                              ? listData[i].images!
+                              : [],
+                        ),
+                      ));
+                },
+                child: VerticalCard(
+                  title: listData[i].name,
+                  subDistrict: listData[i].alamat.split(', ')[0] == ""
+                      ? listData[i].alamat.split(', ')[0]
+                      : listData[i].alamat.split(', ')[3],
+                  price: listData[i].type == "restaurant"
+                      ? listData[i].menus.first.price.toString()
+                      : listData[i].type == "hotel"
+                          ? listData[i].rooms.first.priceRoom.toString()
+                          : listData[i].tickets.first.price.toString(),
+                  rating: listData[i].rating!.toString(),
+                  imageUrl: listData[i].images!.first!.imagesUrl!,
+                ),
               )
           ],
         ),

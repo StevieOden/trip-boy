@@ -263,10 +263,10 @@ class _DetailPageState extends State<DetailPage>
                                   color: widget.imageList.length == 3
                                       ? ColorValues()
                                           .veryBlackColor
-                                          .withOpacity(0.45)
+                                          .withOpacity(0.6)
                                       : ColorValues()
                                           .veryBlackColor
-                                          .withOpacity(0.15),
+                                          .withOpacity(0.6),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: index == 2
@@ -757,14 +757,37 @@ class _DetailPageState extends State<DetailPage>
                 itemBuilder: (context, index) {
                   var iconData = widget.facilityList[index]!.name! == "toilet"
                       ? Icons.wc
-                      : widget.facilityList[index]!.name! == "mushola"
+                      : widget.facilityList[index]!.name! == "mosque"
                           ? Icons.mosque
-                          : null;
+                          : widget.facilityList[index]!.name! == "restaurant"
+                              ? Icons.restaurant
+                              : widget.facilityList[index]!.name! ==
+                                      "swimming pool"
+                                  ? Icons.pool
+                                  : widget.facilityList[index]!.name! == "wifi"
+                                      ? Icons.wifi
+                                      : widget.facilityList[index]!.name! ==
+                                              "smoking area"
+                                          ? Icons.smoking_rooms
+                                          : widget.facilityList[index]!.name! ==
+                                                  "free breakfast"
+                                              ? Icons.lunch_dining
+                                              : widget.facilityList[index]!
+                                                          .name! ==
+                                                      "bar"
+                                                  ? Icons.local_bar
+                                                  : widget.facilityList[index]!
+                                                              .name! ==
+                                                          "easy reservation"
+                                                      ? Icons.receipt
+                                                      : null;
                   return Container(
-                    margin: EdgeInsets.only(right: 10),
+                    margin: EdgeInsets.only(right: 15),
                     child: Column(
                       children: [
-                        Icon(iconData),
+                        widget.facilityList[index]!.name! == "playground"
+                            ? Image.asset("assets/png_image/playground.png")
+                            : Icon(iconData),
                         Text(widget.facilityList[index]!.name!
                                 .substring(0, 1)
                                 .toUpperCase() +
