@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:trip_boy/common/shared_code.dart';
 import 'package:trip_boy/component/circle_button.dart';
 import 'package:trip_boy/component/horizontal_card.dart';
 import 'package:trip_boy/component/loading.dart';
@@ -34,6 +36,9 @@ class _HomePageState extends State<HomePage> {
   List<DestinationModel> destinationData = [];
   List<EventModel> eventData = [];
   List allData = [];
+  final TextEditingController _searchController = TextEditingController();
+  List allDataFiltered = [];
+  String query = "";
 
   @override
   void initState() {
@@ -47,6 +52,8 @@ class _HomePageState extends State<HomePage> {
     allData.addAll(restaurantsData);
     allData.addAll(destinationData);
     allData.sort((a, b) => b.rating.compareTo(a.rating));
+    allDataFiltered = allData;
+    print(" data filtered length : ${allDataFiltered.length}");
   }
 
   Future<void> getAllData() async {
@@ -59,6 +66,21 @@ class _HomePageState extends State<HomePage> {
     eventData = await DatabaseService().getEventData(false, UserData().uid);
     combineAllList();
     setLoading(false);
+  }
+
+  void searchData(String keyword) {
+    final list = allData.where((list) {
+      final titleLower = list.name!.toLowerCase();
+      final searchLower = keyword.toLowerCase();
+
+      return titleLower.contains(searchLower);
+    }).toList();
+
+    setState(() {
+      query = keyword;
+      allDataFiltered = list;
+      print(" data filtered length : ${allDataFiltered.length}");
+    });
   }
 
   void setLoading(bool loading) {
@@ -84,6 +106,8 @@ class _HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: () {
         if (!currentFocus.hasPrimaryFocus) {
+          allDataFiltered = allData;
+          _searchController.clear();
           currentFocus.unfocus();
         }
       },
@@ -101,22 +125,37 @@ class _HomePageState extends State<HomePage> {
                           margin: EdgeInsets.only(
                               left: 15.sp, right: 15.sp, top: 10.sp),
                           width: MediaQuery.of(context).size.width.w,
-                          child: SearchBar()),
-                      Container(
-                        margin:
-                            EdgeInsets.only(left: 15.sp, right: 15.sp, top: 15),
-                        child: _buildCircleButton(),
-                      ),
-                      Container(
-                          margin: EdgeInsets.only(top: 10.sp),
-                          child: _buildHighlightEvent(listAfterFilter)),
-                      Container(
-                          margin: EdgeInsets.only(
-                              left: 12.sp,
-                              top: 10.sp,
-                              right: 12.sp,
-                              bottom: 10.sp),
-                          child: _buildRecommend(allDataAfterFilter)),
+                          child: SearchBar(
+                            controller: _searchController,
+                            onChanged: searchData,
+                          )),
+                      allDataFiltered.length != allData.length
+                          ? Container(
+                              margin: EdgeInsets.only(
+                                  left: 15.sp, right: 15.sp, top: 15),
+                              child: _buildSearchList(allDataFiltered),
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      left: 15.sp, right: 15.sp, top: 15),
+                                  child: _buildCircleButton(),
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(top: 10.sp),
+                                    child:
+                                        _buildHighlightEvent(listAfterFilter)),
+                                Container(
+                                    margin: EdgeInsets.only(
+                                        left: 12.sp,
+                                        top: 10.sp,
+                                        right: 12.sp,
+                                        bottom: 10.sp),
+                                    child: _buildRecommend(allDataAfterFilter)),
+                              ],
+                            ),
                     ],
                   ),
                 )),
@@ -345,5 +384,122 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
     );
+  }
+
+  noData(context) {
+    return Center(
+        child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SvgPicture.asset("assets/svg_image/noDataActivity.svg"),
+        Text(
+          AppLocalizations.of(context)!.noData,
+          style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
+        )
+      ],
+    ));
+  }
+
+  _buildSearchList(allDataAfterFilter) {
+    return allDataAfterFilter.length == 0
+        ? Container(
+            child: noData(context),
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var i = 0; i < allDataAfterFilter.length; i++)
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailPage(
+                            facilityList: allDataAfterFilter[i].type ==
+                                        "hotel" ||
+                                    allDataAfterFilter[i].type == "destination"
+                                ? allDataAfterFilter[i].facility
+                                : [],
+                            price: allDataAfterFilter[i].type == "restaurant"
+                                ? allDataAfterFilter[i]
+                                    .menus
+                                    .first
+                                    .price
+                                    .toString()
+                                : allDataAfterFilter[i].type == "hotel"
+                                    ? allDataAfterFilter[i]
+                                        .rooms
+                                        .first
+                                        .priceRoom
+                                        .toString()
+                                    : allDataAfterFilter[i].tickets,
+                            roomList: allDataAfterFilter[i].type == "hotel"
+                                ? allDataAfterFilter[i].rooms
+                                : [],
+                            googleMapsUrl: allDataAfterFilter[i].googleMapsLink,
+                            type: allDataAfterFilter[i].type,
+                            imageUrl: allDataAfterFilter[i]
+                                        .images!
+                                        .first!
+                                        .imagesUrl !=
+                                    ""
+                                ? allDataAfterFilter[i].images!.first!.imagesUrl
+                                : "",
+                            name: allDataAfterFilter[i].name,
+                            rating: allDataAfterFilter[i].rating,
+                            location: allDataAfterFilter[i]
+                                        .alamat
+                                        .split(', ')[0] ==
+                                    ""
+                                ? allDataAfterFilter[i].alamat.split(', ')[0]
+                                : allDataAfterFilter[i]
+                                    .alamat
+                                    .split(', ')[3]
+                                    .split('. ')[1],
+                            fullLocation: allDataAfterFilter[i].alamat,
+                            timeClose: allDataAfterFilter[i].type ==
+                                        "restaurant" ||
+                                    allDataAfterFilter[i].type == "destination"
+                                ? allDataAfterFilter[i].timeClosed
+                                : "",
+                            timeOpen: allDataAfterFilter[i].type ==
+                                        "restaurant" ||
+                                    allDataAfterFilter[i].type == "destination"
+                                ? allDataAfterFilter[i].timeOpen
+                                : "",
+                            description: allDataAfterFilter[i].description,
+                            imageList: allDataAfterFilter[i].images!.isNotEmpty
+                                ? allDataAfterFilter[i].images!
+                                : [],
+                          ),
+                        ));
+                  },
+                  child: VerticalCard(
+                    title: allDataAfterFilter[i].name,
+                    subDistrict:
+                        allDataAfterFilter[i].alamat.split(', ')[0] == ""
+                            ? allDataAfterFilter[i].alamat.split(', ')[0]
+                            : allDataAfterFilter[i].alamat.split(', ')[3],
+                    price: allDataAfterFilter[i].type == "restaurant"
+                        ? allDataAfterFilter[i].menus.first.price.toString()
+                        : allDataAfterFilter[i].type == "hotel"
+                            ? allDataAfterFilter[i]
+                                .rooms
+                                .first
+                                .priceRoom
+                                .toString()
+                            : allDataAfterFilter[i]
+                                .tickets
+                                .first
+                                .price
+                                .toString(),
+                    rating: allDataAfterFilter[i].rating.toString(),
+                    imageUrl: allDataAfterFilter[i].images!.isNotEmpty
+                        ? allDataAfterFilter[i].images!.first!.imagesUrl
+                        : "",
+                  ),
+                ),
+            ],
+          );
   }
 }
