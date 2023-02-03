@@ -63,6 +63,7 @@ class _VerticalCardState extends State<VerticalCard> {
                     children: [
                       Text(
                         widget.title,
+                        maxLines: 1,
                         style: AppTextStyles.appTitlew500s12(
                             ColorValues().blackColor),
                       ),

@@ -11,6 +11,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../common/app_text_styles.dart';
 
+typedef void StringCallback(String val);
+
 class BuildTextFormField extends StatefulWidget {
   final TextEditingController? controller;
   final FormFieldValidator<String>? validator;
@@ -47,6 +49,7 @@ class BuildTextFormField extends StatefulWidget {
   final bool? noTitle;
   final List<DropdownMenuItem<String>>? customDropdownItems;
   final String? customSelectedValue;
+  StringCallback? imagePath;
 
   BuildTextFormField(
       {this.controller,
@@ -85,6 +88,7 @@ class BuildTextFormField extends StatefulWidget {
       this.noTitle = false,
       this.customDropdownItems,
       this.customSelectedValue,
+      this.imagePath,
       super.key});
 
   @override
@@ -114,6 +118,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
 
     setState(() {
       image = img;
+      widget.imagePath!(img!.path);
     });
   }
 
