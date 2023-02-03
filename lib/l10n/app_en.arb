@@ -80,6 +80,13 @@
      "playground": "Playground",
      "cancel":"Cancel",
      "uploadImage": "Upload image",
+     "deleteImage": "Delete image",
+     "menuName": "Menu Name",
+     "fillMenuName": "Fill Menu Name",
+     "descMenu": "Desc Menu",
+     "fillDescMenu":"Fill Desc Menu",
+     "priceMenu":"Price Menu",
+     "fillPriceMenu": "Fill Price Menu",
 
      "@_Hint-Name":{},
      "hintTextNameRestaurant": "Enter your restaurant name",
@@ -106,10 +113,10 @@
      "hintTextRoadNameDestination": "Enter your destination road name",
      "hintTextRoadNameHotel": "Enter your hotel road name",
 
-     "@_Hint-Village-Name":{},
-     "hintTextVillageRestaurant": "Enter your restaurant Village",
-     "hintTextVillageDestination": "Enter your destination Village",
-     "hintTextVillageHotel": "Enter your hotel Village",
+     "@_Hint-Hamlet-Name":{},
+     "hintTextHamletRestaurant": "Enter your restaurant hamlet",
+     "hintTextHamletDestination": "Enter your destination hamlet",
+     "hintTextHamletHotel": "Enter your hotel hamlet",
 
      "@_Hint-Urban-Village-Name":{},
      "hintTextUrbanVillageRestaurant": "Enter your restaurant urban village",

@@ -81,6 +81,13 @@
      "playground": "Taman Bermain",
      "cancel":"Batal",
      "uploadImage": "Unggah Gambar",
+     "deleteImage": "Hapus Gambar",
+     "menuName": "Nama Menu",
+     "fillMenuName": "Masukkan Nama Menu",
+     "descMenu": "Deskripsi Menu",
+     "fillDescMenu":"Masukkan Deskripsi Menu",
+     "priceMenu":"Harga Menu",
+     "fillPriceMenu": "Masukkan Harga Menu",
 
      "@_Hint-Name":{},
      "hintTextNameRestaurant": "Masukkan nama restoran",
@@ -107,10 +114,10 @@
      "hintTextRoadNameDestination": "Masukkan nama jalan wisata",
      "hintTextRoadNameHotel": "Masukkan nama jalan hotel",
 
-     "@_Hint-Village-Name":{},
-     "hintTextVillageRestaurant": "Masukkan nama dukuh restoran",
-     "hintTextVillageDestination": "Masukkan nama dukuh wisata",
-     "hintTextVillageHotel": "Masukkan nama dukuh hotel",
+     "@_Hint-Hamlet-Name":{},
+     "hintTextHamletRestaurant": "Masukkan nama dukuh restoran",
+     "hintTextHamletDestination": "Masukkan nama dukuh wisata",
+     "hintTextHamletHotel": "Masukkan nama dukuh hotel",
 
      "@_Hint-Urban-Village-Name":{},
      "hintTextUrbanVillageRestaurant": "Masukkan nama kelurahan restoran",
