@@ -260,12 +260,35 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               children: [
                 for (var i = 0; i < listAfterFilter.length; i++)
-                  HorizontalCard(
-                    title: listAfterFilter[i].name!,
-                    rating: listAfterFilter[i].rating,
-                    heldAt: format.format(listAfterFilter[i].timeHeld),
-                    price: listAfterFilter[i].price!.toString(),
-                    imageUrl: listAfterFilter[i].imageUrl!,
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailPage(
+                                type: 'event',
+                                imageUrl: listAfterFilter[i].imageUrl!,
+                                name: listAfterFilter[i].name!,
+                                price: listAfterFilter[i].price!.toString(),
+                                rating: listAfterFilter[i].rating,
+                                location: '',
+                                fullLocation: '',
+                                timeOpen: '',
+                                timeClose: '',
+                                description: '',
+                                imageList: [],
+                                googleMapsUrl: '',
+                                roomList: [],
+                                facilityList: []),
+                          ));
+                    },
+                    child: HorizontalCard(
+                      title: listAfterFilter[i].name!,
+                      rating: listAfterFilter[i].rating,
+                      heldAt: format.format(listAfterFilter[i].timeHeld),
+                      price: listAfterFilter[i].price!.toString(),
+                      imageUrl: listAfterFilter[i].imageUrl!,
+                    ),
                   )
               ],
             ),

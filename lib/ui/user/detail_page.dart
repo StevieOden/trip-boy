@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
@@ -7,7 +9,10 @@ import 'package:trip_boy/component/vertical_card.dart';
 import 'package:trip_boy/models/facility_model.dart';
 import 'package:trip_boy/models/hotel_model.dart';
 import 'package:trip_boy/models/images_model.dart';
+import 'package:trip_boy/ui/user/reservation_ticket.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'menu_detail_restaurant.dart';
 
 class DetailPage extends StatefulWidget {
   String type,
@@ -104,7 +109,9 @@ class _DetailPageState extends State<DetailPage>
                           ? buildRestaurantDetail(length)
                           : widget.type == "hotel"
                               ? buildHotelDetail(length)
-                              : buildDestinationDetail(),
+                              : widget.type == "event"
+                                  ? buildEventDetail()
+                                  : buildDestinationDetail(),
                     ),
                   ),
                 ),
@@ -287,7 +294,9 @@ class _DetailPageState extends State<DetailPage>
                 margin: EdgeInsets.only(bottom: 20),
                 width: MediaQuery.of(context).size.width.sp,
                 child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => MenuDetailPage(),));
+                    },
                     child: Text(
                       AppLocalizations.of(context)!.showMenu,
                       style: AppTextStyles.appTitlew400s14(
@@ -443,7 +452,7 @@ class _DetailPageState extends State<DetailPage>
               children: [
                 buildDescriptionHotel(),
                 buildRoomList(),
-                buildFacilityHotel()
+                buildFacilityHotel(),
               ]),
         )
       ],
@@ -821,5 +830,176 @@ class _DetailPageState extends State<DetailPage>
         ),
       ),
     );
+  }
+
+  buildEventDetail() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 170.sp,
+          width: MediaQuery.of(context).size.width.sp,
+          child: Stack(
+            children: [
+              widget.imageUrl == ""
+                  ? Image.asset("",
+                      fit: BoxFit.cover, filterQuality: FilterQuality.high)
+                  : Image.network(widget.imageUrl,
+                      fit: BoxFit.cover, filterQuality: FilterQuality.high),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, ColorValues().veryBlackColor],
+                  ),
+                  color: ColorValues().veryBlackColor.withOpacity(0.45),
+                ),
+              ),
+              Container(
+                alignment: Alignment.bottomLeft,
+                margin: EdgeInsets.only(
+                  left: 12.sp,
+                  bottom: 12.sp,
+                ),
+                child: Text(
+                  widget.name,
+                  style: AppTextStyles.appTitlew500s20(Colors.white),
+                ),
+              ),
+            ],
+          ),
+        ),
+        buildDescFestival()
+      ],
+    );
+  }
+
+  Widget buildDescFestival() {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Padding(
+        padding: const EdgeInsets.only(
+          left: 20,
+          top: 20,
+        ),
+        child: (Text(
+          'Deskripsi',
+          style: AppTextStyles.appTitlew500s16(ColorValues().blackColor),
+        )),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
+        child: Text(
+          '''
+Event kali ini cukup berbeda dengan mengusung tema makanan yaitu street food indonesia yang khsusnya adalah makanan khas Boyolali. Dengan berbagai macam rasa bentuk dari masing masing wilayah Boyolali.....selengkapnya''',
+          style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
+        ),
+      ),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20),
+            child: Icon(
+              Icons.location_on_outlined,
+              size: 25,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20),
+            child: Text(
+              'Alun-Alun Kidul Boyolali',
+              style: AppTextStyles.appTitlew400s16(ColorValues().blackColor),
+            ),
+          )
+        ],
+      ),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 10),
+            child: Icon(
+              Icons.date_range,
+              size: 25,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 10),
+            child: Text(
+              '03-10 Desember 2022',
+              style: AppTextStyles.appTitlew400s16(ColorValues().blackColor),
+            ),
+          )
+        ],
+      ),
+      Padding(
+        padding: const EdgeInsets.only(left: 20, top: 20),
+        child: Text(
+          'Informasi Lainnya',
+          style: AppTextStyles.appTitlew500s16(ColorValues().blackColor),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(left: 20, top: 10),
+        child: Text(
+          '''
+Buka:
+Senin - Sabtu mulai jam 10.00
+Minggu mulai 06.00''',
+          style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(left: 20, top: 10),
+        child: Text(
+          '''Pemesanan tiket dapat dilakukan minimal 
+6 jam sebelum festival dimulai
+''',
+          style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(left: 20, top: 10),
+        child: Text(
+          'Ketentuan Pengunjung',
+          style: AppTextStyles.appTitlew500s16(ColorValues().blackColor),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(left: 20, top: 10),
+        child: Text(
+          '''
+1.) Sebelum Kunjungan, Pastikan Pengunjung telah  memiliki tiket digital yang telah di booking melalui Aplikasi T-Boy, tunjukkan tiket digital tersebut kepada petugas untuk dilakukan pengecekkan agar dapat di tukar menjadi tiket gelang.
+
+2.) 1 Akun T-Boy hanya berlaku untuk 1 Orang.
+
+3.)Pengunjung Festival harus dalam kondisi sehat, apabila terjadi gejala tidak sehat (flu, batuk, demam di atas 37,3 C) maka tidak diperkenankan untuk masuk kearea festival.
+
+4.)Setiap Pengunjung wajib menggunakan masker dan mengikuti pengukuran suhu tubuh dan wajib scan di Aplikasi Peduli Lindungi.''',
+          style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
+        ),
+      ),
+      Container(
+          margin: EdgeInsets.only(bottom: 10, top: 15),
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+          ),
+          width: MediaQuery.of(context).size.width,
+          height: 50,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: ColorValues().primaryColor,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15)))),
+            onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ReservationTicket())),
+            child: Text('Pesan Tiket',
+                style: AppTextStyles.appTitlew500s16(
+                  Colors.white,
+                )),
+          ))
+    ]);
   }
 }
