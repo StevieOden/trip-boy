@@ -1,24 +1,27 @@
 {
-     "name": "",
-     "alamat": "",
+     "address": "",
      "description":"",
-     "rating":0.0,
-     "time_closed": "",
-     "time_open": "",
      "facility":[
           {
                "name": ""
           }
      ],
-     "images":[
+     "google_maps_link": "",
+     "images": [
           {
-               "images_url":""
+               "image_url": ""
           }
      ],
+     "name": "",
+     "rating":0.0,
      "tickets":[
           {
                "name": "regular",
                "price": 0
           }
-     ]
+     ],
+     "time_closed": "",
+     "time_open": "",
+     "type": "",
+     "user_id": ""
 }

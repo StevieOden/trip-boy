@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
-import 'package:trip_boy/common/shared_code.dart';
 import 'package:trip_boy/component/circle_button.dart';
 import 'package:trip_boy/component/horizontal_card.dart';
 import 'package:trip_boy/component/loading.dart';
@@ -9,16 +8,12 @@ import 'package:trip_boy/component/search_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/component/vertical_card.dart';
-import 'package:trip_boy/models/destination_model.dart';
-import 'package:trip_boy/models/event_model.dart';
-import 'package:trip_boy/models/facility_model.dart';
-import 'package:trip_boy/models/hotel_model.dart';
 import 'package:trip_boy/services/database_services.dart';
 import 'package:trip_boy/ui/user/detail_page.dart';
 import '../../common/app_text_styles.dart';
 import '../../common/color_values.dart';
 import '../../common/user_data.dart';
-import '../../models/restaurant_model.dart';
+import '../../models/content_model.dart';
 import 'dashboard_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -31,13 +26,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   DateFormat format = DateFormat("dd-MM-yyyy");
   bool _isLoading = true;
-  List<RestaurantModel> restaurantsData = [];
-  List<HotelModel> hotelData = [];
-  List<DestinationModel> destinationData = [];
-  List<EventModel> eventData = [];
-  List allData = [];
+  List<ContentModel> contentData = [];
+
+  List<ContentModel> allData = [];
   final TextEditingController _searchController = TextEditingController();
-  List allDataFiltered = [];
+  List<ContentModel> allDataFiltered = [];
   String query = "";
 
   @override
@@ -48,29 +41,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> combineAllList() async {
-    allData.addAll(hotelData);
-    allData.addAll(restaurantsData);
-    allData.addAll(destinationData);
-    allData.sort((a, b) => b.rating.compareTo(a.rating));
+    allData.addAll(contentData);
+    allData
+        .where((element) => element.type != "event")
+        .toList()
+        .sort((a, b) => b.rating.compareTo(a.rating));
     allDataFiltered = allData;
     print(" data filtered length : ${allDataFiltered.length}");
   }
 
   Future<void> getAllData() async {
     setLoading(true);
-    restaurantsData =
+    contentData =
         await DatabaseService().getRestaurantData(false, UserData().uid);
-    hotelData = await DatabaseService().getHotelData(false, UserData().uid);
-    destinationData =
-        await DatabaseService().getDestinationData(false, UserData().uid);
-    eventData = await DatabaseService().getEventData(false, UserData().uid);
     combineAllList();
     setLoading(false);
   }
 
   void searchData(String keyword) {
     final list = allData.where((list) {
-      final titleLower = list.name!.toLowerCase();
+      final titleLower = list.name.toLowerCase();
       final searchLower = keyword.toLowerCase();
 
       return titleLower.contains(searchLower);
@@ -95,13 +85,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List allDataAfterFilter =
-        allData.where((element) => element.name != "").toList();
-    List<EventModel> listAfterFilter = eventData.where(
-      (element) {
-        return element.name != "";
-      },
-    ).toList();
+    List<ContentModel> allDataAfterFilter =
+        allData.where((element) => element.type != "event").toList();
+    List<ContentModel> listAfterFilter = contentData
+        .where(
+          (element) => element.type == "event" && element.name != "",
+        )
+        .toList();
     FocusScopeNode currentFocus = FocusScope.of(context);
     return GestureDetector(
       onTap: () {
@@ -234,7 +224,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildHighlightEvent(listAfterFilter) {
+  _buildHighlightEvent(List<ContentModel> listAfterFilter) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -261,9 +251,9 @@ class _HomePageState extends State<HomePage> {
               children: [
                 for (var i = 0; i < listAfterFilter.length; i++)
                   HorizontalCard(
-                    title: listAfterFilter[i].name!,
+                    title: listAfterFilter[i].name,
                     rating: listAfterFilter[i].rating,
-                    heldAt: format.format(listAfterFilter[i].timeHeld),
+                    heldAt: listAfterFilter[i].timeHeld,
                     price: listAfterFilter[i].price!.toString(),
                     imageUrl: listAfterFilter[i].imageUrl!,
                   )
@@ -275,7 +265,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildRecommend(allDataAfterFilter) {
+  _buildRecommend(List<ContentModel> allDataAfterFilter) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -302,52 +292,51 @@ class _HomePageState extends State<HomePage> {
                         builder: (context) => DetailPage(
                           facilityList: allDataAfterFilter[i].type == "hotel" ||
                                   allDataAfterFilter[i].type == "destination"
-                              ? allDataAfterFilter[i].facility
+                              ? allDataAfterFilter[i].facility!
                               : [],
                           price: allDataAfterFilter[i].type == "restaurant"
                               ? allDataAfterFilter[i]
-                                  .menus
+                                  .menu!
                                   .first
                                   .price
                                   .toString()
                               : allDataAfterFilter[i].type == "hotel"
                                   ? allDataAfterFilter[i]
-                                      .rooms
+                                      .rooms!
                                       .first
                                       .priceRoom
                                       .toString()
                                   : allDataAfterFilter[i].tickets,
                           roomList: allDataAfterFilter[i].type == "hotel"
-                              ? allDataAfterFilter[i].rooms
+                              ? allDataAfterFilter[i].rooms!
                               : [],
-                          googleMapsUrl: allDataAfterFilter[i].googleMapsLink,
+                          googleMapsUrl: allDataAfterFilter[i].googleMapsLink!,
                           type: allDataAfterFilter[i].type,
-                          imageUrl: allDataAfterFilter[i]
-                                      .images!
-                                      .first!
-                                      .imagesUrl !=
-                                  ""
-                              ? allDataAfterFilter[i].images!.first!.imagesUrl
-                              : "",
+                          imageUrl:
+                              allDataAfterFilter[i].images!.first.imageUrl != ""
+                                  ? allDataAfterFilter[i].images!.first.imageUrl
+                                  : "",
                           name: allDataAfterFilter[i].name,
                           rating: allDataAfterFilter[i].rating,
-                          location:
-                              allDataAfterFilter[i].alamat.split(', ')[0] == ""
-                                  ? allDataAfterFilter[i].alamat.split(', ')[0]
-                                  : allDataAfterFilter[i]
-                                      .alamat
-                                      .split(', ')[3]
-                                      .split('. ')[1],
-                          fullLocation: allDataAfterFilter[i].alamat,
+                          location: allDataAfterFilter[i]
+                                      .address!
+                                      .split(', ')[0] ==
+                                  ""
+                              ? allDataAfterFilter[i].address!.split(', ')[0]
+                              : allDataAfterFilter[i]
+                                  .address!
+                                  .split(', ')[3]
+                                  .split('. ')[1],
+                          fullLocation: allDataAfterFilter[i].address!,
                           timeClose: allDataAfterFilter[i].type ==
                                       "restaurant" ||
                                   allDataAfterFilter[i].type == "destination"
-                              ? allDataAfterFilter[i].timeClosed
+                              ? allDataAfterFilter[i].timeClosed!
                               : "",
                           timeOpen: allDataAfterFilter[i].type ==
                                       "restaurant" ||
                                   allDataAfterFilter[i].type == "destination"
-                              ? allDataAfterFilter[i].timeOpen
+                              ? allDataAfterFilter[i].timeOpen!
                               : "",
                           description: allDataAfterFilter[i].description,
                           imageList: allDataAfterFilter[i].images!.isNotEmpty
@@ -358,25 +347,26 @@ class _HomePageState extends State<HomePage> {
                 },
                 child: VerticalCard(
                   title: allDataAfterFilter[i].name,
-                  subDistrict: allDataAfterFilter[i].alamat.split(', ')[0] == ""
-                      ? allDataAfterFilter[i].alamat.split(', ')[0]
-                      : allDataAfterFilter[i].alamat.split(', ')[3],
+                  subDistrict:
+                      allDataAfterFilter[i].address!.split(',')[0] == ""
+                          ? allDataAfterFilter[i].address!.split(',')[0]
+                          : allDataAfterFilter[i].address!.split(',')[3],
                   price: allDataAfterFilter[i].type == "restaurant"
-                      ? allDataAfterFilter[i].menus.first.price.toString()
+                      ? allDataAfterFilter[i].menu!.first.price.toString()
                       : allDataAfterFilter[i].type == "hotel"
                           ? allDataAfterFilter[i]
-                              .rooms
+                              .rooms!
                               .first
                               .priceRoom
                               .toString()
                           : allDataAfterFilter[i]
-                              .tickets
+                              .tickets!
                               .first
                               .price
                               .toString(),
                   rating: allDataAfterFilter[i].rating.toString(),
                   imageUrl: allDataAfterFilter[i].images!.isNotEmpty
-                      ? allDataAfterFilter[i].images!.first!.imagesUrl
+                      ? allDataAfterFilter[i].images!.first.imageUrl
                       : "",
                 ),
               )
@@ -400,7 +390,7 @@ class _HomePageState extends State<HomePage> {
     ));
   }
 
-  _buildSearchList(allDataAfterFilter) {
+  _buildSearchList(List<ContentModel> allDataAfterFilter) {
     return allDataAfterFilter.length == 0
         ? Container(
             child: noData(context),
@@ -418,54 +408,55 @@ class _HomePageState extends State<HomePage> {
                             facilityList: allDataAfterFilter[i].type ==
                                         "hotel" ||
                                     allDataAfterFilter[i].type == "destination"
-                                ? allDataAfterFilter[i].facility
+                                ? allDataAfterFilter[i].facility!
                                 : [],
                             price: allDataAfterFilter[i].type == "restaurant"
                                 ? allDataAfterFilter[i]
-                                    .menus
+                                    .menu!
                                     .first
                                     .price
                                     .toString()
                                 : allDataAfterFilter[i].type == "hotel"
                                     ? allDataAfterFilter[i]
-                                        .rooms
+                                        .rooms!
                                         .first
                                         .priceRoom
                                         .toString()
                                     : allDataAfterFilter[i].tickets,
                             roomList: allDataAfterFilter[i].type == "hotel"
-                                ? allDataAfterFilter[i].rooms
+                                ? allDataAfterFilter[i].rooms!
                                 : [],
-                            googleMapsUrl: allDataAfterFilter[i].googleMapsLink,
+                            googleMapsUrl:
+                                allDataAfterFilter[i].googleMapsLink!,
                             type: allDataAfterFilter[i].type,
                             imageUrl: allDataAfterFilter[i]
                                         .images!
-                                        .first!
-                                        .imagesUrl !=
+                                        .first
+                                        .imageUrl !=
                                     ""
-                                ? allDataAfterFilter[i].images!.first!.imagesUrl
+                                ? allDataAfterFilter[i].images!.first.imageUrl
                                 : "",
                             name: allDataAfterFilter[i].name,
                             rating: allDataAfterFilter[i].rating,
                             location: allDataAfterFilter[i]
-                                        .alamat
+                                        .address!
                                         .split(', ')[0] ==
                                     ""
-                                ? allDataAfterFilter[i].alamat.split(', ')[0]
+                                ? allDataAfterFilter[i].address!.split(', ')[0]
                                 : allDataAfterFilter[i]
-                                    .alamat
+                                    .address!
                                     .split(', ')[3]
                                     .split('. ')[1],
-                            fullLocation: allDataAfterFilter[i].alamat,
+                            fullLocation: allDataAfterFilter[i].address!,
                             timeClose: allDataAfterFilter[i].type ==
                                         "restaurant" ||
                                     allDataAfterFilter[i].type == "destination"
-                                ? allDataAfterFilter[i].timeClosed
+                                ? allDataAfterFilter[i].timeClosed!
                                 : "",
                             timeOpen: allDataAfterFilter[i].type ==
                                         "restaurant" ||
                                     allDataAfterFilter[i].type == "destination"
-                                ? allDataAfterFilter[i].timeOpen
+                                ? allDataAfterFilter[i].timeOpen!
                                 : "",
                             description: allDataAfterFilter[i].description,
                             imageList: allDataAfterFilter[i].images!.isNotEmpty
@@ -477,25 +468,25 @@ class _HomePageState extends State<HomePage> {
                   child: VerticalCard(
                     title: allDataAfterFilter[i].name,
                     subDistrict:
-                        allDataAfterFilter[i].alamat.split(', ')[0] == ""
-                            ? allDataAfterFilter[i].alamat.split(', ')[0]
-                            : allDataAfterFilter[i].alamat.split(', ')[3],
+                        allDataAfterFilter[i].address!.split(', ')[0] == ""
+                            ? allDataAfterFilter[i].address!.split(', ')[0]
+                            : allDataAfterFilter[i].address!.split(', ')[3],
                     price: allDataAfterFilter[i].type == "restaurant"
-                        ? allDataAfterFilter[i].menus.first.price.toString()
+                        ? allDataAfterFilter[i].menu!.first.price.toString()
                         : allDataAfterFilter[i].type == "hotel"
                             ? allDataAfterFilter[i]
-                                .rooms
+                                .rooms!
                                 .first
                                 .priceRoom
                                 .toString()
                             : allDataAfterFilter[i]
-                                .tickets
+                                .tickets!
                                 .first
                                 .price
                                 .toString(),
                     rating: allDataAfterFilter[i].rating.toString(),
                     imageUrl: allDataAfterFilter[i].images!.isNotEmpty
-                        ? allDataAfterFilter[i].images!.first!.imagesUrl
+                        ? allDataAfterFilter[i].images!.first.imageUrl
                         : "",
                   ),
                 ),

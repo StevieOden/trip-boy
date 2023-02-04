@@ -66,6 +66,7 @@
      "room": "Room",
      "menu": "Menu",
      "image": "Image",
+     "rating":"Rating",
      "add":"Add",
      "noData": "No Data",
      "uploadFacility": "Upload facility",
@@ -87,6 +88,7 @@
      "fillDescMenu":"Fill Desc Menu",
      "priceMenu":"Price Menu",
      "fillPriceMenu": "Fill Price Menu",
+     "dataSave": "Saved Successful",
 
      "@_Hint-Name":{},
      "hintTextNameRestaurant": "Enter your restaurant name",

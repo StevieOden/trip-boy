@@ -1,23 +1,27 @@
 {
-     "name": "",
-     "alamat": "",
+     "address": "",
      "description":"",
-     "rating":0,
      "facility":[
           {
                "name": ""
           }
      ],
-     "images":[
+     "google_maps_link": "",
+     "images": [
           {
-               "images_url":""
+               "image_url": ""
           }
      ],
+     "name": "",
+     "rating":4.8,
      "rooms":[
           {
-               "size_room": "regular",
+               "image_url":"",
+               "size_room": "",
                "price_room": 0,
                "description": ""
           }
-     ]
+     ],
+     "type": "",
+     "user_id": ""
 }

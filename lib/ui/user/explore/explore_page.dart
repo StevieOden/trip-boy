@@ -4,6 +4,7 @@ import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:trip_boy/models/content_model.dart';
 import 'package:trip_boy/ui/user/explore/tab_pages/EventPages.dart';
 import 'package:trip_boy/ui/user/explore/tab_pages/TabComponent.dart';
 
@@ -11,10 +12,6 @@ import '../../../common/user_data.dart';
 import '../../../component/search_bar.dart';
 import '../../../component/skeleton.dart';
 import '../../../component/vertical_card.dart';
-import '../../../models/destination_model.dart';
-import '../../../models/event_model.dart';
-import '../../../models/hotel_model.dart';
-import '../../../models/restaurant_model.dart';
 import '../../../services/database_services.dart';
 import '../detail_page.dart';
 
@@ -29,10 +26,8 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
-  List<RestaurantModel> restaurantsData = [];
-  List<HotelModel> hotelData = [];
-  List<DestinationModel> destinationData = [];
-  List<EventModel> eventData = [];
+  List<ContentModel> contentData = [];
+
   List allData = [];
   final TextEditingController _searchController = TextEditingController();
   List allDataFiltered = [];
@@ -48,22 +43,15 @@ class _ExplorePageState extends State<ExplorePage>
   }
 
   Future<void> combineAllList() async {
-    allData.addAll(hotelData);
-    allData.addAll(restaurantsData);
-    allData.addAll(destinationData);
-    allData.addAll(eventData);
+    allData.addAll(contentData);
     allData.sort((a, b) => b.rating.compareTo(a.rating));
     allDataFiltered = allData;
     print(" data filtered length : ${allDataFiltered.length}");
   }
 
   Future<void> getAllData() async {
-    restaurantsData =
+    contentData =
         await DatabaseService().getRestaurantData(false, UserData().uid);
-    hotelData = await DatabaseService().getHotelData(false, UserData().uid);
-    destinationData =
-        await DatabaseService().getDestinationData(false, UserData().uid);
-    eventData = await DatabaseService().getEventData(false, UserData().uid);
     combineAllList();
   }
 

@@ -7,9 +7,7 @@ import '../../../../common/color_values.dart';
 import '../../../../common/user_data.dart';
 import '../../../../component/skeleton.dart';
 import '../../../../component/vertical_card.dart';
-import '../../../../models/destination_model.dart';
-import '../../../../models/hotel_model.dart';
-import '../../../../models/restaurant_model.dart';
+import '../../../../models/content_model.dart';
 import '../../../../services/database_services.dart';
 import '../../detail_page.dart';
 
@@ -26,9 +24,7 @@ class TabComponent extends StatefulWidget {
 
 class _TabComponentState extends State<TabComponent> {
   bool _isLoading = true;
-  List<RestaurantModel> restaurantsData = [];
-  List<HotelModel> hotelData = [];
-  List<DestinationModel> destinationData = [];
+  List<ContentModel> contentData = [];
 
   @override
   void initState() {
@@ -40,11 +36,8 @@ class _TabComponentState extends State<TabComponent> {
 
   Future<void> getAllData() async {
     setLoading(true);
-    restaurantsData =
+    contentData =
         await DatabaseService().getRestaurantData(false, UserData().uid);
-    hotelData = await DatabaseService().getHotelData(false, UserData().uid);
-    destinationData =
-        await DatabaseService().getDestinationData(false, UserData().uid);
     setLoading(false);
   }
 
@@ -60,11 +53,20 @@ class _TabComponentState extends State<TabComponent> {
 
   @override
   Widget build(BuildContext context) {
-    List listData = widget.tabController.index == 0
-        ? restaurantsData.where((element) => element.name != "").toList()
+    List<ContentModel> listData = widget.tabController.index == 0
+        ? contentData
+            .where(
+                (element) => element.type == "restaurant" && element.name != "")
+            .toList()
         : widget.tabController.index == 1
-            ? hotelData.where((element) => element.name != "").toList()
-            : destinationData.where((element) => element.name != "").toList();
+            ? contentData
+                .where(
+                    (element) => element.type == "hotel" && element.name != "")
+                .toList()
+            : contentData
+                .where((element) =>
+                    element.type == "destination" && element.name != "")
+                .toList();
     return _isLoading
         ? NewsCardSkeltonTab()
         : SingleChildScrollView(
@@ -81,7 +83,7 @@ class _TabComponentState extends State<TabComponent> {
           );
   }
 
-  Widget buildRekomendasi(listData) {
+  Widget buildRekomendasi(List<ContentModel> listData) {
     return Container(
       margin: EdgeInsets.only(top: 10.sp),
       child: Column(
@@ -110,43 +112,43 @@ class _TabComponentState extends State<TabComponent> {
                           builder: (context) => DetailPage(
                             facilityList: listData[index].type == "hotel" ||
                                     listData[index].type == "destination"
-                                ? listData[index].facility
+                                ? listData[index].facility!
                                 : [],
                             price: listData[index].type == "restaurant"
-                                ? listData[index].menus.first.price.toString()
+                                ? listData[index].menu!.first.price.toString()
                                 : listData[index].type == "hotel"
                                     ? listData[index]
-                                        .rooms
+                                        .rooms!
                                         .first
                                         .priceRoom
                                         .toString()
                                     : listData[index].tickets,
                             roomList: listData[index].type == "hotel"
-                                ? listData[index].rooms
+                                ? listData[index].rooms!
                                 : [],
-                            googleMapsUrl: listData[index].googleMapsLink,
+                            googleMapsUrl: listData[index].googleMapsLink!,
                             type: listData[index].type,
                             imageUrl:
-                                listData[index].images!.first!.imagesUrl != ""
-                                    ? listData[index].images!.first!.imagesUrl
+                                listData[index].images!.first.imageUrl != ""
+                                    ? listData[index].images!.first.imageUrl
                                     : "",
                             name: listData[index].name,
                             rating: listData[index].rating,
                             location:
-                                listData[index].alamat.split(', ')[0] == ""
-                                    ? listData[index].alamat.split(', ')[0]
+                                listData[index].address!.split(', ')[0] == ""
+                                    ? listData[index].address!.split(', ')[0]
                                     : listData[index]
-                                        .alamat
+                                        .address!
                                         .split(', ')[3]
                                         .split('. ')[1],
-                            fullLocation: listData[index].alamat,
+                            fullLocation: listData[index].address!,
                             timeClose: listData[index].type == "restaurant" ||
                                     listData[index].type == "destination"
-                                ? listData[index].timeClosed
+                                ? listData[index].timeClosed!
                                 : "",
                             timeOpen: listData[index].type == "restaurant" ||
                                     listData[index].type == "destination"
-                                ? listData[index].timeOpen
+                                ? listData[index].timeOpen!
                                 : "",
                             description: listData[index].description,
                             imageList: listData[index].images!.isNotEmpty
@@ -160,14 +162,16 @@ class _TabComponentState extends State<TabComponent> {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        listData[index].images!.first!.imagesUrl! == ""
-                            ? Image.asset("assets/png_image/logo.png",
-                                fit: BoxFit.cover,
-                                filterQuality: FilterQuality.high)
-                            : Image.network(
-                                listData[index].images!.first!.imagesUrl!,
-                                fit: BoxFit.cover,
-                                filterQuality: FilterQuality.high),
+                        listData[index].images!.isEmpty
+                            ? Container()
+                            : listData[index].images!.first.imageUrl == ""
+                                ? Image.asset("assets/png_image/logo.png",
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high)
+                                : Image.network(
+                                    listData[index].images!.first.imageUrl,
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high),
                         Container(
                           padding:
                               EdgeInsets.only(left: 10, right: 10, bottom: 10),
@@ -182,7 +186,7 @@ class _TabComponentState extends State<TabComponent> {
                             children: [
                               Expanded(
                                 flex: 2,
-                                child: Text(listData[index].name!,
+                                child: Text(listData[index].name,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: AppTextStyles.appTitlew500s12(
@@ -217,7 +221,7 @@ class _TabComponentState extends State<TabComponent> {
     );
   }
 
-  Widget buildPopular(list) {
+  Widget buildPopular(List<ContentModel> list) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         AppLocalizations.of(context)!.popular,
@@ -248,43 +252,43 @@ class _TabComponentState extends State<TabComponent> {
                               builder: (context) => DetailPage(
                                 facilityList: list[index].type == "hotel" ||
                                         list[index].type == "destination"
-                                    ? list[index].facility
+                                    ? list[index].facility!
                                     : [],
                                 price: list[index].type == "restaurant"
-                                    ? list[index].menus.first.price.toString()
+                                    ? list[index].menu!.first.price.toString()
                                     : list[index].type == "hotel"
                                         ? list[index]
-                                            .rooms
+                                            .rooms!
                                             .first
                                             .priceRoom
                                             .toString()
                                         : list[index].tickets,
                                 roomList: list[index].type == "hotel"
-                                    ? list[index].rooms
+                                    ? list[index].rooms!
                                     : [],
-                                googleMapsUrl: list[index].googleMapsLink,
+                                googleMapsUrl: list[index].googleMapsLink!,
                                 type: list[index].type,
                                 imageUrl:
-                                    list[index].images!.first!.imagesUrl != ""
-                                        ? list[index].images!.first!.imagesUrl
+                                    list[index].images!.first.imageUrl != ""
+                                        ? list[index].images!.first.imageUrl
                                         : "",
                                 name: list[index].name,
                                 rating: list[index].rating,
                                 location:
-                                    list[index].alamat.split(', ')[0] == ""
-                                        ? list[index].alamat.split(', ')[0]
+                                    list[index].address!.split(', ')[0] == ""
+                                        ? list[index].address!.split(', ')[0]
                                         : list[index]
-                                            .alamat
+                                            .address!
                                             .split(', ')[3]
                                             .split('. ')[1],
-                                fullLocation: list[index].alamat,
+                                fullLocation: list[index].address!,
                                 timeClose: list[index].type == "restaurant" ||
                                         list[index].type == "destination"
-                                    ? list[index].timeClosed
+                                    ? list[index].timeClosed!
                                     : "",
                                 timeOpen: list[index].type == "restaurant" ||
                                         list[index].type == "destination"
-                                    ? list[index].timeOpen
+                                    ? list[index].timeOpen!
                                     : "",
                                 description: list[index].description,
                                 imageList: list[index].images!.isNotEmpty
@@ -298,12 +302,12 @@ class _TabComponentState extends State<TabComponent> {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            list[index].images!.first!.imagesUrl! == ""
+                            list[index].images!.first.imageUrl == ""
                                 ? Image.asset("assets/png_image/logo.png",
                                     fit: BoxFit.cover,
                                     filterQuality: FilterQuality.high)
                                 : Image.network(
-                                    list[index].images!.first!.imagesUrl!,
+                                    list[index].images!.first.imageUrl,
                                     fit: BoxFit.cover,
                                     filterQuality: FilterQuality.high),
                             Container(
@@ -321,7 +325,7 @@ class _TabComponentState extends State<TabComponent> {
                                 children: [
                                   Expanded(
                                     flex: 2,
-                                    child: Text(list[index].name!,
+                                    child: Text(list[index].name,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                         style: AppTextStyles.appTitlew500s12(
@@ -336,7 +340,7 @@ class _TabComponentState extends State<TabComponent> {
                                           Icons.star,
                                           color: ColorValues().starColor,
                                         ),
-                                        Text(list[index].rating!.toString(),
+                                        Text(list[index].rating.toString(),
                                             style:
                                                 AppTextStyles.appTitlew500s12(
                                                     Colors.white)),
@@ -355,7 +359,8 @@ class _TabComponentState extends State<TabComponent> {
     ]);
   }
 
-  buildListAll(listData) {
+  buildListAll(List<ContentModel> listData) {
+    print("dwadasdwa: " + listData.first.address!);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -388,37 +393,38 @@ class _TabComponentState extends State<TabComponent> {
                         builder: (context) => DetailPage(
                           facilityList: listData[i].type == "hotel" ||
                                   listData[i].type == "destination"
-                              ? listData[i].facility
+                              ? listData[i].facility!
                               : [],
                           price: listData[i].type == "restaurant"
-                              ? listData[i].menus.first.price.toString()
+                              ? listData[i].menu!.first.price.toString()
                               : listData[i].type == "hotel"
-                                  ? listData[i].rooms.first.priceRoom.toString()
+                                  ? listData[i]
+                                      .rooms!
+                                      .first
+                                      .priceRoom
+                                      .toString()
                                   : listData[i].tickets,
                           roomList: listData[i].type == "hotel"
-                              ? listData[i].rooms
+                              ? listData[i].rooms!
                               : [],
-                          googleMapsUrl: listData[i].googleMapsLink,
+                          googleMapsUrl: listData[i].googleMapsLink!,
                           type: listData[i].type,
-                          imageUrl: listData[i].images!.first!.imagesUrl != ""
-                              ? listData[i].images!.first!.imagesUrl
+                          imageUrl: listData[i].images!.first.imageUrl != ""
+                              ? listData[i].images!.first.imageUrl
                               : "",
                           name: listData[i].name,
                           rating: listData[i].rating,
-                          location: listData[i].alamat.split(', ')[0] == ""
-                              ? listData[i].alamat.split(', ')[0]
-                              : listData[i]
-                                  .alamat
-                                  .split(', ')[3]
-                                  .split('. ')[1],
-                          fullLocation: listData[i].alamat,
+                          location: listData[i].address!.split(', ')[0] == ""
+                              ? listData[i].address!.split(', ')[0]
+                              : listData[i].address!.split(', ')[3],
+                          fullLocation: listData[i].address!,
                           timeClose: listData[i].type == "restaurant" ||
                                   listData[i].type == "destination"
-                              ? listData[i].timeClosed
+                              ? listData[i].timeClosed!
                               : "",
                           timeOpen: listData[i].type == "restaurant" ||
                                   listData[i].type == "destination"
-                              ? listData[i].timeOpen
+                              ? listData[i].timeOpen!
                               : "",
                           description: listData[i].description,
                           imageList: listData[i].images!.isNotEmpty
@@ -429,16 +435,16 @@ class _TabComponentState extends State<TabComponent> {
                 },
                 child: VerticalCard(
                   title: listData[i].name,
-                  subDistrict: listData[i].alamat.split(', ')[0] == ""
-                      ? listData[i].alamat.split(', ')[0]
-                      : listData[i].alamat.split(', ')[3],
+                  subDistrict: listData[i].address!.split(',')[0] == ""
+                      ? listData[i].address!.split(',')[0]
+                      : listData[i].address!.split(',')[3],
                   price: listData[i].type == "restaurant"
-                      ? listData[i].menus.first.price.toString()
+                      ? listData[i].menu!.first.price.toString()
                       : listData[i].type == "hotel"
-                          ? listData[i].rooms.first.priceRoom.toString()
-                          : listData[i].tickets.first.price.toString(),
-                  rating: listData[i].rating!.toString(),
-                  imageUrl: listData[i].images!.first!.imagesUrl!,
+                          ? listData[i].rooms!.first.priceRoom.toString()
+                          : listData[i].tickets!.first.price.toString(),
+                  rating: listData[i].rating.toString(),
+                  imageUrl: listData[i].images!.first.imageUrl,
                 ),
               )
           ],

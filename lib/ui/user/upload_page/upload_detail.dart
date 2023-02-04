@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
@@ -8,14 +9,11 @@ import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/component/BuildTextFormField.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:trip_boy/component/custom_dialog.dart';
-import 'package:trip_boy/models/destination_model.dart';
-import 'package:trip_boy/models/facility_model.dart';
-import 'package:trip_boy/models/hotel_model.dart';
-import 'package:trip_boy/models/images_model.dart';
-import 'package:trip_boy/models/restaurant_model.dart';
+import 'package:trip_boy/component/loading.dart';
 import 'package:trip_boy/services/database_services.dart';
 
 import '../../../common/color_values.dart';
+import '../../../models/content_model.dart';
 
 class UploadDetail extends StatefulWidget {
   String? hintText;
@@ -47,18 +45,13 @@ class _UploadDetailState extends State<UploadDetail> {
   String hintTextProvinceName = "";
   String hintTextGoogleMapsLinkName = "";
   String hintTextRatingName = "";
-
   List<ImageModel> imageList = [];
   List<Room> roomList = [
-    Room(sizeRoom: "regular", description: "", image: "", priceRoom: 0)
+    Room(sizeRoom: "regular", description: "", imageUrl: "", priceRoom: 0)
   ];
   List<Menu> menuList = [];
-  List<Ticket> ticketList = [
-    Ticket(
-      name: "dadwaxaw",
-      price: 0,
-    )
-  ];
+  List<Ticket> ticketList = [];
+  bool _isLoading = false;
   final ImagePicker picker = ImagePicker();
   XFile? image;
   ScrollController _scrollController = ScrollController();
@@ -72,12 +65,13 @@ class _UploadDetailState extends State<UploadDetail> {
   late final TextEditingController timeOpenController;
   late final TextEditingController timeClosedController;
   late final TextEditingController roadNameController;
-  late final TextEditingController villageNameController;
   late final TextEditingController hamletNameController;
   late final TextEditingController urbanVillageNameController;
   late final TextEditingController subDistrictNameController;
   late final TextEditingController districtNameController;
   late final TextEditingController provinceNameController;
+  late final TextEditingController googleMapsController;
+  late final TextEditingController ratingController;
 
   @override
   void initState() {
@@ -91,12 +85,13 @@ class _UploadDetailState extends State<UploadDetail> {
     timeOpenController = TextEditingController();
     timeClosedController = TextEditingController();
     roadNameController = TextEditingController();
-    villageNameController = TextEditingController();
     hamletNameController = TextEditingController();
     urbanVillageNameController = TextEditingController();
     subDistrictNameController = TextEditingController();
     districtNameController = TextEditingController();
     provinceNameController = TextEditingController();
+    googleMapsController = TextEditingController();
+    ratingController = TextEditingController();
   }
 
   @override
@@ -109,13 +104,24 @@ class _UploadDetailState extends State<UploadDetail> {
     timeOpenController.dispose();
     timeClosedController.dispose();
     roadNameController.dispose();
-    villageNameController.dispose();
     hamletNameController.dispose();
     urbanVillageNameController.dispose();
     subDistrictNameController.dispose();
     districtNameController.dispose();
     provinceNameController.dispose();
+    googleMapsController.dispose();
+    ratingController.dispose();
     super.dispose();
+  }
+
+  void setLoading(bool loading) {
+    if (mounted) {
+      setState(() {
+        _isLoading = loading;
+      });
+    } else {
+      _isLoading = loading;
+    }
   }
 
   void clearForm() {
@@ -127,18 +133,23 @@ class _UploadDetailState extends State<UploadDetail> {
     timeOpenController.clear();
     timeClosedController.clear();
     roadNameController.clear();
-    villageNameController.clear();
     hamletNameController.clear();
     urbanVillageNameController.clear();
     subDistrictNameController.clear();
     districtNameController.clear();
     provinceNameController.clear();
+    googleMapsController.clear();
+    ratingController.clear();
+    imageList.clear();
+    menuList.clear();
   }
 
   void hintText(context) {
     if (widget.index == 0) {
       hintTextName = AppLocalizations.of(context)!.hintTextNameRestaurant;
       hintTextDesc = AppLocalizations.of(context)!.hintTextDescRestaurant;
+      hintTextRatingName =
+          AppLocalizations.of(context)!.hintTextRatingRestaurant;
       hintTextTimeOpen =
           AppLocalizations.of(context)!.hintTextTimeOpenRestaurant;
       hintTextTimeClose =
@@ -233,12 +244,36 @@ class _UploadDetailState extends State<UploadDetail> {
         });
   }
 
+  Future<void> addToDatabase() async {
+    try {
+      setLoading(true);
+      DatabaseService().addRestaurantData(
+          "${roadNameController.text},${hamletNameController.text},${urbanVillageNameController.text},${subDistrictNameController.text},${districtNameController.text},${provinceNameController.text}",
+          descController.text,
+          googleMapsController.text,
+          imageList,
+          menuList,
+          nameController.text,
+          double.parse(ratingController.text),
+          timeClosedController.text,
+          timeOpenController.text);
+      clearForm();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: ColorValues().primaryColor.withOpacity(0.2),
+        content: Text(AppLocalizations.of(context)!.dataSave),
+      ));
+      setLoading(false);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   Future getImage(ImageSource media, List imageList) async {
     var img = await picker.pickImage(source: media);
 
     setState(() {
       image = img;
-      imageList.add(ImageModel(imagesUrl: img!.path));
+      imageList.add(ImageModel(imageUrl: img!.path));
     });
   }
 
@@ -268,469 +303,500 @@ class _UploadDetailState extends State<UploadDetail> {
         ),
         backgroundColor: Colors.transparent,
       ),
-      body: GestureDetector(
-        onTap: () {
-          if (!currentFocus.hasPrimaryFocus) {
-            currentFocus.unfocus();
-          }
-        },
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 12.sp),
-          child: SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.only(top: 12.sp),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  //
-                  BuildTextFormField(
-                    title: AppLocalizations.of(context)!.name,
-                    hintText: hintTextName,
-                    controller: nameController,
-                  ),
-                  BuildTextFormField(
-                    title: AppLocalizations.of(context)!.description,
-                    hintText: hintTextDesc,
-                    controller: descController,
-                  ),
-                  widget.index == 0 || widget.index == 1
-                      ? BuildTextFormField(
-                          title: AppLocalizations.of(context)!.timeOpen,
-                          hintText: hintTextTimeOpen,
-                          controller: timeOpenController,
-                        )
-                      : Container(),
-                  widget.index == 0 || widget.index == 1
-                      ? BuildTextFormField(
-                          title: AppLocalizations.of(context)!.timeClose,
-                          hintText: AppLocalizations.of(context)!
-                              .hintTextTimeCloseDestination,
-                          controller: timeClosedController,
-                        )
-                      : Container(),
-                  widget.index != 3
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(AppLocalizations.of(context)!.address),
-                            BuildTextFormField(
-                              noTitle: true,
-                              title: "",
-                              hintText: hintTextRoadName,
-                              controller: roadNameController,
-                            ),
-                            BuildTextFormField(
-                              noTitle: true,
-                              title: "",
-                              hintText: hintTextHamletName,
-                              controller: hamletNameController,
-                            ),
-                            BuildTextFormField(
-                              noTitle: true,
-                              title: "",
-                              hintText: hintTextUrbanVillageName,
-                              controller: urbanVillageNameController,
-                            ),
-                            BuildTextFormField(
-                              noTitle: true,
-                              title: "",
-                              hintText: hintTextSubDistrictName,
-                              controller: subDistrictNameController,
-                            ),
-                            BuildTextFormField(
-                              noTitle: true,
-                              title: "",
-                              hintText: hintTextDistrictName,
-                              controller: districtNameController,
-                            ),
-                            BuildTextFormField(
-                              noTitle: true,
-                              title: "",
-                              hintText: hintTextProvinceName,
-                              controller: provinceNameController,
-                            ),
-                          ],
-                        )
-                      : Container(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  widget.index != 3
-                      ? BuildTextFormField(
-                          noTitle: false,
-                          title: AppLocalizations.of(context)!.googleMapsLink,
-                          currentValue:
-                              widget.isEditForm! ? widget.hintText : "",
-                          hintText: hintTextGoogleMapsLinkName,
-                        )
-                      : Container(),
-                  widget.index == 1 || widget.index == 2
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppLocalizations.of(context)!.facilities,
-                              style: AppTextStyles.appTitlew400s12(
-                                  ColorValues().blackColor),
-                            ),
-                            Container(
-                              height: 200,
-                              margin: EdgeInsets.symmetric(vertical: 10.sp),
-                              child: Scrollbar(
-                                controller: _scrollController,
-                                isAlwaysShown: true,
-                                child: SingleChildScrollView(
-                                  controller: _scrollController,
-                                  child: ListBody(children: [
-                                    ...facilityList
-                                        .map((item) => CheckboxListTile(
-                                              value: selectedIndex
-                                                  .contains(item.name!),
-                                              onChanged: (_isChecked) => {
-                                                setState(() {
-                                                  _itemChange(
-                                                      item.name!, _isChecked!);
-                                                })
-                                              },
-                                              title: Text(
-                                                item.name!
-                                                        .substring(0, 1)
-                                                        .toUpperCase() +
-                                                    item.name!
-                                                        .substring(1,
-                                                            item.name!.length)
-                                                        .toLowerCase(),
-                                                style: AppTextStyles
-                                                    .appTitlew400s10(
-                                                        ColorValues()
-                                                            .blackColor),
-                                              ),
-                                              controlAffinity:
-                                                  ListTileControlAffinity
-                                                      .leading,
-                                            ))
-                                        .toList(),
-                                  ]),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : Container(),
-                  widget.index == 3
-                      ? BuildTextFormField(
-                          hintText: "",
-                          title: AppLocalizations.of(context)!.uploadImage,
-                          isUploadImage: true,
-                        )
-                      : Container(
-                          width: MediaQuery.of(context).size.width,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.uploadImage,
-                                style: AppTextStyles.appTitlew400s12(
-                                    ColorValues().blackColor),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Column(
+      body: _isLoading
+          ? Loading()
+          : GestureDetector(
+              onTap: () {
+                if (!currentFocus.hasPrimaryFocus) {
+                  currentFocus.unfocus();
+                }
+              },
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 12.sp),
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 12.sp),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BuildTextFormField(
+                          title: AppLocalizations.of(context)!.name,
+                          hintText: hintTextName,
+                          controller: nameController,
+                        ),
+                        BuildTextFormField(
+                          title: AppLocalizations.of(context)!.description,
+                          hintText: hintTextDesc,
+                          controller: descController,
+                        ),
+                        widget.index == 0 || widget.index == 1
+                            ? BuildTextFormField(
+                                title: AppLocalizations.of(context)!.timeOpen,
+                                hintText: hintTextTimeOpen,
+                                controller: timeOpenController,
+                              )
+                            : Container(),
+                        widget.index == 0 || widget.index == 1
+                            ? BuildTextFormField(
+                                title: AppLocalizations.of(context)!.timeClose,
+                                hintText: AppLocalizations.of(context)!
+                                    .hintTextTimeCloseDestination,
+                                controller: timeClosedController,
+                              )
+                            : Container(),
+                        widget.index != 3
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  ListBody(
-                                    children: [
-                                      ...imageList.map(
-                                        (item) => item.imagesUrl! != ""
-                                            ? Container(
-                                                height: 150,
-                                                margin:
-                                                    EdgeInsets.only(bottom: 10),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10),
-                                                        child: item.imagesUrl!
-                                                                .startsWith("/")
-                                                            ? Image(
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                image:
-                                                                    FileImage(
-                                                                  File(item
-                                                                      .imagesUrl!),
-                                                                ))
-                                                            : Image.network(
-                                                                item.imagesUrl!,
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                filterQuality:
-                                                                    FilterQuality
-                                                                        .high),
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                        child: Padding(
-                                                      padding:
-                                                          EdgeInsets.all(10.0),
-                                                      child: IconButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            imageList
-                                                                .remove(item);
-                                                          });
-                                                        },
-                                                        icon: Icon(
-                                                          Icons.delete,
-                                                          color: ColorValues()
-                                                              .primaryColor,
-                                                          size: 25,
-                                                        ),
-                                                      ),
-                                                    ))
-                                                  ],
-                                                ),
-                                              )
-                                            : Container(),
-                                      )
-                                    ],
+                                  Text(AppLocalizations.of(context)!.address),
+                                  BuildTextFormField(
+                                    noTitle: true,
+                                    title: "",
+                                    hintText: hintTextRoadName,
+                                    controller: roadNameController,
                                   ),
-                                  Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          showModalBottom(imageList);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                ColorValues().primaryColor,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10))),
-                                        child: Icon(Icons.upload),
-                                      ))
+                                  BuildTextFormField(
+                                    noTitle: true,
+                                    title: "",
+                                    hintText: hintTextHamletName,
+                                    controller: hamletNameController,
+                                  ),
+                                  BuildTextFormField(
+                                    noTitle: true,
+                                    title: "",
+                                    hintText: hintTextUrbanVillageName,
+                                    controller: urbanVillageNameController,
+                                  ),
+                                  BuildTextFormField(
+                                    noTitle: true,
+                                    title: "",
+                                    hintText: hintTextSubDistrictName,
+                                    controller: subDistrictNameController,
+                                  ),
+                                  BuildTextFormField(
+                                    noTitle: true,
+                                    title: "",
+                                    hintText: hintTextDistrictName,
+                                    controller: districtNameController,
+                                  ),
+                                  BuildTextFormField(
+                                    noTitle: true,
+                                    title: "",
+                                    hintText: hintTextProvinceName,
+                                    controller: provinceNameController,
+                                  ),
                                 ],
-                              ),
-                            ],
-                          )),
-                  widget.index == 0
-                      ? Container(
-                          width: MediaQuery.of(context).size.width,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                              )
+                            : Container(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        widget.index != 3
+                            ? BuildTextFormField(
+                                noTitle: false,
+                                title: AppLocalizations.of(context)!
+                                    .googleMapsLink,
+                                controller: googleMapsController,
+                                hintText: hintTextGoogleMapsLinkName,
+                              )
+                            : Container(),
+                        BuildTextFormField(
+                          noTitle: false,
+                          title: AppLocalizations.of(context)!.rating +
+                              " range(0.0 - 5.0)",
+                          controller: ratingController,
+                          hintText: hintTextRatingName,
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                          isMaxLength: true,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                                RegExp('[0.0-5.0]')),
+                          ],
+                        ),
+                        widget.index == 1 || widget.index == 2
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    AppLocalizations.of(context)!.menu,
+                                    AppLocalizations.of(context)!.facilities,
                                     style: AppTextStyles.appTitlew400s12(
                                         ColorValues().blackColor),
                                   ),
-                                  IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          CustomDialog.showMenuDialog(
-                                              context,
-                                              menuNameController,
-                                              menuDescController,
-                                              menuPriceController,
-                                              (val) => imageUrl = val, () {
-                                            menuList.add(Menu(
-                                                name: menuNameController.text,
-                                                desc: menuDescController.text,
-                                                price: int.parse(
-                                                    menuPriceController.text),
-                                                imageUrl: imageUrl));
-
-                                            Navigator.pop(context);
-                                            clearForm();
-                                          }, () {
-                                            Navigator.of(context).pop();
-                                            clearForm();
-                                          });
-                                        });
-                                      },
-                                      icon: Icon(Icons.add))
+                                  Container(
+                                    height: 200,
+                                    margin:
+                                        EdgeInsets.symmetric(vertical: 10.sp),
+                                    child: Scrollbar(
+                                      controller: _scrollController,
+                                      isAlwaysShown: true,
+                                      child: SingleChildScrollView(
+                                        controller: _scrollController,
+                                        child: ListBody(children: [
+                                          ...facilityList
+                                              .map((item) => CheckboxListTile(
+                                                    value: selectedIndex
+                                                        .contains(item.name),
+                                                    onChanged: (_isChecked) => {
+                                                      setState(() {
+                                                        _itemChange(item.name,
+                                                            _isChecked!);
+                                                      })
+                                                    },
+                                                    title: Text(
+                                                      item.name
+                                                              .substring(0, 1)
+                                                              .toUpperCase() +
+                                                          item.name
+                                                              .substring(
+                                                                  1,
+                                                                  item.name
+                                                                      .length)
+                                                              .toLowerCase(),
+                                                      style: AppTextStyles
+                                                          .appTitlew400s10(
+                                                              ColorValues()
+                                                                  .blackColor),
+                                                    ),
+                                                    controlAffinity:
+                                                        ListTileControlAffinity
+                                                            .leading,
+                                                  ))
+                                              .toList(),
+                                        ]),
+                                      ),
+                                    ),
+                                  ),
                                 ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Column(
-                                children: [
-                                  ListBody(
-                                    children: [
-                                      ...menuList.map((item) => Container(
-                                            height: 150,
-                                            margin: EdgeInsets.only(bottom: 10),
-                                            child: Row(
-                                              children: [
-                                                Expanded(
+                              )
+                            : Container(),
+                        widget.index == 3
+                            ? BuildTextFormField(
+                                hintText: "",
+                                title:
+                                    AppLocalizations.of(context)!.uploadImage,
+                                isUploadImage: true,
+                              )
+                            : Container(
+                                width: MediaQuery.of(context).size.width,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      AppLocalizations.of(context)!.uploadImage,
+                                      style: AppTextStyles.appTitlew400s12(
+                                          ColorValues().blackColor),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      children: [
+                                        ListBody(
+                                          children: [
+                                            ...imageList.map(
+                                              (item) => item.imageUrl != ""
+                                                  ? Container(
+                                                      height: 150,
+                                                      margin: EdgeInsets.only(
+                                                          bottom: 10),
+                                                      child: Row(
+                                                        children: [
+                                                          Expanded(
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              child: item
+                                                                      .imageUrl
+                                                                      .startsWith(
+                                                                          "/")
+                                                                  ? Image(
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                      image:
+                                                                          FileImage(
+                                                                        File(item
+                                                                            .imageUrl),
+                                                                      ))
+                                                                  : Image.network(
+                                                                      item
+                                                                          .imageUrl,
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                      filterQuality:
+                                                                          FilterQuality
+                                                                              .high),
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                              child: Padding(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    10.0),
+                                                            child: IconButton(
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  imageList
+                                                                      .remove(
+                                                                          item);
+                                                                });
+                                                              },
+                                                              icon: Icon(
+                                                                Icons.delete,
+                                                                color: ColorValues()
+                                                                    .primaryColor,
+                                                                size: 25,
+                                                              ),
+                                                            ),
+                                                          ))
+                                                        ],
+                                                      ),
+                                                    )
+                                                  : Container(),
+                                            )
+                                          ],
+                                        ),
+                                        Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                showModalBottom(imageList);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: ColorValues()
+                                                      .primaryColor,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10))),
+                                              child: Icon(Icons.upload),
+                                            ))
+                                      ],
+                                    ),
+                                  ],
+                                )),
+                        widget.index == 0
+                            ? Container(
+                                width: MediaQuery.of(context).size.width,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(context)!.menu,
+                                          style: AppTextStyles.appTitlew400s12(
+                                              ColorValues().blackColor),
+                                        ),
+                                        IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                CustomDialog.showMenuDialog(
+                                                    context,
+                                                    menuNameController,
+                                                    menuDescController,
+                                                    menuPriceController,
+                                                    (val) => imageUrl = val,
+                                                    () {
+                                                  menuList.add(Menu(
+                                                      name: menuNameController
+                                                          .text,
+                                                      desc: menuDescController
+                                                          .text,
+                                                      price: int.parse(
+                                                          menuPriceController
+                                                              .text),
+                                                      imageUrl: imageUrl));
+
+                                                  Navigator.pop(context);
+                                                  menuNameController.clear();
+                                                  menuDescController.clear();
+                                                  menuPriceController.clear();
+                                                }, () {
+                                                  Navigator.of(context).pop();
+                                                  clearForm();
+                                                });
+                                              });
+                                            },
+                                            icon: Icon(Icons.add))
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Column(
+                                      children: [
+                                        ListBody(
+                                          children: [
+                                            ...menuList.map((item) => Container(
+                                                  height: 150,
+                                                  margin: EdgeInsets.only(
+                                                      bottom: 10),
                                                   child: Row(
                                                     children: [
-                                                      Container(
-                                                        height: 100,
-                                                        width: 100,
-                                                        child: ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                          child: item.imageUrl!
-                                                                  .startsWith(
-                                                                      "/")
-                                                              ? Image(
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  image:
-                                                                      FileImage(
-                                                                    File(item
-                                                                        .imageUrl!),
-                                                                  ))
-                                                              : Image.network(
-                                                                  item
-                                                                      .imageUrl!,
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                  filterQuality:
-                                                                      FilterQuality
-                                                                          .high),
+                                                      Expanded(
+                                                        child: Row(
+                                                          children: [
+                                                            Container(
+                                                              height: 100,
+                                                              width: 100,
+                                                              child: ClipRRect(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                                child: item
+                                                                        .imageUrl
+                                                                        .startsWith(
+                                                                            "/")
+                                                                    ? Image(
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                        image:
+                                                                            FileImage(
+                                                                          File(item
+                                                                              .imageUrl),
+                                                                        ))
+                                                                    : Image.network(
+                                                                        item
+                                                                            .imageUrl,
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                        filterQuality:
+                                                                            FilterQuality.high),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(item.name),
+                                                                Text(item.price
+                                                                    .toString()),
+                                                              ],
+                                                            ),
+                                                          ],
                                                         ),
                                                       ),
                                                       SizedBox(
-                                                        width: 10,
-                                                      ),
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(item.name!),
-                                                          Text(item.price!
-                                                              .toString()),
-                                                        ],
-                                                      ),
+                                                          child: Padding(
+                                                        padding: EdgeInsets.all(
+                                                            10.0),
+                                                        child: IconButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              menuList
+                                                                  .remove(item);
+                                                            });
+                                                          },
+                                                          icon: Icon(
+                                                            Icons.delete,
+                                                            color: ColorValues()
+                                                                .primaryColor,
+                                                            size: 25,
+                                                          ),
+                                                        ),
+                                                      ))
                                                     ],
                                                   ),
-                                                ),
-                                                SizedBox(
-                                                    child: Padding(
-                                                  padding: EdgeInsets.all(10.0),
-                                                  child: IconButton(
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        menuList.remove(item);
-                                                      });
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.delete,
-                                                      color: ColorValues()
-                                                          .primaryColor,
-                                                      size: 25,
-                                                    ),
-                                                  ),
                                                 ))
-                                              ],
-                                            ),
-                                          ))
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ))
-                      : Container(),
-                  widget.index == 1
-                      ? Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  AppLocalizations.of(context)!.tickets,
-                                  style: AppTextStyles.appTitlew400s12(
-                                      ColorValues().blackColor),
-                                ),
-                                IconButton(
-                                    onPressed: () {}, icon: Icon(Icons.add))
-                              ],
-                            ),
-                            Container(
-                              margin: EdgeInsets.only(bottom: 10),
-                              child: ListView.separated(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                separatorBuilder: (context, index) {
-                                  return Divider(
-                                    thickness: 1,
-                                    color: ColorValues().greyColor,
-                                  );
-                                },
-                                itemCount: ticketList.length,
-                                itemBuilder: (context, index) {
-                                  return Row(
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ))
+                            : Container(),
+                        widget.index == 1
+                            ? Column(
+                                children: [
+                                  Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(ticketList[index].name!),
-                                          Text(ticketList[index]
-                                              .price!
-                                              .toString()),
-                                        ],
+                                      Text(
+                                        AppLocalizations.of(context)!.tickets,
+                                        style: AppTextStyles.appTitlew400s12(
+                                            ColorValues().blackColor),
                                       ),
                                       IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              ticketList.removeAt(index);
-                                            });
-                                          },
-                                          icon: Icon(Icons.delete))
+                                          onPressed: () {},
+                                          icon: Icon(Icons.add))
                                     ],
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(bottom: 10),
+                                    child: ListView.separated(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      separatorBuilder: (context, index) {
+                                        return Divider(
+                                          thickness: 1,
+                                          color: ColorValues().greyColor,
+                                        );
+                                      },
+                                      itemCount: ticketList.length,
+                                      itemBuilder: (context, index) {
+                                        return Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(ticketList[index].name),
+                                                Text(ticketList[index]
+                                                    .price
+                                                    .toString()),
+                                              ],
+                                            ),
+                                            IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    ticketList.removeAt(index);
+                                                  });
+                                                },
+                                                icon: Icon(Icons.delete))
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Container(),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: ElevatedButton(
+                              onPressed: () {
+                                addToDatabase();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  backgroundColor: ColorValues().primaryColor),
+                              child: Text(AppLocalizations.of(context)!.save)),
                         )
-                      : Container(),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          DatabaseService().addRestaurantData(
-                              "${roadNameController.text},${hamletNameController.text},${villageNameController.text},${urbanVillageNameController.text},${subDistrictNameController.text},${districtNameController.text},${provinceNameController.text}",
-                              descController.text,
-                              'googleMaspLink',
-                              [],
-                              [],
-                              nameController.text,
-                              0,
-                              'timeClosed',
-                              'timeOpen');
-                        },
-                        style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            backgroundColor: ColorValues().primaryColor),
-                        child: Text(AppLocalizations.of(context)!.save)),
-                  )
-                ],
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 

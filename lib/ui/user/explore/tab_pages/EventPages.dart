@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-import 'package:trip_boy/models/event_model.dart';
+import 'package:trip_boy/models/content_model.dart';
 
 import '../../../../common/shared_code.dart';
 import '../../../../common/user_data.dart';
@@ -16,12 +16,15 @@ class EventPages extends StatefulWidget {
 
 class _EventPagesState extends State<EventPages> {
   bool _isLoading = true;
-  List<EventModel> eventData = [];
+  List<ContentModel> eventData = [];
 
   Future<void> getAllData() async {
     setLoading(true);
-    eventData = await DatabaseService().getEventData(false,  UserData().uid);
-    print(eventData.first.name);
+    eventData =
+        await DatabaseService().getRestaurantData(false, UserData().uid);
+    eventData.where(
+      (element) => element.type == "event",
+    );
     setLoading(false);
   }
 
@@ -44,11 +47,11 @@ class _EventPagesState extends State<EventPages> {
 
   @override
   Widget build(BuildContext context) {
-    List<EventModel> listAfterFilter = eventData.where(
-      (element) {
-        return element.name != "";
-      },
-    ).toList();
+    List<ContentModel> listAfterFilter = eventData
+        .where(
+          (element) => element.type == "event" && element.name != "",
+        )
+        .toList();
     return _isLoading
         ? EventSkeleton(list: eventData)
         : Container(
@@ -57,9 +60,8 @@ class _EventPagesState extends State<EventPages> {
             child: ListView.separated(
                 itemBuilder: (context, index) => EventCardItem(
                       asset: listAfterFilter[index].imageUrl,
-                      title: listAfterFilter[index].name as String,
-                      dateHeld: SharedCode.dateFormat
-                          .format(listAfterFilter[index].timeHeld),
+                      title: listAfterFilter[index].name,
+                      dateHeld: listAfterFilter[index].timeHeld!,
                       price: listAfterFilter[index].price!,
                       ticketType: listAfterFilter[index].ticketType!,
                     ),
@@ -72,7 +74,7 @@ class _EventPagesState extends State<EventPages> {
 }
 
 class EventSkeleton extends StatelessWidget {
-  List<EventModel> list;
+  List<ContentModel> list;
   EventSkeleton({Key? key, required this.list}) : super(key: key);
 
   @override

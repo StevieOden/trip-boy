@@ -22,26 +22,18 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool _isLoading = true;
-
   String role = "";
 
   Future<String> getUserData() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    final uid = user!.uid;
+    try {
+      User user = FirebaseAuth.instance.currentUser!;
+      final uid = user.uid;
 
-    UserModel userData = await DatabaseService().getUserData(uid);
-    role = userData.role!;
-    return role;
-  }
-
-  void setLoading(bool loading) {
-    if (mounted) {
-      setState(() {
-        _isLoading = loading;
-      });
-    } else {
-      _isLoading = loading;
+      UserModel userData = await DatabaseService().getUserData(uid);
+      role = userData.role!;
+      return role;
+    } catch (e) {
+      throw ("error : " + e.toString());
     }
   }
 
@@ -57,7 +49,8 @@ class _LoginPageState extends State<LoginPage> {
               return FutureBuilder(
                   future: getUserData(),
                   builder: (context, snapshot) {
-                    return snapshot.data == "user_customer"
+                    print("user role: " + snapshot.data!);
+                    return snapshot.data! == "user_customer"
                         ? DashboardPage()
                         : DashboardAdmin();
                   });

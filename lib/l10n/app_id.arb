@@ -67,6 +67,7 @@
      "room": "Kamar",
      "menu": "Menu",
      "image": "Gambar",
+     "rating":"Rating",
      "add":"Tambah",
      "noData": "Tidak ada data",
      "uploadFacility": "Unggah Fasilitas",
@@ -88,6 +89,7 @@
      "fillDescMenu":"Masukkan Deskripsi Menu",
      "priceMenu":"Harga Menu",
      "fillPriceMenu": "Masukkan Harga Menu",
+     "dataSave": "Berhasil Tersimpan",
 
      "@_Hint-Name":{},
      "hintTextNameRestaurant": "Masukkan nama restoran",

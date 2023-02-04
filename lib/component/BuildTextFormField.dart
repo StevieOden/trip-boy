@@ -47,6 +47,7 @@ class BuildTextFormField extends StatefulWidget {
   final bool? isTitle;
   final bool? isFlag;
   final bool? noTitle;
+  final bool? isMaxLength;
   final List<DropdownMenuItem<String>>? customDropdownItems;
   final String? customSelectedValue;
   StringCallback? imagePath;
@@ -86,6 +87,7 @@ class BuildTextFormField extends StatefulWidget {
       this.isTitle = true,
       this.isFlag = false,
       this.noTitle = false,
+      this.isMaxLength = false,
       this.customDropdownItems,
       this.customSelectedValue,
       this.imagePath,
@@ -208,6 +210,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
       autofocus: widget.autofocus!,
       minLines: widget.isMulti! ? 5 : 1,
       maxLines: widget.isMulti! ? null : 1,
+      maxLength: widget.isMaxLength! ? 3 : null,
       onTap: widget.onTap,
       enabled: widget.enabled,
       readOnly: widget.readOnly!,

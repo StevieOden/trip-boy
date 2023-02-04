@@ -5,14 +5,12 @@ import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/user_data.dart';
 import 'package:trip_boy/component/loading.dart';
 import 'package:trip_boy/component/vertical_card.dart';
+import 'package:trip_boy/models/content_model.dart';
 
 import '../../../common/app_text_styles.dart';
 import '../../../common/color_values.dart';
 import '../../../component/upload_list.dart';
-import '../../../models/destination_model.dart';
-import '../../../models/event_model.dart';
-import '../../../models/hotel_model.dart';
-import '../../../models/restaurant_model.dart';
+
 import '../../../services/database_services.dart';
 
 class UploadPage extends StatefulWidget {
@@ -26,10 +24,7 @@ class _UploadPageState extends State<UploadPage> {
   int tabIndex = 0;
   bool _isLoading = true;
   List<Map> uploadList = [];
-  List<RestaurantModel> restaurantsData = [];
-  List<HotelModel> hotelData = [];
-  List<DestinationModel> destinationData = [];
-  List<EventModel> eventData = [];
+  List<ContentModel> contentData = [];
   List allData = [];
 
   @override
@@ -40,20 +35,14 @@ class _UploadPageState extends State<UploadPage> {
   }
 
   Future<void> combineAllList() async {
-    allData.addAll(hotelData);
-    allData.addAll(restaurantsData);
-    allData.addAll(destinationData);
+    allData.addAll(contentData);
     allData.sort((a, b) => b.rating.compareTo(a.rating));
   }
 
   Future<void> getAllData() async {
     setLoading(true);
-    restaurantsData =
+    contentData =
         await DatabaseService().getRestaurantData(true, UserData().uid);
-    hotelData = await DatabaseService().getHotelData(true, UserData().uid);
-    destinationData =
-        await DatabaseService().getDestinationData(true, UserData().uid);
-    eventData = await DatabaseService().getEventData(true, UserData().uid);
     combineAllList();
     setLoading(false);
   }

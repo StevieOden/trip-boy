@@ -4,10 +4,9 @@ import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:trip_boy/component/vertical_card.dart';
-import 'package:trip_boy/models/facility_model.dart';
-import 'package:trip_boy/models/hotel_model.dart';
-import 'package:trip_boy/models/images_model.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../models/content_model.dart';
 
 class DetailPage extends StatefulWidget {
   String type,
@@ -249,12 +248,12 @@ class _DetailPageState extends State<DetailPage>
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(12),
-                              child: widget.imageList[index]!.imagesUrl == ""
+                              child: widget.imageList[index]!.imageUrl == ""
                                   ? Image.asset("assets/png_image/logo.png",
                                       fit: BoxFit.cover,
                                       filterQuality: FilterQuality.high)
                                   : Image.network(
-                                      widget.imageList[index]!.imagesUrl!,
+                                      widget.imageList[index]!.imageUrl,
                                       fit: BoxFit.cover,
                                       filterQuality: FilterQuality.high),
                             ),
@@ -467,9 +466,9 @@ class _DetailPageState extends State<DetailPage>
         itemCount: widget.roomList.length,
         itemBuilder: (context, index) {
           return VerticalCard(
-            title: widget.roomList[index]!.sizeRoom!,
+            title: widget.roomList[index]!.sizeRoom,
             subDistrict: "",
-            price: widget.roomList[index]!.priceRoom!.toString(),
+            price: widget.roomList[index]!.priceRoom.toString(),
             rating: "",
             imageUrl: "",
             isShowRating: false,
@@ -488,11 +487,11 @@ class _DetailPageState extends State<DetailPage>
         scrollDirection: Axis.horizontal,
         itemCount: widget.facilityList.length,
         itemBuilder: (context, index) {
-          var iconData = widget.facilityList[index]!.name! == "toilet"
+          var iconData = widget.facilityList[index]!.name == "toilet"
               ? Icons.wc
-              : widget.facilityList[index]!.name! == "mushola"
+              : widget.facilityList[index]!.name == "mushola"
                   ? Icons.mosque
-                  : widget.facilityList[index]!.name! == "kolam renang"
+                  : widget.facilityList[index]!.name == "kolam renang"
                       ? Icons.pool
                       : null;
           return Container(
@@ -500,11 +499,11 @@ class _DetailPageState extends State<DetailPage>
             child: Column(
               children: [
                 Icon(iconData),
-                Text(widget.facilityList[index]!.name!
+                Text(widget.facilityList[index]!.name
                         .substring(0, 1)
                         .toUpperCase() +
-                    widget.facilityList[index]!.name!
-                        .substring(1, widget.facilityList[index]!.name!.length)
+                    widget.facilityList[index]!.name
+                        .substring(1, widget.facilityList[index]!.name.length)
                         .toLowerCase())
               ],
             ),
@@ -540,12 +539,12 @@ class _DetailPageState extends State<DetailPage>
                               Expanded(
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(15),
-                                  child: widget.imageList[0]!.imagesUrl! == ""
+                                  child: widget.imageList[0]!.imageUrl == ""
                                       ? Image.asset("assets/png_image/logo.png",
                                           fit: BoxFit.cover,
                                           filterQuality: FilterQuality.high)
                                       : Image.network(
-                                          widget.imageList[0]!.imagesUrl!,
+                                          widget.imageList[0]!.imageUrl,
                                           fit: BoxFit.cover,
                                           filterQuality: FilterQuality.high),
                                 ),
@@ -566,13 +565,13 @@ class _DetailPageState extends State<DetailPage>
                               Expanded(
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
-                                    child: widget.imageList[1]!.imagesUrl! == ""
+                                    child: widget.imageList[1]!.imageUrl == ""
                                         ? Image.asset(
                                             "assets/png_image/logo.png",
                                             fit: BoxFit.cover,
                                             filterQuality: FilterQuality.high)
                                         : Image.network(
-                                            widget.imageList[1]!.imagesUrl!,
+                                            widget.imageList[1]!.imageUrl,
                                             fit: BoxFit.cover,
                                             filterQuality: FilterQuality.high)),
                               ),
@@ -590,7 +589,7 @@ class _DetailPageState extends State<DetailPage>
                                           child: Stack(
                                             fit: StackFit.expand,
                                             children: [
-                                              widget.imageList[2]!.imagesUrl! ==
+                                              widget.imageList[2]!.imageUrl ==
                                                       ""
                                                   ? Image.asset(
                                                       "assets/png_image/logo.png",
@@ -599,7 +598,7 @@ class _DetailPageState extends State<DetailPage>
                                                           FilterQuality.high)
                                                   : Image.network(
                                                       widget.imageList[2]!
-                                                          .imagesUrl!,
+                                                          .imageUrl,
                                                       fit: BoxFit.cover,
                                                       filterQuality:
                                                           FilterQuality.high),
@@ -755,29 +754,29 @@ class _DetailPageState extends State<DetailPage>
                 scrollDirection: Axis.horizontal,
                 itemCount: widget.facilityList.length,
                 itemBuilder: (context, index) {
-                  var iconData = widget.facilityList[index]!.name! == "toilet"
+                  var iconData = widget.facilityList[index]!.name == "toilet"
                       ? Icons.wc
-                      : widget.facilityList[index]!.name! == "mosque"
+                      : widget.facilityList[index]!.name== "mosque"
                           ? Icons.mosque
-                          : widget.facilityList[index]!.name! == "restaurant"
+                          : widget.facilityList[index]!.name== "restaurant"
                               ? Icons.restaurant
-                              : widget.facilityList[index]!.name! ==
+                              : widget.facilityList[index]!.name ==
                                       "swimming pool"
                                   ? Icons.pool
-                                  : widget.facilityList[index]!.name! == "wifi"
+                                  : widget.facilityList[index]!.name == "wifi"
                                       ? Icons.wifi
-                                      : widget.facilityList[index]!.name! ==
+                                      : widget.facilityList[index]!.name ==
                                               "smoking area"
                                           ? Icons.smoking_rooms
-                                          : widget.facilityList[index]!.name! ==
+                                          : widget.facilityList[index]!.name ==
                                                   "free breakfast"
                                               ? Icons.lunch_dining
                                               : widget.facilityList[index]!
-                                                          .name! ==
+                                                          .name ==
                                                       "bar"
                                                   ? Icons.local_bar
                                                   : widget.facilityList[index]!
-                                                              .name! ==
+                                                              .name ==
                                                           "easy reservation"
                                                       ? Icons.receipt
                                                       : null;
@@ -785,15 +784,15 @@ class _DetailPageState extends State<DetailPage>
                     margin: EdgeInsets.only(right: 15),
                     child: Column(
                       children: [
-                        widget.facilityList[index]!.name! == "playground"
+                        widget.facilityList[index]!.name == "playground"
                             ? Image.asset("assets/png_image/playground.png")
                             : Icon(iconData),
-                        Text(widget.facilityList[index]!.name!
+                        Text(widget.facilityList[index]!.name
                                 .substring(0, 1)
                                 .toUpperCase() +
-                            widget.facilityList[index]!.name!
+                            widget.facilityList[index]!.name
                                 .substring(
-                                    1, widget.facilityList[index]!.name!.length)
+                                    1, widget.facilityList[index]!.name.length)
                                 .toLowerCase())
                       ],
                     ),

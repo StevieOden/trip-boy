@@ -2,15 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:trip_boy/component/BuildTextFormField.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:trip_boy/models/images_model.dart';
-import '../common/app_text_styles.dart';
-import '../models/facility_model.dart';
 
 typedef void StringCallback(String val);
 

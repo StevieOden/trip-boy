@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
@@ -43,11 +45,18 @@ class _VerticalCardState extends State<VerticalCard> {
               height: 80,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: widget.imageUrl == ""
-                    ? Image.asset("assets/png_image/logo.png",
-                        fit: BoxFit.cover, filterQuality: FilterQuality.high)
-                    : Image.network(widget.imageUrl,
-                        fit: BoxFit.cover, filterQuality: FilterQuality.high),
+                child: widget.imageUrl.startsWith("/")
+                    ? Image(
+                        image: FileImage(
+                        File(widget.imageUrl),
+                      ))
+                    : widget.imageUrl == ""
+                        ? Image.asset("assets/png_image/logo.png",
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high)
+                        : Image.network(widget.imageUrl,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high),
               ),
             ),
             SizedBox(

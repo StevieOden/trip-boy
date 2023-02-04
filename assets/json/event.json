@@ -1,15 +1,17 @@
 {
-     "name": "",
-     "image_url": "",
      "description":"",
-     "meet_links": "",
-     "rating":4.8,
+     "image_url": "",
+     "meet_link": "",
+     "name": "",
      "price": 0,
-     "ticket_type": "",
-     "time_held": "",
+     "rating":4.8,
      "terms":[
           {
                "text": ""
           }
-     ]
+     ],
+     "ticket_type": "",
+     "time_held": "",
+     "type": "event",
+     "user_id": ""
 }

@@ -4,8 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../models/restaurant_model.dart';
-import '../services/database_services.dart';
 import 'app_text_styles.dart';
 import 'color_values.dart';
 
