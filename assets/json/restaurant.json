@@ -1,22 +1,44 @@
 {
-     "nama_resto": "D'Asmo",
-     "alamat": "",
+     "address": "",
      "description": "",
-     "rating": 4.8,
-     "time_closed": "",
-     "time_open": "",
-     "menus": [
+     "google_maps_link": "",
+     "images": [
+          {
+               "image_url": ""
+          }
+     ],
+     "menu": [
           {
                "name": "",
                "desc": "",
                "image_url": "",
                "price": 0
           }
-
      ],
-     "images": [
+     "payment_method": [
           {
-               "images_url": ""
+               "bca":{"account_number":""}
+          },
+          {
+               "mandiri":{"account_number":""}
+          },
+          {
+               "bri":{"account_number":""}
+          },
+          {
+               "bni":{"account_number":""}
+          },
+          {
+               "ovo":{"phone_number":""}
+          },
+          {
+               "dana":{"phone_number":""}
           }
-     ]
+     ],
+     "name": "D'Asmo",
+     "rating": 4.8,
+     "time_closed": "",
+     "time_open": "",
+     "type": "",
+     "user_id": ""
 }

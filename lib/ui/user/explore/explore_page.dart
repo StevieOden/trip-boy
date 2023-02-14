@@ -4,6 +4,7 @@ import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:trip_boy/models/content_model.dart';
 import 'package:trip_boy/ui/user/explore/tab_pages/EventPages.dart';
 import 'package:trip_boy/ui/user/explore/tab_pages/TabComponent.dart';
 
@@ -29,10 +30,10 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
-  List<RestaurantModel> restaurantsData = [];
-  List<HotelModel> hotelData = [];
-  List<DestinationModel> destinationData = [];
+  List<RestaurantModel> restaurantData = [];
   List<EventModel> eventData = [];
+  List<DestinationModel> destinationData = [];
+  List<HotelModel> hotelData = [];
   List allData = [];
   final TextEditingController _searchController = TextEditingController();
   List allDataFiltered = [];
@@ -48,9 +49,9 @@ class _ExplorePageState extends State<ExplorePage>
   }
 
   Future<void> combineAllList() async {
-    allData.addAll(hotelData);
-    allData.addAll(restaurantsData);
+       allData.addAll(restaurantData);
     allData.addAll(destinationData);
+    allData.addAll(hotelData);
     allData.addAll(eventData);
     allData.sort((a, b) => b.rating.compareTo(a.rating));
     allDataFiltered = allData;
@@ -58,18 +59,18 @@ class _ExplorePageState extends State<ExplorePage>
   }
 
   Future<void> getAllData() async {
-    restaurantsData =
+   restaurantData =
         await DatabaseService().getRestaurantData(false, UserData().uid);
-    hotelData = await DatabaseService().getHotelData(false, UserData().uid);
+    eventData = await DatabaseService().getEventData(false, UserData().uid);
     destinationData =
         await DatabaseService().getDestinationData(false, UserData().uid);
-    eventData = await DatabaseService().getEventData(false, UserData().uid);
+    hotelData = await DatabaseService().getHotelData(false, UserData().uid);
     combineAllList();
   }
 
   void searchData(String keyword) {
     final list = allData.where((list) {
-      final titleLower = list.name!.toLowerCase();
+      final titleLower = list.name.toLowerCase();
       final searchLower = keyword.toLowerCase();
 
       return titleLower.contains(searchLower);

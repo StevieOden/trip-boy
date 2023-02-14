@@ -20,27 +20,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
   String role = "";
 
-  Future<String> getUserData() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    final uid = user!.uid;
-
-    UserModel userData = await DatabaseService().getUserData(uid);
-    role = userData.role!;
-
-    return role;
+  Future<void> getUserData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      final uid = user!.uid;
+      UserModel userData = await DatabaseService().getUserData(uid);
+      role = userData.role!;
+    } catch (e) {
+      print("error: " + e.toString());
+    }
+    navigations();
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getUserData();
-
+  Future<void> navigations() async {
     Future.delayed(Duration(seconds: 2), () {
       if (user == null) {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => LandingPage()));
       } else {
+        print("role user:" + role);
         if (role == "user_customer") {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => DashboardPage()));
@@ -50,6 +48,12 @@ class _SplashScreenState extends State<SplashScreen> {
         }
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserData();
   }
 
   @override

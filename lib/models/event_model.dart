@@ -1,88 +1,153 @@
+// To parse this JSON data, do
+//
+//     final eventModel = eventModelFromJson(jsonString);
+
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+EventModel eventModelFromJson(String str) => EventModel.fromJson(json.decode(str));
 
-EventModel? eventModelFromJson(String str) =>
-    EventModel.fromJson(json.decode(str));
-
-String eventModelToJson(EventModel? data) => json.encode(data!.toJson());
+String eventModelToJson(EventModel data) => json.encode(data.toJson());
 
 class EventModel {
-  EventModel(
-      {this.name,
-      this.imageUrl,
-      this.description,
-      this.meetLinks,
-      this.rating,
-      this.price,
-      this.ticketType,
-      required this.timeHeld,
-      this.terms,
-      this.userId,
-      required this.type});
+    EventModel({
+        required this.description,
+        required this.imageUrl,
+        required this.meetLink,
+        required this.name,
+        required this.price,
+        required this.rating,
+        required this.terms,
+        required this.paymentMethod,
+        required this.ticketType,
+        required this.timeHeld,
+        required this.type,
+        required this.userId,
+    });
 
-  String? name;
-  String? imageUrl;
-  String? description;
-  String? meetLinks;
-  String? userId;
-  double? rating;
-  int? price;
-  String? ticketType;
-  String type;
-  DateTime timeHeld;
-  List<Term?>? terms;
+    String description;
+    String imageUrl;
+    String meetLink;
+    String name;
+    int price;
+    double rating;
+    List<TermEvent> terms;
+    List<PaymentMethod> paymentMethod;
+    String ticketType;
+    String timeHeld;
+    String type;
+    String userId;
 
-  factory EventModel.fromJson(Map<String, dynamic> json) {
-    Timestamp timeHeld = json["time_held"];
-    return EventModel(
-      name: json["name"],
-      imageUrl: json["image_url"] == null ? "" : json["image_url"],
-      description: json["description"],
-      meetLinks: json["meet_links"],
-      rating: json["rating"].toDouble(),
-      price: json["price"] == null ? 0 : json["price"],
-      ticketType: json["ticket_type"],
-      type: json["type"],
-      userId: json["user"],
-      timeHeld: timeHeld.toDate(),
-      terms: json["terms"] == null
-          ? []
-          : List<Term?>.from(json["terms"]!.map((x) => Term.fromJson(x))),
+    factory EventModel.fromJson(Map<String, dynamic> json) => EventModel(
+        description: json["description"],
+        imageUrl: json["image_url"],
+        meetLink: json["meet_link"],
+        name: json["name"],
+        price: json["price"],
+        rating: json["rating"]?.toDouble(),
+        terms: List<TermEvent>.from(json["terms"].map((x) => TermEvent.fromJson(x))),
+        paymentMethod: List<PaymentMethod>.from(json["payment_method"].map((x) => PaymentMethod.fromJson(x))),
+        ticketType: json["ticket_type"],
+        timeHeld: json["time_held"],
+        type: json["type"],
+        userId: json["user_id"],
     );
-  }
 
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "image_url": imageUrl,
+    Map<String, dynamic> toJson() => {
         "description": description,
-        "meet_links": meetLinks,
-        "rating": rating,
+        "image_url": imageUrl,
+        "meet_link": meetLink,
+        "name": name,
         "price": price,
+        "rating": rating,
+        "terms": List<dynamic>.from(terms.map((x) => x.toJson())),
+        "payment_method": List<dynamic>.from(paymentMethod.map((x) => x.toJson())),
         "ticket_type": ticketType,
+        "time_held": timeHeld,
         "type": type,
-        "user":userId,
-        "time_held": Timestamp.fromDate(
-          DateTime(timeHeld.year, timeHeld.month, timeHeld.day),
-        ),
-        "terms": terms == null
-            ? []
-            : List<dynamic>.from(terms!.map((x) => x!.toJson())),
-      };
+        "user_id": userId,
+    };
 }
 
-class Term {
-  Term({
-    this.text,
-  });
+class PaymentMethod {
+    PaymentMethod({
+        this.bca,
+        this.mandiri,
+        this.bri,
+        this.bni,
+        this.ovo,
+        this.dana,
+    });
 
-  String? text;
+    Bca? bca;
+    Bca? mandiri;
+    Bca? bri;
+    Bca? bni;
+    Dana? ovo;
+    Dana? dana;
 
-  factory Term.fromJson(Map<String, dynamic> json) => Term(
+    factory PaymentMethod.fromJson(Map<String, dynamic> json) => PaymentMethod(
+        bca: json["bca"] == null ? null : Bca.fromJson(json["bca"]),
+        mandiri: json["mandiri"] == null ? null : Bca.fromJson(json["mandiri"]),
+        bri: json["bri"] == null ? null : Bca.fromJson(json["bri"]),
+        bni: json["bni"] == null ? null : Bca.fromJson(json["bni"]),
+        ovo: json["ovo"] == null ? null : Dana.fromJson(json["ovo"]),
+        dana: json["dana"] == null ? null : Dana.fromJson(json["dana"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "bca": bca?.toJson(),
+        "mandiri": mandiri?.toJson(),
+        "bri": bri?.toJson(),
+        "bni": bni?.toJson(),
+        "ovo": ovo?.toJson(),
+        "dana": dana?.toJson(),
+    };
+}
+
+class Bca {
+    Bca({
+        required this.accountNumber,
+    });
+
+    String accountNumber;
+
+    factory Bca.fromJson(Map<String, dynamic> json) => Bca(
+        accountNumber: json["account_number"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "account_number": accountNumber,
+    };
+}
+
+class Dana {
+    Dana({
+        required this.phoneNumber,
+    });
+
+    String phoneNumber;
+
+    factory Dana.fromJson(Map<String, dynamic> json) => Dana(
+        phoneNumber: json["phone_number"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "phone_number": phoneNumber,
+    };
+}
+
+class TermEvent {
+    TermEvent({
+        required this.text,
+    });
+
+    String text;
+
+    factory TermEvent.fromJson(Map<String, dynamic> json) => TermEvent(
         text: json["text"],
-      );
+    );
 
-  Map<String, dynamic> toJson() => {
+    Map<String, dynamic> toJson() => {
         "text": text,
-      };
+    };
 }

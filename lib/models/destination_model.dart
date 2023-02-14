@@ -1,111 +1,189 @@
-// To parse this JSON data, do
-//
-//     final destinationModel = destinationModelFromJson(jsonString);
-
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
-import 'package:trip_boy/models/images_model.dart';
+DestinationModel destinationModelFromJson(String str) => DestinationModel.fromJson(json.decode(str));
 
-import 'facility_model.dart';
-
-DestinationModel? destinationModelFromJson(String str) =>
-    DestinationModel.fromJson(json.decode(str));
-
-String destinationModelToJson(DestinationModel? data) =>
-    json.encode(data!.toJson());
+String destinationModelToJson(DestinationModel data) => json.encode(data.toJson());
 
 class DestinationModel {
-  DestinationModel(
-      {this.name,
-      this.alamat,
-      this.description,
-      this.rating,
-      this.timeClosed,
-      this.timeOpen,
-      this.facility,
-      this.images,
-      this.tickets,
-      this.googleMapsLink,
-      this.userId,
-      required this.type});
+    DestinationModel({
+        required this.address,
+        required this.description,
+        required this.facility,
+        required this.googleMapsLink,
+        required this.images,
+        required this.name,
+        required this.rating,
+        required this.tickets,
+        required this.paymentMethod,
+        required this.timeClosed,
+        required this.timeOpen,
+        required this.type,
+        required this.userId,
+    });
 
-  String? name;
-  String? alamat;
-  String? description;
-  String? googleMapsLink;
-  String type;
-  double? rating;
-  String? timeClosed;
-  String? timeOpen;
-  String? userId;
-  List<Facility?>? facility;
-  List<ImageModel?>? images;
-  List<Ticket?>? tickets;
+    String address;
+    String description;
+    List<FacilityDestinationModel> facility;
+    String googleMapsLink;
+    List<ImageDestination> images;
+    String name;
+    double rating;
+    List<TicketDestination> tickets;
+    List<PaymentMethod> paymentMethod;
+    String timeClosed;
+    String timeOpen;
+    String type;
+    String userId;
 
-  factory DestinationModel.fromJson(Map<String, dynamic> json) =>
-      DestinationModel(
-        name: json["name"] == null?"":json["name"],
-        alamat: json["alamat"] == null?"":json["alamat"],
-        description: json["description"] == null?"":json["description"],
-        rating: json["rating"] == null?0:json["rating"],
-        timeClosed: json["time_closed"] == null ? "": json["time_closed"],
-        timeOpen: json["time_open"] == null ? "":json["time_open"],
-        googleMapsLink: json["google_maps_link"] == null ? "":json["google_maps_link"],
-        type: json["type"] == null ? "" : json["type"],
-        userId: json["user"] == null ? "": json["user"],
-        facility: json["facility"] == null
-            ? []
-            : List<Facility?>.from(
-                json["facility"]!.map((x) => Facility.fromJson(x))),
-        images: json["images"] == null
-            ? []
-            : List<ImageModel>.from(
-                json["images"]!.map((x) => ImageModel.fromJson(x))),
-        tickets: json["tickets"] == null
-            ? []
-            : List<Ticket?>.from(
-                json["tickets"]!.map((x) => Ticket.fromJson(x))),
-      );
+    factory DestinationModel.fromJson(Map<String, dynamic> json) => DestinationModel(
+        address: json["address"],
+        description: json["description"],
+        facility: List<FacilityDestinationModel>.from(json["facility"].map((x) => FacilityDestinationModel.fromJson(x))),
+        googleMapsLink: json["google_maps_link"],
+        images: List<ImageDestination>.from(json["images"].map((x) => ImageDestination.fromJson(x))),
+        name: json["name"],
+        rating: json["rating"],
+        tickets: List<TicketDestination>.from(json["tickets"].map((x) => TicketDestination.fromJson(x))),
+        paymentMethod: List<PaymentMethod>.from(json["payment_method"].map((x) => PaymentMethod.fromJson(x))),
+        timeClosed: json["time_closed"],
+        timeOpen: json["time_open"],
+        type: json["type"],
+        userId: json["user_id"],
+    );
 
-  Map<String, dynamic> toJson() => {
-        "name": name,
-        "alamat": alamat,
+    Map<String, dynamic> toJson() => {
+        "address": address,
         "description": description,
+        "facility": List<dynamic>.from(facility.map((x) => x.toJson())),
+        "google_maps_link": googleMapsLink,
+        "images": List<dynamic>.from(images.map((x) => x.toJson())),
+        "name": name,
         "rating": rating,
+        "tickets": List<dynamic>.from(tickets.map((x) => x.toJson())),
+        "payment_method": List<dynamic>.from(paymentMethod.map((x) => x.toJson())),
         "time_closed": timeClosed,
         "time_open": timeOpen,
-        "google_maps_link": googleMapsLink,
         "type": type,
-        "user": userId,
-        "facility": facility == null
-            ? []
-            : List<dynamic>.from(facility!.map((x) => x!.toJson())),
-        "images": images == null
-            ? []
-            : List<dynamic>.from(images!.map((x) => x!.toJson())),
-        "tickets": tickets == null
-            ? []
-            : List<dynamic>.from(tickets!.map((x) => x!.toJson())),
-      };
+        "user_id": userId,
+    };
 }
 
-class Ticket {
-  Ticket({
-    this.name,
-    this.price,
-  });
+class FacilityDestinationModel {
+    FacilityDestinationModel({
+        required this.name,
+    });
 
-  String? name;
-  int? price;
+    String name;
 
-  factory Ticket.fromJson(Map<String, dynamic> json) => Ticket(
+    factory FacilityDestinationModel.fromJson(Map<String, dynamic> json) => FacilityDestinationModel(
+        name: json["name"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "name": name,
+    };
+}
+
+class ImageDestination {
+    ImageDestination({
+        required this.imageUrl,
+    });
+
+    String imageUrl;
+
+    factory ImageDestination.fromJson(Map<String, dynamic> json) => ImageDestination(
+        imageUrl: json["image_url"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "image_url": imageUrl,
+    };
+}
+
+class PaymentMethod {
+    PaymentMethod({
+        this.bca,
+        this.mandiri,
+        this.bri,
+        this.bni,
+        this.ovo,
+        this.dana,
+    });
+
+    Bca? bca;
+    Bca? mandiri;
+    Bca? bri;
+    Bca? bni;
+    Dana? ovo;
+    Dana? dana;
+
+    factory PaymentMethod.fromJson(Map<String, dynamic> json) => PaymentMethod(
+        bca: json["bca"] == null ? null : Bca.fromJson(json["bca"]),
+        mandiri: json["mandiri"] == null ? null : Bca.fromJson(json["mandiri"]),
+        bri: json["bri"] == null ? null : Bca.fromJson(json["bri"]),
+        bni: json["bni"] == null ? null : Bca.fromJson(json["bni"]),
+        ovo: json["ovo"] == null ? null : Dana.fromJson(json["ovo"]),
+        dana: json["dana"] == null ? null : Dana.fromJson(json["dana"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "bca": bca?.toJson(),
+        "mandiri": mandiri?.toJson(),
+        "bri": bri?.toJson(),
+        "bni": bni?.toJson(),
+        "ovo": ovo?.toJson(),
+        "dana": dana?.toJson(),
+    };
+}
+
+class Bca {
+    Bca({
+        required this.accountNumber,
+    });
+
+    String accountNumber;
+
+    factory Bca.fromJson(Map<String, dynamic> json) => Bca(
+        accountNumber: json["account_number"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "account_number": accountNumber,
+    };
+}
+
+class Dana {
+    Dana({
+        required this.phoneNumber,
+    });
+
+    String phoneNumber;
+
+    factory Dana.fromJson(Map<String, dynamic> json) => Dana(
+        phoneNumber: json["phone_number"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "phone_number": phoneNumber,
+    };
+}
+
+class TicketDestination {
+    TicketDestination({
+        required this.name,
+        required this.price,
+    });
+
+    String name;
+    int price;
+
+    factory TicketDestination.fromJson(Map<String, dynamic> json) => TicketDestination(
         name: json["name"],
         price: json["price"],
-      );
+    );
 
-  Map<String, dynamic> toJson() => {
+    Map<String, dynamic> toJson() => {
         "name": name,
         "price": price,
-      };
+    };
 }

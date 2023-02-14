@@ -25,12 +25,12 @@ class _LandingPageState extends State<LandingPage> {
 
   void nextPage() {
     _pageController!.animateToPage(_pageController!.page!.toInt() + 1,
-        duration: Duration(milliseconds: 400), curve: Curves.easeIn);
+        duration: Duration(milliseconds: 300), curve: Curves.easeIn);
   }
 
   void previousPage() {
     _pageController!.animateToPage(_pageController!.page!.toInt() - 1,
-        duration: Duration(milliseconds: 400), curve: Curves.easeIn);
+        duration: Duration(milliseconds: 300), curve: Curves.easeIn);
   }
 
   @override

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
-
-import 'detail_page.dart';
+import 'package:trip_boy/component/vertical_card.dart';
+import 'package:trip_boy/ui/user/detail_checkout.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MenuDetailPage extends StatefulWidget {
   MenuDetailPage({Key? key}) : super(key: key);
@@ -12,21 +13,42 @@ class MenuDetailPage extends StatefulWidget {
 }
 
 class _MenuDetailPageState extends State<MenuDetailPage> {
-  List<String> chipList = ['Semua', 'Minuman', 'Makanan', 'Jajanan'];
+  List<String> chipList = [];
   List<Map> gridViewMenu = [
     {"name": "Nasi Goreng Ati", "image": "", "price": 25000},
     {"name": "Nasi Goreng Ati", "image": "", "price": 25000},
     {"name": "Nasi Goreng Ati", "image": "", "price": 25000},
     {"name": "Nasi Goreng Ati", "image": "", "price": 25000},
   ];
+  int _choiceIndex = 0;
+  ScrollController? _scrollController;
+  final dataKeyAll = new GlobalKey();
+  final dataKeyDrink = new GlobalKey();
+  final dataKeyFood = new GlobalKey();
+  final dataKeySnack = new GlobalKey();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
   @override
   Widget build(BuildContext context) {
+    chipList = [
+      AppLocalizations.of(context)!.all,
+      AppLocalizations.of(context)!.drink,
+      AppLocalizations.of(context)!.food,
+      AppLocalizations.of(context)!.snack
+    ];
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: Icon(
             Icons.arrow_back_ios,
+            size: 20,
             color: ColorValues().primaryColor,
           ),
         ),
@@ -34,79 +56,110 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
         backgroundColor: Colors.white,
       ),
       body: Container(
+        height: MediaQuery.of(context).size.height,
         padding: EdgeInsets.only(left: 20, right: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'D’ASMO RESTO',
-              style: AppTextStyles.appTitlew500s16(ColorValues().blackColor),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.star,
-                      size: 18,
-                      color: Colors.yellow.shade400,
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Text('4.8 (32 Review)')
-                  ],
+                Text(
+                  'D’ASMO RESTO',
+                  style:
+                      AppTextStyles.appTitlew500s16(ColorValues().blackColor),
+                ),
+                SizedBox(
+                  height: 8,
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(
-                      Icons.location_on,
-                      size: 18,
-                      color: Colors.black,
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.star,
+                          size: 18,
+                          color: Colors.yellow.shade400,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text('4.8 (32 Review)')
+                      ],
                     ),
-                    SizedBox(
-                      width: 8,
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 18,
+                          color: Colors.black,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text('Pulisen')
+                      ],
                     ),
-                    Text('Pulisen')
                   ],
                 ),
+                SizedBox(
+                  height: 8,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.watch_later_outlined,
+                          size: 18,
+                          color: Colors.black,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(AppLocalizations.of(context)!.timeOpen)
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text('13:00-21:00')
+                      ],
+                    ),
+                  ],
+                ),
+                buildChipsCategory(),
               ],
             ),
-            SizedBox(
-              height: 8,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
                   children: [
-                    Icon(
-                      Icons.watch_later_outlined,
-                      size: 18,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Text('Jam Buka')
+                    Container(key: dataKeyAll, child: builGridView()),
+                    Container(key: dataKeyDrink, child: buildBlankCardDrink()),
+                    Container(key: dataKeyFood, child: buildBlankCardFood()),
+                    Container(key: dataKeySnack, child: buildBlankCardSnack())
                   ],
                 ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Text('13:00-21:00')
-                  ],
-                ),
-              ],
+              ),
             ),
-            buildChipsCategory(),
-            builGridView()
+            Container(
+              margin: EdgeInsets.only(bottom: 15, top: 15),
+              width: MediaQuery.of(context).size.width,
+              height: 50,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorValues().primaryColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15)))),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => DetailCheckout())),
+                  child: Text(AppLocalizations.of(context)!.cart)),
+            )
           ],
         ),
       ),
@@ -115,69 +168,91 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
 
   Widget buildChipsCategory() {
     return Container(
-      margin: EdgeInsets.only(top: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          for (int i = 0; i < 4; i++)
-            Container(
-              padding: EdgeInsets.only(left: 5, right: 3),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: ColorValues().primaryColor),
-              child: Row(
-                children: [
-                  chipList[i] == 'Semua'
-                      ? Icon(
-                          Icons.grid_view_rounded,
-                          size: 17,
-                          color: Colors.white,
-                        )
-                      : chipList[i] == 'Minuman'
-                          ? Icon(
-                              Icons.wine_bar_rounded,
-                              size: 17,
-                              color: Colors.white,
-                            )
-                          : chipList[i] == 'Makanan'
-                              ? Icon(
-                                  Icons.fastfood,
-                                  size: 17,
-                                  color: Colors.white,
-                                )
-                              : Icon(
-                                  Icons.tapas,
-                                  size: 17,
-                                  color: Colors.white,
-                                ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 5, right: 5),
-                    child: Text(
-                      chipList[i],
-                      style: AppTextStyles.appTitlew500s10(Colors.white),
-                    ),
-                  )
-                ],
-              ),
-              height: 30,
+      height: 30,
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.only(top: 20, bottom: 10),
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: 4,
+        separatorBuilder: (context, index) => Container(
+          width: 3,
+        ),
+        itemBuilder: (context, index) => ChoiceChip(
+          label: Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                index == 0
+                    ? Icon(
+                        Icons.grid_view_rounded,
+                        size: 13,
+                        color: Colors.white,
+                      )
+                    : index == 1
+                        ? Icon(
+                            Icons.wine_bar_rounded,
+                            size: 13,
+                            color: Colors.white,
+                          )
+                        : index == 2
+                            ? Icon(
+                                Icons.fastfood,
+                                size: 13,
+                                color: Colors.white,
+                              )
+                            : Icon(
+                                Icons.tapas,
+                                size: 13,
+                                color: Colors.white,
+                              ),
+                SizedBox(
+                  width: 3,
+                ),
+                Text(
+                  chipList[index],
+                  style: AppTextStyles.appTitlew500s10(Colors.white),
+                )
+              ],
             ),
-        ],
+          ),
+          selected: _choiceIndex == index,
+          selectedColor: ColorValues().primaryColor,
+          onSelected: (bool selected) {
+            setState(() {
+              _choiceIndex = selected ? index : 0;
+              var scrollPosition = _choiceIndex == 1
+                  ? dataKeyDrink.currentContext
+                  : _choiceIndex == 2
+                      ? dataKeyFood.currentContext
+                      : _choiceIndex == 3
+                          ? dataKeySnack.currentContext
+                          : dataKeyAll.currentContext;
+              Scrollable.ensureVisible(scrollPosition!);
+            });
+          },
+          backgroundColor: ColorValues().greyColor,
+          labelStyle: AppTextStyles.appTitlew500s10(Colors.white),
+        ),
       ),
     );
   }
 
   Widget builGridView() {
     return Container(
+      margin: EdgeInsets.only(top: 20),
       child: GridView.builder(
+        physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: gridViewMenu.length < 4 ? gridViewMenu.length : 4,
-        gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, mainAxisSpacing: 8, crossAxisSpacing: 8),
         itemBuilder: (BuildContext context, int index) {
-          return new Card(
-            child: Column(
-              children: [
-                Stack(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Stack(
                   fit: StackFit.expand,
                   children: [
                     gridViewMenu[index]["image"] == ""
@@ -197,11 +272,116 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
                     )
                   ],
                 ),
-                Text(gridViewMenu[index]['name'])
-              ],
-            ),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 6, top: 6),
+                child: Text(
+                  gridViewMenu[index]['name'],
+                  style:
+                      AppTextStyles.appTitlew400s14(ColorValues().blackColor),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 6, top: 6),
+                child: Text(
+                  gridViewMenu[index]['price'].toString(),
+                  style:
+                      AppTextStyles.appTitlew500s14(ColorValues().blackColor),
+                ),
+              )
+            ],
           );
         },
+      ),
+    );
+  }
+
+  Widget buildBlankCardDrink() {
+    return Container(
+      padding: EdgeInsets.only(top: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.drink,
+              style: AppTextStyles.appTitlew500s16(ColorValues().blackColor)),
+          SizedBox(
+            height: 8,
+          ),
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return VerticalCard(
+                  isElevated: false,
+                  title: "",
+                  subDistrict: "",
+                  price: "",
+                  rating: "",
+                  imageUrl: "");
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildBlankCardFood() {
+    return Container(
+      padding: EdgeInsets.only(top: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.food,
+              style: AppTextStyles.appTitlew500s16(ColorValues().blackColor)),
+          SizedBox(
+            height: 8,
+          ),
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return VerticalCard(
+                  isElevated: false,
+                  title: "",
+                  subDistrict: "",
+                  price: "",
+                  rating: "",
+                  imageUrl: "");
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildBlankCardSnack() {
+    return Container(
+      padding: EdgeInsets.only(top: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(AppLocalizations.of(context)!.snack,
+              style: AppTextStyles.appTitlew500s16(ColorValues().blackColor)),
+          SizedBox(
+            height: 8,
+          ),
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return VerticalCard(
+                  isElevated: false,
+                  title: "",
+                  subDistrict: "",
+                  price: "",
+                  rating: "",
+                  imageUrl: "");
+            },
+          ),
+        ],
       ),
     );
   }
