@@ -293,7 +293,9 @@ class _DetailPageState extends State<DetailPage>
                 width: MediaQuery.of(context).size.width.sp,
                 child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => MenuDetailPage(),));
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => MenuDetailPage(),
+                      ));
                     },
                     child: Text(
                       AppLocalizations.of(context)!.showMenu,
@@ -764,9 +766,9 @@ class _DetailPageState extends State<DetailPage>
                 itemBuilder: (context, index) {
                   var iconData = widget.facilityList[index]!.name == "toilet"
                       ? Icons.wc
-                      : widget.facilityList[index]!.name== "mosque"
+                      : widget.facilityList[index]!.name == "mosque"
                           ? Icons.mosque
-                          : widget.facilityList[index]!.name== "restaurant"
+                          : widget.facilityList[index]!.name == "restaurant"
                               ? Icons.restaurant
                               : widget.facilityList[index]!.name ==
                                       "swimming pool"

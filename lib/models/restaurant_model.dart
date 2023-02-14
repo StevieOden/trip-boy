@@ -29,7 +29,7 @@ class RestaurantModel {
     String googleMapsLink;
     List<ImageModelRestaurant> images;
     List<MenuRestaurant> menu;
-    List<PaymentMethod> paymentMethod;
+    List<PaymentMethodRestaurant> paymentMethod;
     String name;
     double rating;
     String? timeClosed;
@@ -43,7 +43,7 @@ class RestaurantModel {
         googleMapsLink: json["google_maps_link"],
         images: List<ImageModelRestaurant>.from(json["images"].map((x) => ImageModelRestaurant.fromJson(x))),
         menu: List<MenuRestaurant>.from(json["menu"].map((x) => MenuRestaurant.fromJson(x))),
-        paymentMethod: List<PaymentMethod>.from(json["payment_method"].map((x) => PaymentMethod.fromJson(x))),
+        paymentMethod: List<PaymentMethodRestaurant>.from(json["payment_method"].map((x) => PaymentMethodRestaurant.fromJson(x))),
         name: json["name"],
         rating: json["rating"].toDouble(),
         timeClosed: json["time_closed"],
@@ -111,71 +111,22 @@ class MenuRestaurant {
         "price": price,
     };
 }
-
-class PaymentMethod {
-    PaymentMethod({
-        this.bca,
-        this.mandiri,
-        this.bri,
-        this.bni,
-        this.ovo,
-        this.dana,
+class PaymentMethodRestaurant {
+    PaymentMethodRestaurant({
+        required this.method,
+        required this.number,
     });
 
-    Bca? bca;
-    Bca? mandiri;
-    Bca? bri;
-    Bca? bni;
-    Dana? ovo;
-    Dana? dana;
+    String method;
+    String number;
 
-    factory PaymentMethod.fromJson(Map<String, dynamic> json) => PaymentMethod(
-        bca: json["bca"] == null ? null : Bca.fromJson(json["bca"]),
-        mandiri: json["mandiri"] == null ? null : Bca.fromJson(json["mandiri"]),
-        bri: json["bri"] == null ? null : Bca.fromJson(json["bri"]),
-        bni: json["bni"] == null ? null : Bca.fromJson(json["bni"]),
-        ovo: json["ovo"] == null ? null : Dana.fromJson(json["ovo"]),
-        dana: json["dana"] == null ? null : Dana.fromJson(json["dana"]),
+    factory PaymentMethodRestaurant.fromJson(Map<String, dynamic> json) => PaymentMethodRestaurant(
+        method: json["method"],
+        number: json["number"],
     );
 
     Map<String, dynamic> toJson() => {
-        "bca": bca?.toJson(),
-        "mandiri": mandiri?.toJson(),
-        "bri": bri?.toJson(),
-        "bni": bni?.toJson(),
-        "ovo": ovo?.toJson(),
-        "dana": dana?.toJson(),
-    };
-}
-
-class Bca {
-    Bca({
-        required this.accountNumber,
-    });
-
-    String accountNumber;
-
-    factory Bca.fromJson(Map<String, dynamic> json) => Bca(
-        accountNumber: json["account_number"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "account_number": accountNumber,
-    };
-}
-
-class Dana {
-    Dana({
-        required this.phoneNumber,
-    });
-
-    String phoneNumber;
-
-    factory Dana.fromJson(Map<String, dynamic> json) => Dana(
-        phoneNumber: json["phone_number"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "phone_number": phoneNumber,
+        "method": method,
+        "number": number,
     };
 }
