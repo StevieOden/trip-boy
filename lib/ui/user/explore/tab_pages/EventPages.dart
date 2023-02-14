@@ -10,6 +10,7 @@ import '../../../../models/event_model.dart';
 import '../../../../models/hotel_model.dart';
 import '../../../../models/restaurant_model.dart';
 import '../../../../services/database_services.dart';
+import '../../detail_page.dart';
 
 class EventPages extends StatefulWidget {
   EventPages({Key? key}) : super(key: key);
@@ -20,15 +21,15 @@ class EventPages extends StatefulWidget {
 
 class _EventPagesState extends State<EventPages> {
   bool _isLoading = true;
-   List<RestaurantModel> restaurantData = [];
+  List<RestaurantModel> restaurantData = [];
   List<EventModel> eventData = [];
   List<DestinationModel> destinationData = [];
   List<HotelModel> hotelData = [];
-   List<ContentModel> allData = [];
+  List<ContentModel> allData = [];
 
   Future<void> getAllData() async {
     setLoading(true);
-     restaurantData =
+    restaurantData =
         await DatabaseService().getRestaurantData(false, UserData().uid);
     eventData = await DatabaseService().getEventData(false, UserData().uid);
     destinationData =
@@ -67,12 +68,36 @@ class _EventPagesState extends State<EventPages> {
             height: MediaQuery.of(context).size.height.sp,
             margin: EdgeInsets.only(left: 15.sp, right: 15.sp),
             child: ListView.separated(
-                itemBuilder: (context, index) => EventCardItem(
-                      asset: listAfterFilter[index].imageUrl,
-                      title: listAfterFilter[index].name,
-                      dateHeld: listAfterFilter[index].timeHeld,
-                      price: listAfterFilter[index].price,
-                      ticketType: listAfterFilter[index].ticketType,
+                itemBuilder: (context, index) => InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailPage(
+                                facilityList: [],
+                                price: listAfterFilter[index].price,
+                                roomList: [],
+                                googleMapsUrl: "",
+                                type: listAfterFilter[index].type,
+                                imageUrl: listAfterFilter[index].imageUrl,
+                                name: listAfterFilter[index].name,
+                                rating: listAfterFilter[index].rating,
+                                location: "",
+                                fullLocation: "",
+                                timeClose: "",
+                                timeOpen: "",
+                                description: listAfterFilter[index].description,
+                                imageList: [],
+                              ),
+                            ));
+                      },
+                      child: EventCardItem(
+                        asset: listAfterFilter[index].imageUrl,
+                        title: listAfterFilter[index].name,
+                        dateHeld: listAfterFilter[index].timeHeld,
+                        price: listAfterFilter[index].price,
+                        ticketType: listAfterFilter[index].ticketType,
+                      ),
                     ),
                 separatorBuilder: (context, index) => Container(
                       height: 1.sp,

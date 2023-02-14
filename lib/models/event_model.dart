@@ -31,7 +31,7 @@ class EventModel {
     int price;
     double rating;
     List<TermEvent> terms;
-    List<PaymentMethod> paymentMethod;
+    List<PaymentMethodEvent> paymentMethod;
     String ticketType;
     String timeHeld;
     String type;
@@ -45,7 +45,7 @@ class EventModel {
         price: json["price"],
         rating: json["rating"]?.toDouble(),
         terms: List<TermEvent>.from(json["terms"].map((x) => TermEvent.fromJson(x))),
-        paymentMethod: List<PaymentMethod>.from(json["payment_method"].map((x) => PaymentMethod.fromJson(x))),
+        paymentMethod: List<PaymentMethodEvent>.from(json["payment_method"].map((x) => PaymentMethodEvent.fromJson(x))),
         ticketType: json["ticket_type"],
         timeHeld: json["time_held"],
         type: json["type"],
@@ -68,71 +68,23 @@ class EventModel {
     };
 }
 
-class PaymentMethod {
-    PaymentMethod({
-        this.bca,
-        this.mandiri,
-        this.bri,
-        this.bni,
-        this.ovo,
-        this.dana,
+class PaymentMethodEvent {
+    PaymentMethodEvent({
+        required this.method,
+        required this.number,
     });
 
-    Bca? bca;
-    Bca? mandiri;
-    Bca? bri;
-    Bca? bni;
-    Dana? ovo;
-    Dana? dana;
+    String method;
+    String number;
 
-    factory PaymentMethod.fromJson(Map<String, dynamic> json) => PaymentMethod(
-        bca: json["bca"] == null ? null : Bca.fromJson(json["bca"]),
-        mandiri: json["mandiri"] == null ? null : Bca.fromJson(json["mandiri"]),
-        bri: json["bri"] == null ? null : Bca.fromJson(json["bri"]),
-        bni: json["bni"] == null ? null : Bca.fromJson(json["bni"]),
-        ovo: json["ovo"] == null ? null : Dana.fromJson(json["ovo"]),
-        dana: json["dana"] == null ? null : Dana.fromJson(json["dana"]),
+    factory PaymentMethodEvent.fromJson(Map<String, dynamic> json) => PaymentMethodEvent(
+        method: json["method"],
+        number: json["number"],
     );
 
     Map<String, dynamic> toJson() => {
-        "bca": bca?.toJson(),
-        "mandiri": mandiri?.toJson(),
-        "bri": bri?.toJson(),
-        "bni": bni?.toJson(),
-        "ovo": ovo?.toJson(),
-        "dana": dana?.toJson(),
-    };
-}
-
-class Bca {
-    Bca({
-        required this.accountNumber,
-    });
-
-    String accountNumber;
-
-    factory Bca.fromJson(Map<String, dynamic> json) => Bca(
-        accountNumber: json["account_number"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "account_number": accountNumber,
-    };
-}
-
-class Dana {
-    Dana({
-        required this.phoneNumber,
-    });
-
-    String phoneNumber;
-
-    factory Dana.fromJson(Map<String, dynamic> json) => Dana(
-        phoneNumber: json["phone_number"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "phone_number": phoneNumber,
+        "method": method,
+        "number": number,
     };
 }
 

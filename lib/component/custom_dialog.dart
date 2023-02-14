@@ -10,6 +10,156 @@ import 'package:trip_boy/component/BuildTextFormField.dart';
 typedef void StringCallback(String val);
 
 class CustomDialog {
+  static showUploadTicketDialog(
+    BuildContext context,
+    TextEditingController _ticketNameController,
+    TextEditingController _ticketPriceController,
+    Function? saveButton,
+    Function? cancelButton,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            insetPadding: EdgeInsets.symmetric(horizontal: 10),
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.sp))),
+            title: Text(AppLocalizations.of(context)!.tickets),
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BuildTextFormField(
+                      controller: _ticketNameController,
+                      obsecure: false,
+                      title: AppLocalizations.of(context)!.ticketName,
+                      hintText: AppLocalizations.of(context)!.fillTicketName,
+                    ),
+                    BuildTextFormField(
+                      keyboardType: TextInputType.number,
+                      controller: _ticketPriceController,
+                      title: AppLocalizations.of(context)!.ticketPrice,
+                      hintText: AppLocalizations.of(context)!.fillTicketPrice,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text(
+                  AppLocalizations.of(context)!.cancel,
+                  style: TextStyle(
+                      fontSize: 15, color: ColorValues().primaryColor),
+                ),
+                onPressed: () {
+                  cancelButton!.call();
+                },
+              ),
+              TextButton(
+                child: Text(
+                  AppLocalizations.of(context)!.save,
+                  style: TextStyle(
+                      fontSize: 15, color: ColorValues().primaryColor),
+                ),
+                onPressed: () {
+                  saveButton!.call();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  static showRoomHotelDialog(
+    BuildContext context,
+    TextEditingController _sizeRoomController,
+    TextEditingController _descRoomController,
+    TextEditingController _priceRoomController,
+    StringCallback imageUrl,
+    Function? saveButton,
+    Function? cancelButton,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            insetPadding: EdgeInsets.symmetric(horizontal: 10),
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.sp))),
+            title: Text(AppLocalizations.of(context)!.room),
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BuildTextFormField(
+                      controller: _sizeRoomController,
+                      obsecure: false,
+                      title: AppLocalizations.of(context)!.sizeRoom,
+                      hintText: AppLocalizations.of(context)!.fillSizeRoom,
+                    ),
+                    BuildTextFormField(
+                      controller: _descRoomController,
+                      title: AppLocalizations.of(context)!.descRoom,
+                      hintText: AppLocalizations.of(context)!.fillDescRoom,
+                    ),
+                    BuildTextFormField(
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp('[0-9]')),
+                      ],
+                      controller: _priceRoomController,
+                      title: AppLocalizations.of(context)!.priceRoom,
+                      hintText: AppLocalizations.of(context)!.fillPriceRoom,
+                    ),
+                    BuildTextFormField(
+                      hintText: "",
+                      title: AppLocalizations.of(context)!.uploadImage,
+                      isUploadImage: true,
+                      imagePath: (val) => setState(() => imageUrl(val)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text(
+                  AppLocalizations.of(context)!.cancel,
+                  style: TextStyle(
+                      fontSize: 15, color: ColorValues().primaryColor),
+                ),
+                onPressed: () {
+                  cancelButton!.call();
+                },
+              ),
+              TextButton(
+                child: Text(
+                  AppLocalizations.of(context)!.save,
+                  style: TextStyle(
+                      fontSize: 15, color: ColorValues().primaryColor),
+                ),
+                onPressed: () {
+                  saveButton!.call();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   static showMenuDialog(
     BuildContext context,
     TextEditingController _menuNameController,
@@ -25,7 +175,6 @@ class CustomDialog {
         return StatefulBuilder(
           builder: (context, setState) => AlertDialog(
             insetPadding: EdgeInsets.symmetric(horizontal: 10),
-            contentPadding: EdgeInsets.all(15.sp),
             clipBehavior: Clip.antiAliasWithSaveLayer,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10.sp))),
@@ -86,7 +235,6 @@ class CustomDialog {
                       fontSize: 15, color: ColorValues().primaryColor),
                 ),
                 onPressed: () {
-                 
                   saveButton!.call();
                 },
               ),

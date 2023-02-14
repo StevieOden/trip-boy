@@ -1,37 +1,24 @@
 {
-     "description":"",
-     "image_url": "",
-     "meet_link": "",
-     "name": "",
-     "price": 0,
-     "rating":4.8,
-     "terms":[
-          {
-               "text": ""
-          }
-     ],
-     "payment_method": [
-          {
-               "bca":{"account_number":""}
-          },
-          {
-               "mandiri":{"account_number":""}
-          },
-          {
-               "bri":{"account_number":""}
-          },
-          {
-               "bni":{"account_number":""}
-          },
-          {
-               "ovo":{"phone_number":""}
-          },
-          {
-               "dana":{"phone_number":""}
-          }
-     ],
-     "ticket_type": "",
-     "time_held": "",
-     "type": "event",
-     "user_id": ""
+  "name": "",
+  "description": "",
+  "date_held": "",
+  "time_held": "",
+  "rating": 4.8,
+  "image_url": "",
+  "meet_link": "",
+  "price": 0,
+  "ticket_type": "",
+  "type": "event",
+  "user_id": "",
+  "terms": [
+    {
+      "text": ""
+    }
+  ],
+  "payment_method": [
+    {
+      "method": "",
+      "number": ""
+    }
+  ]
 }

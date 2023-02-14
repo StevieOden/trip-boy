@@ -1,47 +1,59 @@
 {
-     "address": "",
-     "description":"",
-     "facility":[
-          {
-               "name": ""
-          }
-     ],
-     "google_maps_link": "",
-     "images": [
-          {
-               "image_url": ""
-          }
-     ],
-     "name": "",
-     "rating":4.8,
-     "rooms":[
-          {
-               "image_url":"",
-               "size_room": "",
-               "price_room": 0,
-               "description": ""
-          }
-     ],
-     "payment_method": [
-          {
-               "bca":{"account_number":""}
-          },
-          {
-               "mandiri":{"account_number":""}
-          },
-          {
-               "bri":{"account_number":""}
-          },
-          {
-               "bni":{"account_number":""}
-          },
-          {
-               "ovo":{"phone_number":""}
-          },
-          {
-               "dana":{"phone_number":""}
-          }
-     ],
-     "type": "",
-     "user_id": ""
+  "name": "",
+  "description": "",
+  "address": "",
+  "google_maps_link": "",
+  "rating": 4.8,
+  "type": "",
+  "user_id": "",
+  "facility": [
+    {
+      "name": ""
+    }
+  ],
+  "images": [
+    {
+      "image_url": ""
+    }
+  ],
+  "rooms": [
+    {
+      "image_url": "",
+      "size_room": "",
+      "price_room": 0,
+      "description": ""
+    }
+  ],
+  "payment_method": [
+    {
+      "bca": {
+        "account_number": ""
+      }
+    },
+    {
+      "mandiri": {
+        "account_number": ""
+      }
+    },
+    {
+      "bri": {
+        "account_number": ""
+      }
+    },
+    {
+      "bni": {
+        "account_number": ""
+      }
+    },
+    {
+      "ovo": {
+        "phone_number": ""
+      }
+    },
+    {
+      "dana": {
+        "phone_number": ""
+      }
+    }
+  ]
 }

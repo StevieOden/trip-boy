@@ -33,6 +33,7 @@ class ContentModel {
     this.timeHeld,
     this.rooms,
     this.menu,
+    this.paymentMethod
   });
 
   String? address;
@@ -55,6 +56,8 @@ class ContentModel {
   String? timeHeld;
   List<Room>? rooms;
   List<Menu>? menu;
+      List<PaymentMethod>? paymentMethod;
+
 
   factory ContentModel.fromJson(Map<String, dynamic> json) {
     return ContentModel(
@@ -74,6 +77,7 @@ class ContentModel {
       tickets: json["tickets"] == null
           ? []
           : List<Ticket>.from(json["tickets"]!.map((x) => Ticket.fromJson(x))),
+          paymentMethod: List<PaymentMethod>.from(json["payment_method"].map((x) => PaymentMethod.fromJson(x))),
       timeClosed: json["time_closed"],
       timeOpen: json["time_open"],
       type: json["type"],
@@ -121,6 +125,7 @@ class ContentModel {
             ? []
             : List<dynamic>.from(terms!.map((x) => x.toJson())),
         "ticket_type": ticketType,
+        "payment_method": List<dynamic>.from(paymentMethod!.map((x) => x.toJson())),
         "time_held": timeHeld,
         "rooms": rooms == null
             ? []
@@ -145,6 +150,26 @@ class Facility {
   Map<String, dynamic> toJson() => {
         "name": name,
       };
+}
+
+class PaymentMethod {
+    PaymentMethod({
+        required this.method,
+        required this.number,
+    });
+
+    String method;
+    String number;
+
+    factory PaymentMethod.fromJson(Map<String, dynamic> json) => PaymentMethod(
+        method: json["method"],
+        number: json["number"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "method": method,
+        "number": number,
+    };
 }
 
 class ImageModel {
