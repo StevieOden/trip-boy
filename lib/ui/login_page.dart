@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -23,17 +25,27 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   String role = "";
+  bool _isLoading = false;
 
   Future<String> getUserData() async {
     try {
       User user = FirebaseAuth.instance.currentUser!;
       final uid = user.uid;
-
       UserModel userData = await DatabaseService().getUserData(uid);
       role = userData.role!;
       return role;
     } catch (e) {
       throw ("error : " + e.toString());
+    }
+  }
+
+  void setLoading(bool loading) {
+    if (mounted) {
+      setState(() {
+        _isLoading = loading;
+      });
+    } else {
+      _isLoading = loading;
     }
   }
 
@@ -49,10 +61,11 @@ class _LoginPageState extends State<LoginPage> {
               return FutureBuilder(
                   future: getUserData(),
                   builder: (context, snapshot) {
-                    print("user role: " + snapshot.data!);
-                    return snapshot.data! == "user_customer"
-                        ? DashboardPage()
-                        : DashboardAdmin();
+                    return _isLoading
+                        ? Loading()
+                        : snapshot.data! == "user_customer"
+                            ? DashboardPage()
+                            : DashboardAdmin();
                   });
             } else if (snapshot.hasError) {
               return Center(

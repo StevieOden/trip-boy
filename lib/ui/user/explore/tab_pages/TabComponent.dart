@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:sizer/sizer.dart';
@@ -8,6 +10,10 @@ import '../../../../common/user_data.dart';
 import '../../../../component/skeleton.dart';
 import '../../../../component/vertical_card.dart';
 import '../../../../models/content_model.dart';
+import '../../../../models/destination_model.dart';
+import '../../../../models/event_model.dart';
+import '../../../../models/hotel_model.dart';
+import '../../../../models/restaurant_model.dart';
 import '../../../../services/database_services.dart';
 import '../../detail_page.dart';
 
@@ -24,7 +30,10 @@ class TabComponent extends StatefulWidget {
 
 class _TabComponentState extends State<TabComponent> {
   bool _isLoading = true;
-  List<ContentModel> contentData = [];
+  List<RestaurantModel> restaurantData = [];
+  List<DestinationModel> destinationData = [];
+  List<HotelModel> hotelData = [];
+  List allData = [];
 
   @override
   void initState() {
@@ -36,8 +45,11 @@ class _TabComponentState extends State<TabComponent> {
 
   Future<void> getAllData() async {
     setLoading(true);
-    contentData =
+    restaurantData =
         await DatabaseService().getRestaurantData(false, UserData().uid);
+    destinationData =
+        await DatabaseService().getDestinationData(false, UserData().uid);
+    hotelData = await DatabaseService().getHotelData(false, UserData().uid);
     setLoading(false);
   }
 
@@ -53,20 +65,13 @@ class _TabComponentState extends State<TabComponent> {
 
   @override
   Widget build(BuildContext context) {
-    List<ContentModel> listData = widget.tabController.index == 0
-        ? contentData
-            .where(
-                (element) => element.type == "restaurant" && element.name != "")
-            .toList()
-        : widget.tabController.index == 1
-            ? contentData
-                .where(
-                    (element) => element.type == "hotel" && element.name != "")
-                .toList()
-            : contentData
-                .where((element) =>
-                    element.type == "destination" && element.name != "")
-                .toList();
+    if (widget.tabController.index == 0) {
+      allData = restaurantData;
+    } else if (widget.tabController.index == 1) {
+      allData = hotelData;
+    } else if (widget.tabController.index == 2) {
+      allData = destinationData;
+    }
     return _isLoading
         ? NewsCardSkeltonTab()
         : SingleChildScrollView(
@@ -74,16 +79,16 @@ class _TabComponentState extends State<TabComponent> {
               margin: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 10.sp),
               child: Column(
                 children: [
-                  buildPopular(listData),
-                  buildRekomendasi(listData),
-                  buildListAll(listData)
+                  buildPopular(allData),
+                  buildRekomendasi(allData),
+                  buildListAll(allData)
                 ],
               ),
             ),
           );
   }
 
-  Widget buildRekomendasi(List<ContentModel> listData) {
+  Widget buildRekomendasi(List listData) {
     return Container(
       margin: EdgeInsets.only(top: 10.sp),
       child: Column(
@@ -115,7 +120,13 @@ class _TabComponentState extends State<TabComponent> {
                                 ? listData[index].facility!
                                 : [],
                             price: listData[index].type == "restaurant"
-                                ? listData[index].menu!.first.price.toString()
+                                ? listData[index].menu!.isEmpty
+                                    ? ""
+                                    : listData[index]
+                                        .menu!
+                                        .first
+                                        .price
+                                        .toString()
                                 : listData[index].type == "hotel"
                                     ? listData[index]
                                         .rooms!
@@ -135,12 +146,12 @@ class _TabComponentState extends State<TabComponent> {
                             name: listData[index].name,
                             rating: listData[index].rating,
                             location:
-                                listData[index].address!.split(', ')[0] == ""
-                                    ? listData[index].address!.split(', ')[0]
+                                listData[index].address!.split(',')[0] == ""
+                                    ? listData[index].address!.split(',')[0]
                                     : listData[index]
                                         .address!
-                                        .split(', ')[3]
-                                        .split('. ')[1],
+                                        .split(',')[3]
+                                        .split('.')[1],
                             fullLocation: listData[index].address!,
                             timeClose: listData[index].type == "restaurant" ||
                                     listData[index].type == "destination"
@@ -162,9 +173,13 @@ class _TabComponentState extends State<TabComponent> {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        listData[index].images!.isEmpty
-                            ? Container()
-                            : listData[index].images!.first.imageUrl == ""
+                        listData[index].images!.first.imageUrl.startsWith("/")
+                            ? Image(
+                                image: FileImage(
+                                File(listData[index].images!.first.imageUrl),
+                              ))
+                            : listData[index].images!.first.imageUrl == "" ||
+                                    listData[index].images!.isEmpty == ""
                                 ? Image.asset("assets/png_image/logo.png",
                                     fit: BoxFit.cover,
                                     filterQuality: FilterQuality.high)
@@ -221,7 +236,7 @@ class _TabComponentState extends State<TabComponent> {
     );
   }
 
-  Widget buildPopular(List<ContentModel> list) {
+  Widget buildPopular(List list) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(
         AppLocalizations.of(context)!.popular,
@@ -302,14 +317,20 @@ class _TabComponentState extends State<TabComponent> {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            list[index].images!.first.imageUrl == ""
-                                ? Image.asset("assets/png_image/logo.png",
-                                    fit: BoxFit.cover,
-                                    filterQuality: FilterQuality.high)
-                                : Image.network(
-                                    list[index].images!.first.imageUrl,
-                                    fit: BoxFit.cover,
-                                    filterQuality: FilterQuality.high),
+                            list[index].images!.first.imageUrl.startsWith("/")
+                                ? Image(
+                                    image: FileImage(
+                                    File(list[index].images!.first.imageUrl),
+                                  ))
+                                : list[index].images!.first.imageUrl == "" ||
+                                        list[index].images!.isEmpty == ""
+                                    ? Image.asset("assets/png_image/logo.png",
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.high)
+                                    : Image.network(
+                                        list[index].images!.first.imageUrl,
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.high),
                             Container(
                               padding: EdgeInsets.only(
                                   left: 10, right: 10, bottom: 10),
@@ -359,7 +380,7 @@ class _TabComponentState extends State<TabComponent> {
     ]);
   }
 
-  buildListAll(List<ContentModel> listData) {
+  buildListAll(List listData) {
     print("dwadasdwa: " + listData.first.address!);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -439,12 +460,16 @@ class _TabComponentState extends State<TabComponent> {
                       ? listData[i].address!.split(',')[0]
                       : listData[i].address!.split(',')[3],
                   price: listData[i].type == "restaurant"
-                      ? listData[i].menu!.first.price.toString()
+                      ? listData[i].menu!.isEmpty
+                          ? ""
+                          : listData[i].menu!.first.price.toString()
                       : listData[i].type == "hotel"
                           ? listData[i].rooms!.first.priceRoom.toString()
                           : listData[i].tickets!.first.price.toString(),
                   rating: listData[i].rating.toString(),
-                  imageUrl: listData[i].images!.first.imageUrl,
+                  imageUrl: listData[i].images!.isEmpty
+                      ? ""
+                      : listData[i].images!.first.imageUrl,
                 ),
               )
           ],

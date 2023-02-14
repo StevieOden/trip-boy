@@ -47,6 +47,8 @@
      "enterPhoneNumber": "Enter Phone Number",
      "timeOpen": "Time Open",
      "timeClose": "Time Close",
+     "dateHeld": "Date Held",
+     "timeHeld": "Time Held",
      "readMore": "Read More",
      "showLess": "Show Less",
      "galery": "Galery",
@@ -89,6 +91,15 @@
      "priceMenu":"Price Menu",
      "fillPriceMenu": "Fill Price Menu",
      "dataSave": "Saved Successful",
+     "paymentMethod": "Payment Method",
+
+     "@_Menu-detail-restaurant":{},
+     "drink": "Drink",
+     "food":"Food",
+     "snack":"Snack",
+     "all" : "All",
+     "cart":"Cart",
+     
 
      "@_Hint-Name":{},
      "hintTextNameRestaurant": "Enter your restaurant name",

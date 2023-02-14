@@ -5,6 +5,10 @@ import 'package:trip_boy/models/content_model.dart';
 import '../../../../common/shared_code.dart';
 import '../../../../common/user_data.dart';
 import '../../../../component/event_card_item.dart';
+import '../../../../models/destination_model.dart';
+import '../../../../models/event_model.dart';
+import '../../../../models/hotel_model.dart';
+import '../../../../models/restaurant_model.dart';
 import '../../../../services/database_services.dart';
 
 class EventPages extends StatefulWidget {
@@ -16,15 +20,20 @@ class EventPages extends StatefulWidget {
 
 class _EventPagesState extends State<EventPages> {
   bool _isLoading = true;
-  List<ContentModel> eventData = [];
+   List<RestaurantModel> restaurantData = [];
+  List<EventModel> eventData = [];
+  List<DestinationModel> destinationData = [];
+  List<HotelModel> hotelData = [];
+   List<ContentModel> allData = [];
 
   Future<void> getAllData() async {
     setLoading(true);
-    eventData =
+     restaurantData =
         await DatabaseService().getRestaurantData(false, UserData().uid);
-    eventData.where(
-      (element) => element.type == "event",
-    );
+    eventData = await DatabaseService().getEventData(false, UserData().uid);
+    destinationData =
+        await DatabaseService().getDestinationData(false, UserData().uid);
+    hotelData = await DatabaseService().getHotelData(false, UserData().uid);
     setLoading(false);
   }
 
@@ -47,7 +56,7 @@ class _EventPagesState extends State<EventPages> {
 
   @override
   Widget build(BuildContext context) {
-    List<ContentModel> listAfterFilter = eventData
+    List<EventModel> listAfterFilter = eventData
         .where(
           (element) => element.type == "event" && element.name != "",
         )
@@ -61,9 +70,9 @@ class _EventPagesState extends State<EventPages> {
                 itemBuilder: (context, index) => EventCardItem(
                       asset: listAfterFilter[index].imageUrl,
                       title: listAfterFilter[index].name,
-                      dateHeld: listAfterFilter[index].timeHeld!,
-                      price: listAfterFilter[index].price!,
-                      ticketType: listAfterFilter[index].ticketType!,
+                      dateHeld: listAfterFilter[index].timeHeld,
+                      price: listAfterFilter[index].price,
+                      ticketType: listAfterFilter[index].ticketType,
                     ),
                 separatorBuilder: (context, index) => Container(
                       height: 1.sp,
@@ -74,7 +83,7 @@ class _EventPagesState extends State<EventPages> {
 }
 
 class EventSkeleton extends StatelessWidget {
-  List<ContentModel> list;
+  List<EventModel> list;
   EventSkeleton({Key? key, required this.list}) : super(key: key);
 
   @override

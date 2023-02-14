@@ -4,20 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:sizer/sizer.dart';
+import 'package:trip_boy/models/content_model.dart';
 
 class VerticalCard extends StatefulWidget {
   String title, subDistrict, rating, imageUrl;
   String price;
   bool isShowRating;
-  VerticalCard(
-      {Key? key,
-      required this.title,
-      required this.subDistrict,
-      required this.price,
-      required this.rating,
-      required this.imageUrl,
-      this.isShowRating = true})
-      : super(key: key);
+  bool isElevated;
+  List<ContentModel>? listContent;
+  VerticalCard({
+    Key? key,
+    required this.title,
+    required this.subDistrict,
+    required this.price,
+    required this.rating,
+    required this.imageUrl,
+    this.isShowRating = true,
+    this.isElevated = true,
+    this.listContent,
+  }) : super(key: key);
 
   @override
   State<VerticalCard> createState() => _VerticalCardState();
@@ -31,7 +36,7 @@ class _VerticalCardState extends State<VerticalCard> {
 
   Widget card() {
     return Card(
-      elevation: 2,
+      elevation: widget.isElevated ? 2 : 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         width: MediaQuery.of(context).size.width.sp,
@@ -83,11 +88,13 @@ class _VerticalCardState extends State<VerticalCard> {
                       ),
                     ],
                   ),
-                  Text(
-                    "Rp${widget.price.toString()}",
-                    style: AppTextStyles.appTitlew700s12(
-                        ColorValues().primaryColor),
-                  )
+                  widget.price.isEmpty
+                      ? Container()
+                      : Text(
+                          "Rp${widget.price.toString()}",
+                          style: AppTextStyles.appTitlew700s12(
+                              ColorValues().primaryColor),
+                        )
                 ],
               ),
             ),

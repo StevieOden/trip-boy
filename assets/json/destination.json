@@ -1,27 +1,47 @@
 {
-     "address": "",
+     "name": "",
      "description":"",
+     "time_open": "",
+     "time_closed": "",
+     "address": "",
+     "google_maps_link": "",
+     "rating":0.0,
      "facility":[
           {
                "name": ""
           }
      ],
-     "google_maps_link": "",
      "images": [
           {
                "image_url": ""
           }
      ],
-     "name": "",
-     "rating":0.0,
      "tickets":[
           {
                "name": "regular",
                "price": 0
           }
      ],
-     "time_closed": "",
-     "time_open": "",
+     "payment_method": [
+          {
+               "bca":{"account_number":""}
+          },
+          {
+               "mandiri":{"account_number":""}
+          },
+          {
+               "bri":{"account_number":""}
+          },
+          {
+               "bni":{"account_number":""}
+          },
+          {
+               "ovo":{"phone_number":""}
+          },
+          {
+               "dana":{"phone_number":""}
+          }
+     ],
      "type": "",
      "user_id": ""
 }

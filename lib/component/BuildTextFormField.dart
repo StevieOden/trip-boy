@@ -46,7 +46,6 @@ class BuildTextFormField extends StatefulWidget {
   final bool? editFile;
   final bool? isTitle;
   final bool? isFlag;
-  final bool? noTitle;
   final bool? isMaxLength;
   final List<DropdownMenuItem<String>>? customDropdownItems;
   final String? customSelectedValue;
@@ -72,7 +71,7 @@ class BuildTextFormField extends StatefulWidget {
       required this.hintText,
       required this.title,
       this.currentValue,
-      this.assetImage = 'assets/images/ktp-sample.png',
+      this.assetImage,
       this.inputFormatters,
       // dua node ini nanti di-required
       this.nextFocusNode,
@@ -86,7 +85,6 @@ class BuildTextFormField extends StatefulWidget {
       this.editFile = false,
       this.isTitle = true,
       this.isFlag = false,
-      this.noTitle = false,
       this.isMaxLength = false,
       this.customDropdownItems,
       this.customSelectedValue,
@@ -169,9 +167,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
                 style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
               )
             : const SizedBox.shrink(),
-        widget.noTitle!
-            ? SizedBox()
-            : SizedBox(
+       SizedBox(
                 height: 5.sp,
               ),
         if (widget.isDropDown == true) ...[
@@ -187,9 +183,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
         ] else ...[
           buildRegularTextForm()
         ],
-        widget.noTitle!
-            ? SizedBox()
-            : widget.isFlag == true
+        widget.isFlag == true
                 ? SizedBox(
                     height: 5.sp,
                   )
@@ -431,14 +425,9 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
                   width: 100.w,
                   height: 25.h,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10.sp)),
-                      color: ColorValues().primaryColor.withOpacity(0.2),
-                      image: DecorationImage(
-                          fit: BoxFit.cover,
-                          colorFilter: ColorFilter.mode(
-                              Colors.black.withOpacity(0.75),
-                              BlendMode.dstATop),
-                          image: AssetImage(widget.assetImage!))),
+                    borderRadius: BorderRadius.all(Radius.circular(10.sp)),
+                    color: ColorValues().primaryColor.withOpacity(0.2),
+                  ),
                 ),
               ]
             ] else ...[

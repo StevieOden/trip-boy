@@ -48,6 +48,8 @@
      "enterPhoneNumber": "Masukkan No Hp",
      "timeOpen": "Jam Buka",
       "timeClose": "Jam Tutup",
+      "dateHeld": "Tanggal diadakan",
+      "timeHeld":"Jam diadakan",
      "readMore": "Baca Selengkapnya",
      "showLess": "Tampilkan Lebih Sedikit",
      "galery": "Galeri",
@@ -90,6 +92,14 @@
      "priceMenu":"Harga Menu",
      "fillPriceMenu": "Masukkan Harga Menu",
      "dataSave": "Berhasil Tersimpan",
+      "paymentMethod": "Metode Pembayaran",
+
+     "@_Menu-detail-restaurant":{},
+     "drink": "Minuman",
+     "food":"Makanan",
+     "snack":"Jajanan",
+     "all" : "Semua",
+     "cart":"Keranjang",
 
      "@_Hint-Name":{},
      "hintTextNameRestaurant": "Masukkan nama restoran",

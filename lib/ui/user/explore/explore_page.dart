@@ -12,6 +12,10 @@ import '../../../common/user_data.dart';
 import '../../../component/search_bar.dart';
 import '../../../component/skeleton.dart';
 import '../../../component/vertical_card.dart';
+import '../../../models/destination_model.dart';
+import '../../../models/event_model.dart';
+import '../../../models/hotel_model.dart';
+import '../../../models/restaurant_model.dart';
 import '../../../services/database_services.dart';
 import '../detail_page.dart';
 
@@ -26,8 +30,10 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage>
     with SingleTickerProviderStateMixin {
   TabController? _tabController;
-  List<ContentModel> contentData = [];
-
+  List<RestaurantModel> restaurantData = [];
+  List<EventModel> eventData = [];
+  List<DestinationModel> destinationData = [];
+  List<HotelModel> hotelData = [];
   List allData = [];
   final TextEditingController _searchController = TextEditingController();
   List allDataFiltered = [];
@@ -43,21 +49,28 @@ class _ExplorePageState extends State<ExplorePage>
   }
 
   Future<void> combineAllList() async {
-    allData.addAll(contentData);
+       allData.addAll(restaurantData);
+    allData.addAll(destinationData);
+    allData.addAll(hotelData);
+    allData.addAll(eventData);
     allData.sort((a, b) => b.rating.compareTo(a.rating));
     allDataFiltered = allData;
     print(" data filtered length : ${allDataFiltered.length}");
   }
 
   Future<void> getAllData() async {
-    contentData =
+   restaurantData =
         await DatabaseService().getRestaurantData(false, UserData().uid);
+    eventData = await DatabaseService().getEventData(false, UserData().uid);
+    destinationData =
+        await DatabaseService().getDestinationData(false, UserData().uid);
+    hotelData = await DatabaseService().getHotelData(false, UserData().uid);
     combineAllList();
   }
 
   void searchData(String keyword) {
     final list = allData.where((list) {
-      final titleLower = list.name!.toLowerCase();
+      final titleLower = list.name.toLowerCase();
       final searchLower = keyword.toLowerCase();
 
       return titleLower.contains(searchLower);

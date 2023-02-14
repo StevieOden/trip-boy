@@ -11,6 +11,10 @@ import '../../../common/app_text_styles.dart';
 import '../../../common/color_values.dart';
 import '../../../component/upload_list.dart';
 
+import '../../../models/destination_model.dart';
+import '../../../models/event_model.dart';
+import '../../../models/hotel_model.dart';
+import '../../../models/restaurant_model.dart';
 import '../../../services/database_services.dart';
 
 class UploadPage extends StatefulWidget {
@@ -24,7 +28,10 @@ class _UploadPageState extends State<UploadPage> {
   int tabIndex = 0;
   bool _isLoading = true;
   List<Map> uploadList = [];
-  List<ContentModel> contentData = [];
+  List<RestaurantModel> restaurantData = [];
+  List<EventModel> eventData = [];
+  List<DestinationModel> destinationData = [];
+  List<HotelModel> hotelData = [];
   List allData = [];
 
   @override
@@ -35,14 +42,22 @@ class _UploadPageState extends State<UploadPage> {
   }
 
   Future<void> combineAllList() async {
-    allData.addAll(contentData);
-    allData.sort((a, b) => b.rating.compareTo(a.rating));
+    allData.addAll(restaurantData);
+    allData.addAll(destinationData);
+    allData.addAll(hotelData);
+    allData.addAll(eventData);
+    // allData.sort((a, b) => b.rating.compareTo(a.rating));
+    print(allData.length);
   }
 
   Future<void> getAllData() async {
     setLoading(true);
-    contentData =
+    restaurantData =
         await DatabaseService().getRestaurantData(true, UserData().uid);
+    eventData = await DatabaseService().getEventData(true, UserData().uid);
+    destinationData =
+        await DatabaseService().getDestinationData(true, UserData().uid);
+    hotelData = await DatabaseService().getHotelData(true, UserData().uid);
     combineAllList();
     setLoading(false);
   }
@@ -182,18 +197,28 @@ class _UploadPageState extends State<UploadPage> {
               child: ListView.builder(
                 itemCount: allData.length,
                 itemBuilder: (context, index) => VerticalCard(
-                    imageUrl: allData[index].images!.first!.imagesUrl != ""
-                        ? allData[index].images!.first!.imagesUrl
-                        : "",
+                    imageUrl: allData[index].type == "event"
+                        ? allData[index].imageUrl
+                        : allData[index].images!.first.imageUrl != ""
+                            ? allData[index].images!.first.imageUrl
+                            : "",
                     title: allData[index].name,
-                    subDistrict: allData[index].alamat.split(', ')[0] == ""
-                        ? allData[index].alamat.split(', ')[0]
-                        : allData[index].alamat.split(', ')[3].split('. ')[1],
+                    subDistrict: allData[index].type == "event"
+                        ? ""
+                        : allData[index].address!.split(',')[0] == ""
+                            ? allData[index].address!.split(',')[0]
+                            : allData[index].address!.split(',')[3],
                     price: allData[index].type == "restaurant"
-                        ? allData[index].menus.first.price.toString()
+                        ? allData[index].menu!.first.price.toString()
                         : allData[index].type == "hotel"
-                            ? allData[index].rooms.first.priceRoom.toString()
-                            : allData[index].tickets.first.price.toString(),
+                            ? allData[index].rooms!.first.priceRoom.toString()
+                            : allData[index].type == "event"
+                                ? allData[index].price.toString()
+                                : allData[index]
+                                    .tickets!
+                                    .first
+                                    .price
+                                    .toString(),
                     rating: allData[index].rating.toString()),
               ),
             ),

@@ -8,6 +8,10 @@ import 'package:trip_boy/component/search_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/component/vertical_card.dart';
+import 'package:trip_boy/models/destination_model.dart';
+import 'package:trip_boy/models/event_model.dart';
+import 'package:trip_boy/models/hotel_model.dart';
+import 'package:trip_boy/models/restaurant_model.dart';
 import 'package:trip_boy/services/database_services.dart';
 import 'package:trip_boy/ui/user/detail_page.dart';
 import '../../common/app_text_styles.dart';
@@ -26,11 +30,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   DateFormat format = DateFormat("dd-MM-yyyy");
   bool _isLoading = true;
-  List<ContentModel> contentData = [];
-
-  List<ContentModel> allData = [];
+  List<RestaurantModel> restaurantData = [];
+  List<EventModel> eventData = [];
+  List<DestinationModel> destinationData = [];
+  List<HotelModel> hotelData = [];
+  List allData = [];
   final TextEditingController _searchController = TextEditingController();
-  List<ContentModel> allDataFiltered = [];
+  List allDataFiltered = [];
   String query = "";
 
   @override
@@ -41,19 +47,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> combineAllList() async {
-    allData.addAll(contentData);
-    allData
-        .where((element) => element.type != "event")
-        .toList()
-        .sort((a, b) => b.rating.compareTo(a.rating));
+    allData.addAll(restaurantData);
+    allData.addAll(destinationData);
+    allData.addAll(hotelData);
+    allData.addAll(eventData);
+    allData.sort((a, b) => b.rating.compareTo(a.rating));
     allDataFiltered = allData;
     print(" data filtered length : ${allDataFiltered.length}");
   }
 
   Future<void> getAllData() async {
     setLoading(true);
-    contentData =
+    restaurantData =
         await DatabaseService().getRestaurantData(false, UserData().uid);
+    eventData = await DatabaseService().getEventData(false, UserData().uid);
+    destinationData =
+        await DatabaseService().getDestinationData(false, UserData().uid);
+    hotelData = await DatabaseService().getHotelData(false, UserData().uid);
     combineAllList();
     setLoading(false);
   }
@@ -85,9 +95,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<ContentModel> allDataAfterFilter =
+    List allDataAfterFilter =
         allData.where((element) => element.type != "event").toList();
-    List<ContentModel> listAfterFilter = contentData
+    List listAfterFilter = allData
         .where(
           (element) => element.type == "event" && element.name != "",
         )
@@ -224,7 +234,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildHighlightEvent(List<ContentModel> listAfterFilter) {
+  _buildHighlightEvent(List listAfterFilter) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -265,7 +275,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildRecommend(List<ContentModel> allDataAfterFilter) {
+  _buildRecommend(List allDataAfterFilter) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -318,15 +328,12 @@ class _HomePageState extends State<HomePage> {
                                   : "",
                           name: allDataAfterFilter[i].name,
                           rating: allDataAfterFilter[i].rating,
-                          location: allDataAfterFilter[i]
+                          location:
+                              allDataAfterFilter[i].address!.split(',')[0] == ""
+                                  ? allDataAfterFilter[i].address!.split(',')[0]
+                                  : allDataAfterFilter[i]
                                       .address!
-                                      .split(', ')[0] ==
-                                  ""
-                              ? allDataAfterFilter[i].address!.split(', ')[0]
-                              : allDataAfterFilter[i]
-                                  .address!
-                                  .split(', ')[3]
-                                  .split('. ')[1],
+                                      .split(',')[2],
                           fullLocation: allDataAfterFilter[i].address!,
                           timeClose: allDataAfterFilter[i].type ==
                                       "restaurant" ||
@@ -352,7 +359,9 @@ class _HomePageState extends State<HomePage> {
                           ? allDataAfterFilter[i].address!.split(',')[0]
                           : allDataAfterFilter[i].address!.split(',')[3],
                   price: allDataAfterFilter[i].type == "restaurant"
-                      ? allDataAfterFilter[i].menu!.first.price.toString()
+                      ? allDataAfterFilter[i].menu!.isEmpty
+                          ? ""
+                          : allDataAfterFilter[i].menu!.first.price.toString()
                       : allDataAfterFilter[i].type == "hotel"
                           ? allDataAfterFilter[i]
                               .rooms!
@@ -390,7 +399,7 @@ class _HomePageState extends State<HomePage> {
     ));
   }
 
-  _buildSearchList(List<ContentModel> allDataAfterFilter) {
+  _buildSearchList(List allDataAfterFilter) {
     return allDataAfterFilter.length == 0
         ? Container(
             child: noData(context),
