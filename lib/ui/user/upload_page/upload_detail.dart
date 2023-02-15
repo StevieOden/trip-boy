@@ -85,6 +85,8 @@ class _UploadDetailState extends State<UploadDetail> {
   late final TextEditingController _descRoomController;
   late final TextEditingController _priceRoomController;
 
+  late final TextEditingController _termsController;
+
   late final TextEditingController nameController;
   late final TextEditingController descController;
   late final TextEditingController timeOpenController;
@@ -100,6 +102,7 @@ class _UploadDetailState extends State<UploadDetail> {
   late final TextEditingController provinceNameController;
   late final TextEditingController googleMapsController;
   late final TextEditingController ratingController;
+  late final TextEditingController meetLinkController;
 
   @override
   void initState() {
@@ -115,6 +118,10 @@ class _UploadDetailState extends State<UploadDetail> {
     _sizeRoomController = TextEditingController();
     _descRoomController = TextEditingController();
     _priceRoomController = TextEditingController();
+
+    meetLinkController = TextEditingController();
+
+    _termsController = TextEditingController();
 
     nameController = TextEditingController();
     descController = TextEditingController();
@@ -140,6 +147,8 @@ class _UploadDetailState extends State<UploadDetail> {
     menuPriceController.dispose();
     ticketNameController.dispose();
     ticketPriceController.dispose();
+    _termsController.dispose();
+    meetLinkController.dispose();
     _sizeRoomController.dispose();
     _descRoomController.dispose();
     _priceRoomController.dispose();
@@ -177,6 +186,8 @@ class _UploadDetailState extends State<UploadDetail> {
     menuPriceController.clear();
     ticketNameController.clear();
     ticketPriceController.clear();
+    _termsController.clear();
+    meetLinkController.clear();
     _sizeRoomController.clear();
     _descRoomController.clear();
     _priceRoomController.clear();
@@ -1721,26 +1732,6 @@ class _UploadDetailState extends State<UploadDetail> {
             hintText: "",
             controller: dateHeldController,
           ),
-          Text(AppLocalizations.of(context)!.ticketPrice),
-          BuildTextFormField(
-            isTitle: false,
-            title: "",
-            hintText: AppLocalizations.of(context)!.fillTicketPrice,
-            controller: dateHeldController,
-          ),
-          Row(
-            children: [
-              Text(AppLocalizations.of(context)!.ticketType),
-              Switch(
-                value: ticketType,
-                onChanged: (value) {
-                  setState(() {
-                    ticketType = value;
-                  });
-                },
-              )
-            ],
-          ),
           Row(
             children: [
               Expanded(
@@ -1764,6 +1755,36 @@ class _UploadDetailState extends State<UploadDetail> {
               ),
             ],
           ),
+          Text(AppLocalizations.of(context)!.ticketPrice),
+          BuildTextFormField(
+            isTitle: false,
+            title: "",
+            hintText: AppLocalizations.of(context)!.fillTicketPrice,
+            controller: dateHeldController,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(AppLocalizations.of(context)!.ticketType),
+              Switch(
+                value: ticketType,
+                activeColor: ColorValues().primaryColor,
+                onChanged: (value) {
+                  setState(() {
+                    ticketType = value;
+                  });
+                },
+              )
+            ],
+          ),
+          ticketType
+              ? BuildTextFormField(
+                  isTitle: false,
+                  title: "",
+                  hintText: AppLocalizations.of(context)!.fillMeetLink,
+                  controller: meetLinkController,
+                )
+              : Container(),
           BuildTextFormField(
             title: AppLocalizations.of(context)!.rating + " range (0.0 - 5.0)",
             controller: ratingController,
@@ -1773,6 +1794,28 @@ class _UploadDetailState extends State<UploadDetail> {
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp('[0.0-5.0]')),
             ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(AppLocalizations.of(context)!.termTitle,
+                  style:
+                      AppTextStyles.appTitlew400s12(ColorValues().blackColor)),
+              IconButton(
+                  onPressed: () {
+                    CustomDialog.showTermsDialog(
+                        context, _termsController, () {}, () {
+                      Navigator.pop(context);
+                    });
+                  },
+                  icon: Icon(
+                    Icons.add,
+                    color: ColorValues().blackColor,
+                  ))
+            ],
+          ),
+          SizedBox(
+            height: 10,
           ),
           BuildTextFormField(
             hintText: "",

@@ -160,6 +160,65 @@ class CustomDialog {
     );
   }
 
+  static showTermsDialog(
+    BuildContext context,
+    TextEditingController _termsController,
+    Function? saveButton,
+    Function? cancelButton,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            insetPadding: EdgeInsets.symmetric(horizontal: 10),
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.sp))),
+            title: Text(AppLocalizations.of(context)!.termTitle),
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  BuildTextFormField(
+                    isTitle: false,
+                    controller: _termsController,
+                    obsecure: false,
+                    title: "",
+                    hintText: AppLocalizations.of(context)!.fillTerm,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: Text(
+                  AppLocalizations.of(context)!.cancel,
+                  style: TextStyle(
+                      fontSize: 15, color: ColorValues().primaryColor),
+                ),
+                onPressed: () {
+                  cancelButton!.call();
+                },
+              ),
+              TextButton(
+                child: Text(
+                  AppLocalizations.of(context)!.save,
+                  style: TextStyle(
+                      fontSize: 15, color: ColorValues().primaryColor),
+                ),
+                onPressed: () {
+                  saveButton!.call();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   static showMenuDialog(
     BuildContext context,
     TextEditingController _menuNameController,
