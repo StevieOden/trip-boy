@@ -35,17 +35,74 @@ class _ResevartionCartState extends State<ResevartionCart> {
         ),
       ),
       body: Container(
-          child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Pesanan Anda',
-            style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
-          ),
-          Text('29 Nov 2022',
-              style: AppTextStyles.appTitlew400s14(ColorValues().blackColor))
-        ],
-      )),
+        padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Pesanan Anda',
+                  style:
+                      AppTextStyles.appTitlew500s16(ColorValues().blackColor),
+                ),
+                Text('29 Nov 2022',
+                    style:
+                        AppTextStyles.appTitlew500s16(ColorValues().blackColor))
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '1x Tiket Masuk',
+                  style:
+                      AppTextStyles.appTitlew400s16(ColorValues().blackColor),
+                ),
+                Text('75.000',
+                    style:
+                        AppTextStyles.appTitlew700s16(ColorValues().blackColor))
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Tiket berlaku hanya untuk 1 orang',
+                  style:
+                      AppTextStyles.appTitlew400s16(ColorValues().blackColor),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Divider(
+              color: Color.fromARGB(255, 227, 227, 227),
+              thickness: 3,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Notes',
+                  style:
+                      AppTextStyles.appTitlew500s16(ColorValues().blackColor),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
