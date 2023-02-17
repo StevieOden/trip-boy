@@ -7,7 +7,7 @@ import '../../common/color_values.dart';
 
 class DetailCheckout extends StatefulWidget {
   DetailCheckout({Key? key}) : super(key: key);
-
+    
   @override
   State<DetailCheckout> createState() => _DetailCheckoutState();
 }
