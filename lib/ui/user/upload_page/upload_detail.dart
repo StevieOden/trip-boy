@@ -357,6 +357,7 @@ class _UploadDetailState extends State<UploadDetail> {
       Facility(name: "easy reservation"),
       Facility(name: "playground")
     ];
+
     hintText(context);
     FocusScopeNode currentFocus = FocusScope.of(context);
     return GestureDetector(
