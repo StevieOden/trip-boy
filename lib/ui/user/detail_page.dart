@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:trip_boy/component/vertical_card.dart';
+import 'package:trip_boy/models/hotel_model.dart';
 import 'package:trip_boy/ui/user/menu_detail_restaurant.dart';
 import 'package:trip_boy/ui/user/reservation_ticket.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,11 +24,12 @@ class DetailPage extends StatefulWidget {
       timeClose,
       description,
       googleMapsUrl;
+  String? timeHeld;
   var price;
   double rating;
-  List<ImageModel?> imageList;
-  List<Room?> roomList;
-  List<Facility?> facilityList;
+  List imageList;
+  List<RoomHotel> roomList;
+  List facilityList;
   DetailPage(
       {super.key,
       required this.type,
@@ -38,6 +41,7 @@ class DetailPage extends StatefulWidget {
       required this.fullLocation,
       required this.timeOpen,
       required this.timeClose,
+      this.timeHeld,
       required this.description,
       required this.imageList,
       required this.googleMapsUrl,
@@ -126,11 +130,16 @@ class _DetailPageState extends State<DetailPage>
         Container(
           height: 170.sp,
           width: MediaQuery.of(context).size.width.sp,
-          child: widget.imageUrl == ""
-              ? Image.asset("assets/png_image/logo.png",
-                  fit: BoxFit.cover, filterQuality: FilterQuality.high)
-              : Image.network(widget.imageUrl,
-                  fit: BoxFit.cover, filterQuality: FilterQuality.high),
+          child: widget.imageUrl.startsWith("/")
+              ? Image(
+                  image: FileImage(
+                  File(widget.imageUrl),
+                ))
+              : widget.imageUrl == ""
+                  ? Image.asset("assets/png_image/logo.png",
+                      fit: BoxFit.cover, filterQuality: FilterQuality.high)
+                  : Image.network(widget.imageUrl,
+                      fit: BoxFit.cover, filterQuality: FilterQuality.high),
         ),
         SizedBox(
           height: 10.sp,
@@ -324,11 +333,16 @@ class _DetailPageState extends State<DetailPage>
           width: MediaQuery.of(context).size.width.sp,
           child: Stack(
             children: [
-              widget.imageUrl == ""
-                  ? Image.asset("assets/png_image/logo.png",
-                      fit: BoxFit.cover, filterQuality: FilterQuality.high)
-                  : Image.network(widget.imageUrl,
-                      fit: BoxFit.cover, filterQuality: FilterQuality.high),
+              widget.imageUrl.startsWith("/")
+                  ? Image(
+                      image: FileImage(
+                      File(widget.imageUrl),
+                    ))
+                  : widget.imageUrl == ""
+                      ? Image.asset("assets/png_image/logo.png",
+                          fit: BoxFit.cover, filterQuality: FilterQuality.high)
+                      : Image.network(widget.imageUrl,
+                          fit: BoxFit.cover, filterQuality: FilterQuality.high),
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -476,9 +490,9 @@ class _DetailPageState extends State<DetailPage>
         itemCount: widget.roomList.length,
         itemBuilder: (context, index) {
           return VerticalCard(
-            title: widget.roomList[index]!.sizeRoom,
+            title: widget.roomList[index].sizeRoom,
             subDistrict: "",
-            price: widget.roomList[index]!.priceRoom.toString(),
+            price: widget.roomList[index].priceRoom.toString(),
             rating: "",
             imageUrl: "",
             isShowRating: false,
@@ -493,28 +507,59 @@ class _DetailPageState extends State<DetailPage>
       margin: EdgeInsets.only(top: 10),
       width: MediaQuery.of(context).size.width.sp,
       height: 50.sp,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 5.0,
+          mainAxisSpacing: 5.0,
+        ),
+        scrollDirection: Axis.vertical,
         itemCount: widget.facilityList.length,
         itemBuilder: (context, index) {
           var iconData = widget.facilityList[index]!.name == "toilet"
               ? Icons.wc
-              : widget.facilityList[index]!.name == "mushola"
+              : widget.facilityList[index]!.name == "mosque"
                   ? Icons.mosque
-                  : widget.facilityList[index]!.name == "kolam renang"
-                      ? Icons.pool
-                      : null;
-          return Container(
-            margin: EdgeInsets.only(right: 10),
+                  : widget.facilityList[index]!.name == "restaurant"
+                      ? Icons.restaurant
+                      : widget.facilityList[index]!.name == "swimming pool"
+                          ? Icons.pool
+                          : widget.facilityList[index]!.name == "wifi"
+                              ? Icons.wifi
+                              : widget.facilityList[index]!.name ==
+                                      "smoking area"
+                                  ? Icons.smoking_rooms
+                                  : widget.facilityList[index]!.name ==
+                                          "free breakfast"
+                                      ? Icons.free_breakfast
+                                      : widget.facilityList[index]!.name ==
+                                              "bar"
+                                          ? Icons.wine_bar
+                                          : widget.facilityList[index]!.name ==
+                                                  "easy reservation"
+                                              ? Icons.book_online
+                                              : null;
+          return Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             child: Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(iconData),
-                Text(widget.facilityList[index]!.name
-                        .substring(0, 1)
-                        .toUpperCase() +
-                    widget.facilityList[index]!.name
-                        .substring(1, widget.facilityList[index]!.name.length)
-                        .toLowerCase())
+                widget.facilityList[index]!.name == "playground"
+                    ? Image(
+                        image: AssetImage("assets/png_image/playground.png"))
+                    : Icon(iconData),
+                Text(
+                  widget.facilityList[index]!.name
+                          .substring(0, 1)
+                          .toUpperCase() +
+                      widget.facilityList[index]!.name
+                          .substring(1, widget.facilityList[index]!.name.length)
+                          .toLowerCase(),
+                  textAlign: TextAlign.center,
+                )
               ],
             ),
           );
@@ -536,32 +581,45 @@ class _DetailPageState extends State<DetailPage>
               margin: EdgeInsets.only(bottom: 10.sp),
               child: Row(
                 children: [
-                  widget.imageList.length == 0
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.asset("assets/png_image/logo.png",
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.high),
-                        )
-                      : Expanded(
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(15),
-                                  child: widget.imageList[0]!.imageUrl == ""
-                                      ? Image.asset("assets/png_image/logo.png",
-                                          fit: BoxFit.cover,
-                                          filterQuality: FilterQuality.high)
-                                      : Image.network(
-                                          widget.imageList[0]!.imageUrl,
-                                          fit: BoxFit.cover,
-                                          filterQuality: FilterQuality.high),
-                                ),
+                  widget.imageUrl.startsWith("/")
+                      ? Image(
+                          image: FileImage(
+                          File(widget.imageUrl),
+                        ))
+                      : widget.imageList.length == 0
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(15),
+                              child: Image.asset("assets/png_image/logo.png",
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high),
+                            )
+                          : Expanded(
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child: widget.imageUrl.startsWith("/")
+                                          ? Image(
+                                              image: FileImage(
+                                              File(widget.imageUrl),
+                                            ))
+                                          : widget.imageList[0]!.imageUrl == ""
+                                              ? Image.asset(
+                                                  "assets/png_image/logo.png",
+                                                  fit: BoxFit.cover,
+                                                  filterQuality:
+                                                      FilterQuality.high)
+                                              : Image.network(
+                                                  widget.imageList[0]!.imageUrl,
+                                                  fit: BoxFit.cover,
+                                                  filterQuality:
+                                                      FilterQuality.high),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
                   widget.imageList.length < 2
                       ? Container()
                       : SizedBox(
@@ -575,15 +633,22 @@ class _DetailPageState extends State<DetailPage>
                               Expanded(
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
-                                    child: widget.imageList[1]!.imageUrl == ""
-                                        ? Image.asset(
-                                            "assets/png_image/logo.png",
-                                            fit: BoxFit.cover,
-                                            filterQuality: FilterQuality.high)
-                                        : Image.network(
-                                            widget.imageList[1]!.imageUrl,
-                                            fit: BoxFit.cover,
-                                            filterQuality: FilterQuality.high)),
+                                    child: widget.imageUrl.startsWith("/")
+                                        ? Image(
+                                            image: FileImage(
+                                            File(widget.imageUrl),
+                                          ))
+                                        : widget.imageList[1]!.imageUrl == ""
+                                            ? Image.asset(
+                                                "assets/png_image/logo.png",
+                                                fit: BoxFit.cover,
+                                                filterQuality:
+                                                    FilterQuality.high)
+                                            : Image.network(
+                                                widget.imageList[1]!.imageUrl,
+                                                fit: BoxFit.cover,
+                                                filterQuality:
+                                                    FilterQuality.high)),
                               ),
                               widget.imageList.length < 3
                                   ? Container()
@@ -599,19 +664,27 @@ class _DetailPageState extends State<DetailPage>
                                           child: Stack(
                                             fit: StackFit.expand,
                                             children: [
-                                              widget.imageList[2]!.imageUrl ==
-                                                      ""
-                                                  ? Image.asset(
-                                                      "assets/png_image/logo.png",
-                                                      fit: BoxFit.cover,
-                                                      filterQuality:
-                                                          FilterQuality.high)
-                                                  : Image.network(
-                                                      widget.imageList[2]!
-                                                          .imageUrl,
-                                                      fit: BoxFit.cover,
-                                                      filterQuality:
-                                                          FilterQuality.high),
+                                              widget.imageUrl.startsWith("/")
+                                                  ? Image(
+                                                      image: FileImage(
+                                                      File(widget.imageUrl),
+                                                    ))
+                                                  : widget.imageList[2]!
+                                                              .imageUrl ==
+                                                          ""
+                                                      ? Image.asset(
+                                                          "assets/png_image/logo.png",
+                                                          fit: BoxFit.cover,
+                                                          filterQuality:
+                                                              FilterQuality
+                                                                  .high)
+                                                      : Image.network(
+                                                          widget.imageList[2]!
+                                                              .imageUrl,
+                                                          fit: BoxFit.cover,
+                                                          filterQuality:
+                                                              FilterQuality
+                                                                  .high),
                                               widget.imageList.length > 3
                                                   ? Container(
                                                       decoration: BoxDecoration(
@@ -864,7 +937,7 @@ class _DetailPageState extends State<DetailPage>
                 ),
                 child: Text(
                   widget.name,
-                  style: AppTextStyles.appTitlew500s20(Colors.white),
+                  style: AppTextStyles.appTitlew500s18(Colors.white),
                 ),
               ),
             ],
@@ -884,7 +957,7 @@ class _DetailPageState extends State<DetailPage>
         ),
         child: (Text(
           'Deskripsi',
-          style: AppTextStyles.appTitlew500s16(ColorValues().blackColor),
+          style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
         )),
       ),
       Padding(
@@ -892,7 +965,7 @@ class _DetailPageState extends State<DetailPage>
         child: Text(
           '''
 Event kali ini cukup berbeda dengan mengusung tema makanan yaitu street food indonesia yang khsusnya adalah makanan khas Boyolali. Dengan berbagai macam rasa bentuk dari masing masing wilayah Boyolali.....selengkapnya''',
-          style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
+          style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
         ),
       ),
       Row(
@@ -902,14 +975,14 @@ Event kali ini cukup berbeda dengan mengusung tema makanan yaitu street food ind
             padding: const EdgeInsets.only(left: 20, top: 20),
             child: Icon(
               Icons.location_on_outlined,
-              size: 25,
+              size: 20,
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 20, top: 20),
             child: Text(
               'Alun-Alun Kidul Boyolali',
-              style: AppTextStyles.appTitlew400s16(ColorValues().blackColor),
+              style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
             ),
           )
         ],
@@ -921,14 +994,14 @@ Event kali ini cukup berbeda dengan mengusung tema makanan yaitu street food ind
             padding: const EdgeInsets.only(left: 20, top: 10),
             child: Icon(
               Icons.date_range,
-              size: 25,
+              size: 20,
             ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 20, top: 10),
             child: Text(
               '03-10 Desember 2022',
-              style: AppTextStyles.appTitlew400s16(ColorValues().blackColor),
+              style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
             ),
           )
         ],
@@ -937,7 +1010,7 @@ Event kali ini cukup berbeda dengan mengusung tema makanan yaitu street food ind
         padding: const EdgeInsets.only(left: 20, top: 20),
         child: Text(
           'Informasi Lainnya',
-          style: AppTextStyles.appTitlew500s16(ColorValues().blackColor),
+          style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
         ),
       ),
       Padding(
@@ -947,7 +1020,7 @@ Event kali ini cukup berbeda dengan mengusung tema makanan yaitu street food ind
 Buka:
 Senin - Sabtu mulai jam 10.00
 Minggu mulai 06.00''',
-          style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
+          style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
         ),
       ),
       Padding(
@@ -956,14 +1029,14 @@ Minggu mulai 06.00''',
           '''Pemesanan tiket dapat dilakukan minimal 
 6 jam sebelum festival dimulai
 ''',
-          style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
+          style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
         ),
       ),
       Padding(
         padding: const EdgeInsets.only(left: 20, top: 10),
         child: Text(
           'Ketentuan Pengunjung',
-          style: AppTextStyles.appTitlew500s16(ColorValues().blackColor),
+          style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
         ),
       ),
       Padding(
@@ -977,7 +1050,7 @@ Minggu mulai 06.00''',
 3.)Pengunjung Festival harus dalam kondisi sehat, apabila terjadi gejala tidak sehat (flu, batuk, demam di atas 37,3 C) maka tidak diperkenankan untuk masuk kearea festival.
 
 4.)Setiap Pengunjung wajib menggunakan masker dan mengikuti pengukuran suhu tubuh dan wajib scan di Aplikasi Peduli Lindungi.''',
-          style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
+          style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
         ),
       ),
       Container(
@@ -987,7 +1060,6 @@ Minggu mulai 06.00''',
             right: 20,
           ),
           width: MediaQuery.of(context).size.width,
-          height: 50,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: ColorValues().primaryColor,
@@ -996,7 +1068,7 @@ Minggu mulai 06.00''',
             onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => ReservationTicket())),
             child: Text('Pesan Tiket',
-                style: AppTextStyles.appTitlew500s16(
+                style: AppTextStyles.appTitlew500s14(
                   Colors.white,
                 )),
           ))

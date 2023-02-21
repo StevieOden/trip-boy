@@ -1,6 +1,11 @@
+import 'dart:io';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:trip_boy/component/custom_dialog.dart';
+import 'package:trip_boy/services/network_connectivity.dart';
 import 'package:trip_boy/ui/admin/dashboard.dart';
 import 'package:trip_boy/ui/user/dashboard_page.dart';
 import 'package:trip_boy/ui/user/landing_page/landing_page.dart';
@@ -17,8 +22,9 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final user = FirebaseAuth.instance.currentUser;
-
   String role = "";
+  Map _source = {ConnectivityResult.none: false};
+  final NetworkConnectivity _networkConnectivity = NetworkConnectivity.instance;
 
   Future<void> getUserData() async {
     try {
@@ -26,10 +32,13 @@ class _SplashScreenState extends State<SplashScreen> {
       final uid = user!.uid;
       UserModel userData = await DatabaseService().getUserData(uid);
       role = userData.role!;
+
+      if (uid.isNotEmpty) {
+        navigations();
+      }
     } catch (e) {
       print("error: " + e.toString());
     }
-    navigations();
   }
 
   Future<void> navigations() async {
@@ -38,7 +47,6 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => LandingPage()));
       } else {
-        print("role user:" + role);
         if (role == "user_customer") {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => DashboardPage()));
@@ -50,10 +58,29 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
+  Future<void> checkInternet2() async {
+    _networkConnectivity.initialise();
+    _networkConnectivity.myStream.listen((source) {
+      _source = source;
+      switch (_source.keys.toList()[0]) {
+        case ConnectivityResult.mobile:
+          getUserData();
+          break;
+        case ConnectivityResult.wifi:
+          getUserData();
+          break;
+        case ConnectivityResult.none:
+        default:
+          CustomDialog.showNoInternetConnectionDialog(context);
+      }
+      setState(() {});
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    getUserData();
+    checkInternet2();
   }
 
   @override
@@ -67,5 +94,11 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _networkConnectivity.disposeStream();
+    super.dispose();
   }
 }

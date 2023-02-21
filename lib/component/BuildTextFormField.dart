@@ -8,6 +8,7 @@ import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:trip_boy/component/custom_dialog.dart';
 
 import '../common/app_text_styles.dart';
 
@@ -50,6 +51,8 @@ class BuildTextFormField extends StatefulWidget {
   final List<DropdownMenuItem<String>>? customDropdownItems;
   final String? customSelectedValue;
   StringCallback? imagePath;
+  TextEditingController? timeController;
+  TextEditingController? dateController;
 
   BuildTextFormField(
       {this.controller,
@@ -89,6 +92,8 @@ class BuildTextFormField extends StatefulWidget {
       this.customDropdownItems,
       this.customSelectedValue,
       this.imagePath,
+      this.timeController,
+      this.dateController,
       super.key});
 
   @override
@@ -104,9 +109,6 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
     ];
     return menuItems;
   }
-
-  TextEditingController dateController = TextEditingController();
-  TextEditingController timeController = TextEditingController();
 
   XFile? image;
 
@@ -167,9 +169,11 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
                 style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
               )
             : const SizedBox.shrink(),
-       SizedBox(
+        widget.isTitle == true
+            ? SizedBox(
                 height: 5.sp,
-              ),
+              )
+            : SizedBox(),
         if (widget.isDropDown == true) ...[
           buildDropDownForm()
         ] else if (widget.isDateForm == true) ...[
@@ -184,12 +188,12 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
           buildRegularTextForm()
         ],
         widget.isFlag == true
-                ? SizedBox(
-                    height: 5.sp,
-                  )
-                : SizedBox(
-                    height: 10.sp,
-                  ),
+            ? SizedBox(
+                height: 5.sp,
+              )
+            : SizedBox(
+                height: 10.sp,
+              ),
       ],
     );
   }
@@ -292,7 +296,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
   Widget buildDateForm() {
     return TextFormField(
       focusNode: FocusNode(canRequestFocus: false),
-      controller: dateController,
+      controller: widget.dateController,
       style: AppTextStyles.appTitlew400s12(ColorValues().darkGreyColor),
       onTap: () async {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -306,7 +310,8 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
         // dateController.text = pickedDate.toString();
         if (pickedDate != null) {
           setState(() {
-            dateController.text = DateFormat('dd/MM/yy').format(pickedDate);
+            widget.dateController!.text =
+                DateFormat('dd - MM - yy').format(pickedDate);
           });
         }
       },
@@ -341,7 +346,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
   Widget buildTimeForm() {
     return TextFormField(
       focusNode: FocusNode(canRequestFocus: false),
-      controller: timeController,
+      controller: widget.timeController,
       style: AppTextStyles.appTitlew400s12(ColorValues().darkGreyColor),
       onTap: () async {
         TimeOfDay? pickedTime = await showTimePicker(
@@ -360,8 +365,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
           // //DateFormat() is from intl package, you can format the time on any pattern you need.
 
           setState(() {
-            timeController.text =
-                pickedTime.format(context); //set the value of text field.
+            widget.timeController!.text = pickedTime.format(context);
           });
         } else {
           print("Time is not selected");
