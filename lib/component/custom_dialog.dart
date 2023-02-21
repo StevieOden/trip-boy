@@ -2,14 +2,44 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:trip_boy/component/BuildTextFormField.dart';
 
 typedef void StringCallback(String val);
 
 class CustomDialog {
+  static showNoInternetConnectionDialog(
+    BuildContext context,
+  ) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(
+                "assets/svg_image/noConnection.svg",
+                height: 100.sp,
+              ),
+              Text(
+                AppLocalizations.of(context)!.noConnection,
+                style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   static showUploadTicketDialog(
     BuildContext context,
     TextEditingController _ticketNameController,

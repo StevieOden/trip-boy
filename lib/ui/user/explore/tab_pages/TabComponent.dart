@@ -290,12 +290,9 @@ class _TabComponentState extends State<TabComponent> {
                                 name: list[index].name,
                                 rating: list[index].rating,
                                 location:
-                                    list[index].address!.split(', ')[0] == ""
-                                        ? list[index].address!.split(', ')[0]
-                                        : list[index]
-                                            .address!
-                                            .split(', ')[3]
-                                            .split('. ')[1],
+                                    list[index].address!.split(',')[0] == ""
+                                        ? list[index].address!.split(',')[0]
+                                        : list[index].address!.split(',')[3],
                                 fullLocation: list[index].address!,
                                 timeClose: list[index].type == "restaurant" ||
                                         list[index].type == "destination"

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:trip_boy/component/BuildTextFormField.dart';
 import 'package:trip_boy/ui/user/resevartion_cart.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'detail_page.dart';
 
@@ -16,6 +18,8 @@ class ReservationTicket extends StatefulWidget {
 class _ReservationTicketState extends State<ReservationTicket> {
   TextEditingController name = TextEditingController();
   TextEditingController desc = TextEditingController();
+  TextEditingController dateCheckIn = TextEditingController();
+  TextEditingController dateCheckOut = TextEditingController();
 
   @override
   void initState() {
@@ -46,42 +50,77 @@ class _ReservationTicketState extends State<ReservationTicket> {
         ),
         body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.all(15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextField(
-                  controller: name,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15)),
-                      labelText: 'Nama',
-                      hintText: 'Masukan Nama'),
+                BuildTextFormField(
+                    hintText: AppLocalizations.of(context)!.fillName,
+                    title: AppLocalizations.of(context)!.name),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(AppLocalizations.of(context)!.checkInDate),
+                      TextButton(
+                          onPressed: () {},
+                          child: Text(AppLocalizations.of(context)!.clear))
+                    ]),
+                BuildTextFormField(
+                  hintText: AppLocalizations.of(context)!.enterCheckInDate,
+                  title: "",
+                  isTitle: false,
+                  isDateForm: true,
+                  dateController: dateCheckIn,
                 ),
-                SizedBox(
-                  height: 20,
+                BuildTextFormField(
+                  hintText: AppLocalizations.of(context)!.enterCheckOutDate,
+                  title: AppLocalizations.of(context)!.checkOutDate,
+                  isDateForm: true,
+                  dateController: dateCheckOut,
                 ),
-                TextField(
-                  controller: name,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15)),
-                      labelText: 'Tanggal',
-                      hintText: 'Masukan tanggal Check - In dan Check- Out'),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextField(
-                  controller: name,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15)),
-                      labelText: 'Guest',
-                      hintText: 'Tiket masuk belum termasuk parkir dll.'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(AppLocalizations.of(context)!.guest),
+                    TextButton(
+                        onPressed: () {},
+                        child: Text(AppLocalizations.of(context)!.clear))
+                  ],
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 10, top: 20),
+                  padding: EdgeInsets.only(left: 10, right: 10),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Tiket Masuk",
+                              style: AppTextStyles.appTitlew400s10(
+                                  ColorValues().blackColor)),
+                          Text(
+                            "Belum termasuk parkir dll",
+                            style: AppTextStyles.appTitlew400s10(
+                                ColorValues().lightGrayColor),
+                          )
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                              onPressed: () {}, icon: Icon(Icons.remove)),
+                          Text("2"),
+                          IconButton(onPressed: () {}, icon: Icon(Icons.add))
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 20),
                   child: Text(
                     'Informasi Lainya',
                     style:
@@ -89,7 +128,7 @@ class _ReservationTicketState extends State<ReservationTicket> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 10, top: 10),
+                  padding: EdgeInsets.only(top: 10),
                   child: Text(
                     '''Buka :
 Senin - Jumat mulai jam 10.00 WIB
@@ -97,11 +136,11 @@ Sabtu - Minggu mulai jam 09.00 WIB
         
 Harap hadir tepat waktu minimal 30 menit sebelum Sesi dimulai dan maksimal toleransi keterlambatan adalah 10 menit dari waktu Sesi yang dipilh''',
                     style:
-                        AppTextStyles.appTitlew400s14(ColorValues().blackColor),
+                        AppTextStyles.appTitlew400s12(ColorValues().blackColor),
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 10, top: 20),
+                  padding: EdgeInsets.only(top: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -120,12 +159,8 @@ Harap hadir tepat waktu minimal 30 menit sebelum Sesi dimulai dan maksimal toler
                 ),
                 Container(
                     margin: EdgeInsets.only(bottom: 10, top: 15),
-                    padding: EdgeInsets.only(
-                      left: 8,
-                      right: 8,
-                    ),
                     width: MediaQuery.of(context).size.width,
-                    height: 50,
+                    height: 40,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           backgroundColor: ColorValues().primaryColor,
@@ -135,8 +170,8 @@ Harap hadir tepat waktu minimal 30 menit sebelum Sesi dimulai dan maksimal toler
                       onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(
                               builder: (context) => ResevartionCart())),
-                      child: Text('Pesan',
-                          style: AppTextStyles.appTitlew500s16(
+                      child: Text(AppLocalizations.of(context)!.booking,
+                          style: AppTextStyles.appTitlew500s14(
                             Colors.white,
                           )),
                     ))

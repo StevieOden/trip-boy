@@ -10,6 +10,8 @@ import 'color_values.dart';
 class SharedCode {
   static DateFormat dateFormat = DateFormat('dd MMM yyyy, hh:mm');
 
+  static final formKey = GlobalKey<FormState>();
+
   static Future<User?> checkUser() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     User? _user;

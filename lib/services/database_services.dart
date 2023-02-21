@@ -125,13 +125,13 @@ class DatabaseService {
   Future addHotelData(
       String alamat,
       String description,
-      List<FacilityModel> facilityList,
+      List<FacilityHotelModel> facilityList,
       double rating,
       List<ImageHotel> images,
       String name,
       String googleMapsLink,
-      String latlongtude,
-      List<RoomHotel> roomsList) async {
+      List<RoomHotel> roomsList,
+       List<PaymentMethodHotel> paymentMethod) async {
     HotelModel data = HotelModel(
         type: "hotel",
         address: alamat,
@@ -142,8 +142,8 @@ class DatabaseService {
         googleMapsLink: googleMapsLink,
         name: name,
         rooms: roomsList,
-        paymentMethod: [],
-        userId: "");
+        paymentMethod: paymentMethod,
+        userId: UserData().uid);
     await hotels
         .add(data.toJson())
         .then((value) => print('Hotel Added'))
@@ -159,7 +159,8 @@ class DatabaseService {
       int price,
       double rating,
       List<TermEvent> termList,
-      String ticketType) async {
+      String ticketType,
+       List<PaymentMethodEvent> paymentMethod) async {
     EventModel data = EventModel(
         timeHeld: timeHeld,
         description: description,
@@ -171,8 +172,8 @@ class DatabaseService {
         terms: termList,
         ticketType: ticketType,
         type: "event",
-        userId: "",
-        paymentMethod: []);
+        userId: UserData().uid,
+        paymentMethod: paymentMethod);
     await events
         .add(data.toJson())
         .then((value) => print('Event Added'))
@@ -189,6 +190,7 @@ class DatabaseService {
     double rating,
     String timeClosed,
     String timeOpen,
+    List<PaymentMethodRestaurant> paymentMethod
   ) async {
     RestaurantModel data = RestaurantModel(
         type: "restaurant",
@@ -202,7 +204,7 @@ class DatabaseService {
         timeClosed: timeClosed,
         timeOpen: timeOpen,
         userId: UserData().uid,
-        paymentMethod: []);
+        paymentMethod: paymentMethod);
     await restaurants
         .add(data.toJson())
         .then((value) => print('Restaurant Added'))
@@ -219,7 +221,8 @@ class DatabaseService {
       double rating,
       List<TicketDestination> tickets,
       String timeClosed,
-      String timeOpen) async {
+      String timeOpen,
+      List<PaymentMethodDestination> paymentMethod) async {
     DestinationModel data = DestinationModel(
         type: "destination",
         address: alamat,
@@ -232,8 +235,8 @@ class DatabaseService {
         tickets: tickets,
         timeClosed: timeClosed,
         timeOpen: timeOpen,
-        userId: "",
-        paymentMethod: []);
+        userId: UserData().uid,
+        paymentMethod: paymentMethod);
     await destination
         .add(data.toJson())
         .then((value) => print('Destination Added'))

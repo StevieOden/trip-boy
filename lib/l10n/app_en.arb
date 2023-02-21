@@ -108,6 +108,18 @@
      "enterAccountPhoneNum":"Enter account number or phone number",
      "termTitle":"Terms",
      "fillTerm":"Fill term",
+     "delete":"Delete",
+     "noConnection":"No Internet connection",
+
+     "@_Event-Reservation":{},
+     "fillName":"Fill your name",
+     "checkInDate":"Check In Date",
+     "checkOutDate":"Check Out Date",
+     "enterCheckInDate":"Enter check-in date",
+     "enterCheckOutDate":"Enter check-out date",
+     "clear":"Clear",
+     "guest":"Guest",
+     "booking":"Booking",
 
      "@_Menu-detail-restaurant":{},
      "drink": "Drink",

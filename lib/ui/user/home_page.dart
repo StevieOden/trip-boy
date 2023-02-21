@@ -50,7 +50,6 @@ class _HomePageState extends State<HomePage> {
     allData.addAll(restaurantData);
     allData.addAll(destinationData);
     allData.addAll(hotelData);
-    allData.addAll(eventData);
     allData.sort((a, b) => b.rating.compareTo(a.rating));
     allDataFiltered = allData;
     print(" data filtered length : ${allDataFiltered.length}");
@@ -95,13 +94,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List allDataAfterFilter =
-        allData.where((element) => element.type != "event").toList();
-    List listAfterFilter = allData
-        .where(
-          (element) => element.type == "event" && element.name != "",
-        )
-        .toList();
     FocusScopeNode currentFocus = FocusScope.of(context);
     return GestureDetector(
       onTap: () {
@@ -145,15 +137,14 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Container(
                                     margin: EdgeInsets.only(top: 10.sp),
-                                    child:
-                                        _buildHighlightEvent(listAfterFilter)),
+                                    child: _buildHighlightEvent(eventData)),
                                 Container(
                                     margin: EdgeInsets.only(
                                         left: 12.sp,
                                         top: 10.sp,
                                         right: 12.sp,
                                         bottom: 10.sp),
-                                    child: _buildRecommend(allDataAfterFilter)),
+                                    child: _buildRecommend(allDataFiltered)),
                               ],
                             ),
                     ],
@@ -234,7 +225,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildHighlightEvent(List listAfterFilter) {
+  _buildHighlightEvent(List<EventModel> listAfterFilter) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -260,12 +251,36 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               children: [
                 for (var i = 0; i < listAfterFilter.length; i++)
-                  HorizontalCard(
-                    title: listAfterFilter[i].name,
-                    rating: listAfterFilter[i].rating,
-                    heldAt: listAfterFilter[i].timeHeld,
-                    price: listAfterFilter[i].price!.toString(),
-                    imageUrl: listAfterFilter[i].imageUrl!,
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailPage(
+                              facilityList: [],
+                              price: listAfterFilter[i].price,
+                              roomList: [],
+                              googleMapsUrl: listAfterFilter[i].meetLink,
+                              type: listAfterFilter[i].type,
+                              imageUrl: listAfterFilter[i].imageUrl,
+                              name: listAfterFilter[i].name,
+                              rating: listAfterFilter[i].rating,
+                              location: "",
+                              fullLocation: "",
+                              timeClose: listAfterFilter[i].timeHeld,
+                              timeOpen: "",
+                              description: listAfterFilter[i].description,
+                              imageList: [],
+                            ),
+                          ));
+                    },
+                    child: HorizontalCard(
+                      title: listAfterFilter[i].name,
+                      rating: listAfterFilter[i].rating,
+                      heldAt: listAfterFilter[i].timeHeld,
+                      price: listAfterFilter[i].price.toString(),
+                      imageUrl: listAfterFilter[i].imageUrl,
+                    ),
                   )
               ],
             ),
@@ -333,12 +348,12 @@ class _HomePageState extends State<HomePage> {
                                   ? allDataAfterFilter[i].address!.split(',')[0]
                                   : allDataAfterFilter[i]
                                       .address!
-                                      .split(',')[2],
+                                      .split(',')[3],
                           fullLocation: allDataAfterFilter[i].address!,
                           timeClose: allDataAfterFilter[i].type ==
                                       "restaurant" ||
                                   allDataAfterFilter[i].type == "destination"
-                              ? allDataAfterFilter[i].timeClosed!
+                              ? allDataAfterFilter[i].timeClosed
                               : "",
                           timeOpen: allDataAfterFilter[i].type ==
                                       "restaurant" ||
@@ -449,13 +464,10 @@ class _HomePageState extends State<HomePage> {
                             rating: allDataAfterFilter[i].rating,
                             location: allDataAfterFilter[i]
                                         .address!
-                                        .split(', ')[0] ==
+                                        .split(',')[0] ==
                                     ""
-                                ? allDataAfterFilter[i].address!.split(', ')[0]
-                                : allDataAfterFilter[i]
-                                    .address!
-                                    .split(', ')[3]
-                                    .split('. ')[1],
+                                ? allDataAfterFilter[i].address!.split(',')[0]
+                                : allDataAfterFilter[i].address!.split(',')[3],
                             fullLocation: allDataAfterFilter[i].address!,
                             timeClose: allDataAfterFilter[i].type ==
                                         "restaurant" ||
@@ -476,10 +488,11 @@ class _HomePageState extends State<HomePage> {
                   },
                   child: VerticalCard(
                     title: allDataAfterFilter[i].name,
-                    subDistrict:
-                        allDataAfterFilter[i].address!.split(', ')[0] == ""
-                            ? allDataAfterFilter[i].address!.split(', ')[0]
-                            : allDataAfterFilter[i].address!.split(', ')[3],
+                    subDistrict: allDataAfterFilter[i].type == "event"
+                        ? ""
+                        : allDataAfterFilter[i].address!.split(',')[0] == ""
+                            ? allDataAfterFilter[i].address!.split(',')[0]
+                            : allDataAfterFilter[i].address!.split(',')[3],
                     price: allDataAfterFilter[i].type == "restaurant"
                         ? allDataAfterFilter[i].menu!.first.price.toString()
                         : allDataAfterFilter[i].type == "hotel"
@@ -488,15 +501,19 @@ class _HomePageState extends State<HomePage> {
                                 .first
                                 .priceRoom
                                 .toString()
-                            : allDataAfterFilter[i]
-                                .tickets!
-                                .first
-                                .price
-                                .toString(),
+                            : allDataAfterFilter[i].type == "destination"
+                                ? allDataAfterFilter[i]
+                                    .tickets!
+                                    .first
+                                    .price
+                                    .toString()
+                                : allDataAfterFilter[i].price.toString(),
                     rating: allDataAfterFilter[i].rating.toString(),
-                    imageUrl: allDataAfterFilter[i].images!.isNotEmpty
-                        ? allDataAfterFilter[i].images!.first.imageUrl
-                        : "",
+                    imageUrl: allDataAfterFilter[i].type == "event"
+                        ? allDataAfterFilter[i].imageUrl
+                        : allDataAfterFilter[i].images!.isNotEmpty
+                            ? allDataAfterFilter[i].images!.first.imageUrl
+                            : "",
                   ),
                 ),
             ],

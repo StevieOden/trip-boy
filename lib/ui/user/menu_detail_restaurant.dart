@@ -168,82 +168,55 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
 
   Widget buildChipsCategory() {
     return Container(
-      height: 30,
-      width: MediaQuery.of(context).size.width,
-      margin: EdgeInsets.only(top: 20, bottom: 10),
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: 4,
-        separatorBuilder: (context, index) => Container(
-          width: 3,
-        ),
-        itemBuilder: (context, index) => ChoiceChip(
-          label: Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                index == 0
-                    ? Icon(
-                        Icons.grid_view_rounded,
-                        size: 13,
-                        color: Colors.white,
+      child: Row(
+        children: [
+          for (int i = 0; i < chipList.length; i++)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 2, right: 2),
+                child: ChoiceChip(
+                  label: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        chipList[i],
+                        style: AppTextStyles.appTitlew500s10(Colors.white),
                       )
-                    : index == 1
-                        ? Icon(
-                            Icons.wine_bar_rounded,
-                            size: 13,
-                            color: Colors.white,
-                          )
-                        : index == 2
-                            ? Icon(
-                                Icons.fastfood,
-                                size: 13,
-                                color: Colors.white,
-                              )
-                            : Icon(
-                                Icons.tapas,
-                                size: 13,
-                                color: Colors.white,
-                              ),
-                SizedBox(
-                  width: 3,
+                    ],
+                  ),
+                  selected: _choiceIndex == i,
+                  selectedColor: ColorValues().primaryColor,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      _choiceIndex = selected ? i : 0;
+                      var scrollPosition = _choiceIndex == 1
+                          ? dataKeyDrink.currentContext
+                          : _choiceIndex == 2
+                              ? dataKeyFood.currentContext
+                              : _choiceIndex == 3
+                                  ? dataKeySnack.currentContext
+                                  : dataKeyAll.currentContext;
+                      Scrollable.ensureVisible(scrollPosition!);
+                    });
+                  },
+                  backgroundColor: ColorValues().greyColor,
+                  labelStyle: AppTextStyles.appTitlew500s10(Colors.white),
                 ),
-                Text(
-                  chipList[index],
-                  style: AppTextStyles.appTitlew500s10(Colors.white),
-                )
-              ],
+              ),
             ),
-          ),
-          selected: _choiceIndex == index,
-          selectedColor: ColorValues().primaryColor,
-          onSelected: (bool selected) {
-            setState(() {
-              _choiceIndex = selected ? index : 0;
-              var scrollPosition = _choiceIndex == 1
-                  ? dataKeyDrink.currentContext
-                  : _choiceIndex == 2
-                      ? dataKeyFood.currentContext
-                      : _choiceIndex == 3
-                          ? dataKeySnack.currentContext
-                          : dataKeyAll.currentContext;
-              Scrollable.ensureVisible(scrollPosition!);
-            });
-          },
-          backgroundColor: ColorValues().greyColor,
-          labelStyle: AppTextStyles.appTitlew500s10(Colors.white),
-        ),
+        ],
       ),
     );
   }
 
   Widget builGridView() {
     return Container(
-      margin: EdgeInsets.only(top: 20),
+      height: 400,
+      margin: EdgeInsets.only(top: 10),
       child: GridView.builder(
         physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
+        // shrinkWrap: true,
         itemCount: gridViewMenu.length < 4 ? gridViewMenu.length : 4,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2, mainAxisSpacing: 8, crossAxisSpacing: 8),
@@ -273,21 +246,13 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
                   ],
                 ),
               ),
-              Container(
-                margin: EdgeInsets.only(left: 6, top: 6),
-                child: Text(
-                  gridViewMenu[index]['name'],
-                  style:
-                      AppTextStyles.appTitlew400s14(ColorValues().blackColor),
-                ),
+              Text(
+                gridViewMenu[index]['name'],
+                style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
               ),
-              Container(
-                margin: EdgeInsets.only(left: 6, top: 6),
-                child: Text(
-                  gridViewMenu[index]['price'].toString(),
-                  style:
-                      AppTextStyles.appTitlew500s14(ColorValues().blackColor),
-                ),
+              Text(
+                gridViewMenu[index]['price'].toString(),
+                style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
               )
             ],
           );

@@ -197,6 +197,7 @@ class _UploadPageState extends State<UploadPage> {
               child: ListView.builder(
                 itemCount: allData.length,
                 itemBuilder: (context, index) => VerticalCard(
+                  isUploadedPage: true,
                     imageUrl: allData[index].type == "event"
                         ? allData[index].imageUrl
                         : allData[index].images!.first.imageUrl != ""

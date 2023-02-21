@@ -25,7 +25,7 @@ class HotelModel {
 
     String address;
     String description;
-    List<FacilityModel> facility;
+    List<FacilityHotelModel> facility;
     String googleMapsLink;
     List<ImageHotel> images;
     String name;
@@ -38,7 +38,7 @@ class HotelModel {
     factory HotelModel.fromJson(Map<String, dynamic> json) => HotelModel(
         address: json["address"],
         description: json["description"],
-        facility: List<FacilityModel>.from(json["facility"].map((x) => FacilityModel.fromJson(x))),
+        facility: List<FacilityHotelModel>.from(json["facility"].map((x) => FacilityHotelModel.fromJson(x))),
         googleMapsLink: json["google_maps_link"],
         images: List<ImageHotel>.from(json["images"].map((x) => ImageHotel.fromJson(x))),
         name: json["name"],
@@ -64,14 +64,14 @@ class HotelModel {
     };
 }
 
-class FacilityModel {
-    FacilityModel({
+class FacilityHotelModel {
+    FacilityHotelModel({
         required this.name,
     });
 
     String name;
 
-    factory FacilityModel.fromJson(Map<String, dynamic> json) => FacilityModel(
+    factory FacilityHotelModel.fromJson(Map<String, dynamic> json) => FacilityHotelModel(
         name: json["name"],
     );
 

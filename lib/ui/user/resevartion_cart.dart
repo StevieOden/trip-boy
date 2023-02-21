@@ -44,11 +44,11 @@ class _ResevartionCartState extends State<ResevartionCart> {
                 Text(
                   'Pesanan Anda',
                   style:
-                      AppTextStyles.appTitlew500s16(ColorValues().blackColor),
+                      AppTextStyles.appTitlew500s14(ColorValues().blackColor),
                 ),
                 Text('29 Nov 2022',
                     style:
-                        AppTextStyles.appTitlew500s16(ColorValues().blackColor))
+                        AppTextStyles.appTitlew500s14(ColorValues().blackColor))
               ],
             ),
             SizedBox(
@@ -60,11 +60,11 @@ class _ResevartionCartState extends State<ResevartionCart> {
                 Text(
                   '1x Tiket Masuk',
                   style:
-                      AppTextStyles.appTitlew400s16(ColorValues().blackColor),
+                      AppTextStyles.appTitlew400s12(ColorValues().blackColor),
                 ),
                 Text('75.000',
                     style:
-                        AppTextStyles.appTitlew700s16(ColorValues().blackColor))
+                        AppTextStyles.appTitlew700s12(ColorValues().blackColor))
               ],
             ),
             SizedBox(
@@ -76,7 +76,7 @@ class _ResevartionCartState extends State<ResevartionCart> {
                 Text(
                   'Tiket berlaku hanya untuk 1 orang',
                   style:
-                      AppTextStyles.appTitlew400s16(ColorValues().blackColor),
+                      AppTextStyles.appTitlew400s12(ColorValues().blackColor),
                 ),
               ],
             ),
@@ -96,7 +96,7 @@ class _ResevartionCartState extends State<ResevartionCart> {
                 Text(
                   'Notes',
                   style:
-                      AppTextStyles.appTitlew500s16(ColorValues().blackColor),
+                      AppTextStyles.appTitlew500s14(ColorValues().blackColor),
                 ),
               ],
             ),

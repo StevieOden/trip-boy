@@ -51,6 +51,7 @@ dependencies:
   flutter_svg:
   flutter_staggered_grid_view:
   url_launcher:
+  connectivity_plus: ^3.0.3
 
 dev_dependencies:
   flutter_test:
