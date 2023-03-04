@@ -9,7 +9,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:trip_boy/component/vertical_card.dart';
 import 'package:trip_boy/models/hotel_model.dart';
 import 'package:trip_boy/ui/user/menu_detail_restaurant.dart';
-import 'package:trip_boy/ui/user/reservation_ticket.dart';
+import 'package:trip_boy/ui/user/event_reservation_ticket.dart';
+import 'package:trip_boy/ui/user/tour_reservation_ticket.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/content_model.dart';
@@ -887,7 +888,14 @@ class _DetailPageState extends State<DetailPage>
               margin: EdgeInsets.only(bottom: 20),
               width: MediaQuery.of(context).size.width.sp,
               child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    setState(() {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) => TourReservationTicket())));
+                    });
+                  },
                   child: Text(
                     AppLocalizations.of(context)!.reserveTicket,
                     style: AppTextStyles.appTitlew400s14(
@@ -1065,8 +1073,8 @@ Minggu mulai 06.00''',
                 backgroundColor: ColorValues().primaryColor,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15)))),
-            onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => ReservationTicket())),
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => EventReservationTicket())),
             child: Text('Pesan Tiket',
                 style: AppTextStyles.appTitlew500s14(
                   Colors.white,

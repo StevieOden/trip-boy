@@ -3,19 +3,19 @@ import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:trip_boy/component/BuildTextFormField.dart';
-import 'package:trip_boy/ui/user/resevartion_cart.dart';
+import 'package:trip_boy/ui/user/event_resevartion_cart.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'detail_page.dart';
 
-class ReservationTicket extends StatefulWidget {
-  ReservationTicket({Key? key}) : super(key: key);
+class EventReservationTicket extends StatefulWidget {
+  EventReservationTicket({Key? key}) : super(key: key);
 
   @override
-  State<ReservationTicket> createState() => _ReservationTicketState();
+  State<EventReservationTicket> createState() => _EventReservationTicketState();
 }
 
-class _ReservationTicketState extends State<ReservationTicket> {
+class _EventReservationTicketState extends State<EventReservationTicket> {
   TextEditingController name = TextEditingController();
   TextEditingController desc = TextEditingController();
   TextEditingController dateCheckIn = TextEditingController();
@@ -169,12 +169,13 @@ Harap hadir tepat waktu minimal 30 menit sebelum Sesi dimulai dan maksimal toler
                                   BorderRadius.all(Radius.circular(15)))),
                       onPressed: () => Navigator.of(context).push(
                           MaterialPageRoute(
-                              builder: (context) => ResevartionCart())),
+                              builder: (context) => EventResevartionCart())),
                       child: Text(AppLocalizations.of(context)!.booking,
                           style: AppTextStyles.appTitlew500s14(
                             Colors.white,
                           )),
-                    ))
+                    )
+                    )
               ],
             ),
           ),
