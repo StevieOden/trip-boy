@@ -50,6 +50,7 @@ class BuildTextFormField extends StatefulWidget {
   final bool? isMaxLength;
   final List<DropdownMenuItem<String>>? customDropdownItems;
   final String? customSelectedValue;
+  final Color? cursorColor;
   StringCallback? imagePath;
   TextEditingController? timeController;
   TextEditingController? dateController;
@@ -76,6 +77,7 @@ class BuildTextFormField extends StatefulWidget {
       this.currentValue,
       this.assetImage,
       this.inputFormatters,
+      this.cursorColor,
       // dua node ini nanti di-required
       this.nextFocusNode,
       this.focusNode,
@@ -200,6 +202,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
 
   Widget buildRegularTextForm() {
     return TextFormField(
+      cursorColor: widget.cursorColor,
       style: AppTextStyles.appTitlew400s12(ColorValues().darkGreyColor),
       onFieldSubmitted: (_) => widget.nextFocusNode?.requestFocus(),
       onChanged: widget.onChanged,

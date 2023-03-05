@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
 
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
+import 'package:trip_boy/common/color_values.dart';
+import 'package:trip_boy/services/auth.dart';
+import 'package:trip_boy/ui/register_page.dart';
+import 'package:trip_boy/ui/user/dashboard_page.dart';
 
-import '../../../main.dart';
-import '../../login_page.dart';
+import '../../main.dart';
+import '../login_page.dart';
 import 'pages/page_one.dart';
 import 'pages/page_three.dart';
 import 'pages/page_two.dart';
@@ -147,46 +152,59 @@ class _LandingPageState extends State<LandingPage> {
 
   Widget buildLoginButton() {
     return Container(
-      height: 35.sp,
-      width: 130.sp,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-      child: ElevatedButton(
-        onPressed: (() {
-          setState(() {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => LoginPage()));
-          });
-        }),
-        child: Text(
-          AppLocalizations.of(context)!.login_button,
-          style: AppTextStyles.appTitlew500s12(Colors.white),
-        ),
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(Color.fromRGBO(111, 56, 197, 1)),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18.0),
-          )),
-        ),
-      ),
-    );
-  }
-
-  Widget buildChangeLocalizationButton() {
-    return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-      child: ElevatedButton(
-        onPressed: (() => MyApp),
-        child: Text("Login Sekarang"),
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all<Color>(Color.fromRGBO(111, 56, 197, 1)),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18.0),
-          )),
-        ),
+      margin: EdgeInsets.symmetric(horizontal: 20),
+      width: MediaQuery.of(context).size.width.sp,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Expanded(
+            child: Container(
+              height: 40,
+              child: OutlinedButton(
+                onPressed: (() {
+                  setState(() {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  });
+                }),
+                child: Text(
+                  AppLocalizations.of(context)!.login_button.toUpperCase(),
+                  style: AppTextStyles.appTitlew500s12(
+                      ColorValues().darkGreyColor),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: ColorValues().greyColor),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: Container(
+              height: 40,
+              child: ElevatedButton(
+                onPressed: (() {
+                  setState(() {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => RegisterPage()));
+                  });
+                }),
+                child: Text(
+                  AppLocalizations.of(context)!.signup.toUpperCase(),
+                  style: AppTextStyles.appTitlew500s12(Colors.white),
+                ),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Color.fromRGBO(111, 56, 197, 1)),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -86,6 +86,7 @@ class ImageModelRestaurant {
 
 class MenuRestaurant {
     MenuRestaurant({
+      required this.type,
         required this.name,
         required this.desc,
         required this.imageUrl,
@@ -95,6 +96,7 @@ class MenuRestaurant {
     String name;
     String desc;
     String imageUrl;
+    String type;
     int price;
 
     factory MenuRestaurant.fromJson(Map<String, dynamic> json) => MenuRestaurant(
@@ -102,6 +104,7 @@ class MenuRestaurant {
         desc: json["desc"],
         imageUrl: json["image_url"],
         price: json["price"],
+        type: json["type"]
     );
 
     Map<String, dynamic> toJson() => {
@@ -109,6 +112,7 @@ class MenuRestaurant {
         "desc": desc,
         "image_url": imageUrl,
         "price": price,
+        "type":type
     };
 }
 class PaymentMethodRestaurant {

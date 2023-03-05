@@ -78,6 +78,7 @@ class _DetailConfirmationRestaurantState
   late final TextEditingController menuNameController;
   late final TextEditingController menuDescController;
   late final TextEditingController menuPriceController;
+  late final TextEditingController menuTypeController;
 
   late final TextEditingController ticketNameController;
   late final TextEditingController ticketPriceController;
@@ -109,6 +110,7 @@ class _DetailConfirmationRestaurantState
     menuNameController.clear();
     menuDescController.clear();
     menuPriceController.clear();
+    menuTypeController.clear();
     ticketNameController.clear();
     ticketPriceController.clear();
     _termsController.clear();
@@ -142,6 +144,7 @@ class _DetailConfirmationRestaurantState
     menuNameController = TextEditingController();
     menuDescController = TextEditingController();
     menuPriceController = TextEditingController();
+    menuTypeController = TextEditingController();
 
     ticketNameController = TextEditingController();
     ticketPriceController = TextEditingController();
@@ -459,8 +462,10 @@ class _DetailConfirmationRestaurantState
                           menuNameController,
                           menuDescController,
                           menuPriceController,
+                          menuTypeController,
                           (val) => imageUrl = val, () {
                         menuList.add(MenuRestaurant(
+                          type: menuTypeController.text,
                             name: menuNameController.text,
                             desc: menuDescController.text,
                             price: int.parse(menuPriceController.text),

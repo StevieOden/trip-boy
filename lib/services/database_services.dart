@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:trip_boy/common/user_data.dart';
-import 'package:trip_boy/models/content_model.dart';
 import 'package:trip_boy/models/destination_model.dart';
 import 'package:trip_boy/models/event_model.dart';
 import 'package:trip_boy/models/hotel_model.dart';
@@ -17,14 +16,15 @@ class DatabaseService {
   CollectionReference destination =
       FirebaseFirestore.instance.collection('destination');
 
-  Future<dynamic> addDefaultPatientUser(String uid, String email, String name,
-      String phoneNumber, String photoUrl) async {
+  Future<dynamic> addDefaultPatientUser(String uid, String? email, String? password, String name,
+      String? phoneNumber, String photoUrl) async {
     QuerySnapshot querySnapshot =
         await users.where("uid", isEqualTo: uid).get();
     UserModel userModel = UserModel(
         role: "user_customer",
         email: email,
         name: name,
+        password: password == null ? "": password,
         phoneNumber: phoneNumber == null ? "" : phoneNumber,
         profileImage: photoUrl,
         uid: uid);

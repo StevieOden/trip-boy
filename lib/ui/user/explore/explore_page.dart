@@ -182,6 +182,10 @@ class _ExplorePageState extends State<ExplorePage>
                           context,
                           MaterialPageRoute(
                             builder: (context) => DetailPage(
+                              menuRestaurantsList:
+                                  allDataAfterFilter[i].type == "restaurant"
+                                      ? allDataAfterFilter[i].menu
+                                      : [],
                               facilityList:
                                   allDataAfterFilter[i].type == "hotel" ||
                                           allDataAfterFilter[i].type ==
@@ -230,47 +234,48 @@ class _ExplorePageState extends State<ExplorePage>
                               rating: allDataAfterFilter[i].rating,
                               location: allDataAfterFilter[i].type == "event"
                                   ? ""
-                                  :allDataAfterFilter[i]
-                                          .address!
-                                          .split(', ')[0] ==
-                                      ""
-                                  ? allDataAfterFilter[i]
-                                      .address!
-                                      .split(', ')[0]
                                   : allDataAfterFilter[i]
-                                      .address!
-                                      .split(', ')[3]
-                                      .split('. ')[1],
-                              fullLocation: allDataAfterFilter[i].type == "event"
+                                              .address!
+                                              .split(', ')[0] ==
+                                          ""
+                                      ? allDataAfterFilter[i]
+                                          .address!
+                                          .split(', ')[0]
+                                      : allDataAfterFilter[i]
+                                          .address!
+                                          .split(', ')[3]
+                                          .split('. ')[1],
+                              fullLocation:
+                                  allDataAfterFilter[i].type == "event"
+                                      ? ""
+                                      : allDataAfterFilter[i].address!,
+                              timeClose: allDataAfterFilter[i].type == "event"
                                   ? ""
-                                  :allDataAfterFilter[i].address!,
-                              timeClose:allDataAfterFilter[i].type == "event"
-                                  ? ""
-                                  :
-                                  allDataAfterFilter[i].type == "restaurant" ||
+                                  : allDataAfterFilter[i].type ==
+                                              "restaurant" ||
                                           allDataAfterFilter[i].type ==
                                               "destination"
                                       ? allDataAfterFilter[i].timeClosed!
                                       : "",
                               timeOpen: allDataAfterFilter[i].type == "event"
                                   ? ""
-                                  :
-                                  allDataAfterFilter[i].type == "restaurant" ||
+                                  : allDataAfterFilter[i].type ==
+                                              "restaurant" ||
                                           allDataAfterFilter[i].type ==
                                               "destination"
                                       ? allDataAfterFilter[i].timeOpen!
                                       : "",
                               description: allDataAfterFilter[i].description,
-                              imageList:
-                                  allDataAfterFilter[i].type == "event"
+                              imageList: allDataAfterFilter[i].type == "event"
                                   ? []
-                                  :allDataAfterFilter[i].images!.isNotEmpty
+                                  : allDataAfterFilter[i].images!.isNotEmpty
                                       ? allDataAfterFilter[i].images!
                                       : [],
                             ),
                           ));
                     },
                     child: VerticalCard(
+                      isShowRating: true,
                       title: allDataAfterFilter[i].name,
                       subDistrict: allDataAfterFilter[i].type != "event"
                           ? allDataAfterFilter[i].address.split(',')[0] == ""

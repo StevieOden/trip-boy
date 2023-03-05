@@ -254,6 +254,7 @@ class CustomDialog {
     TextEditingController _menuNameController,
     TextEditingController _descNameController,
     TextEditingController _priceNameController,
+    TextEditingController _menuTypeController,
     StringCallback imageUrl,
     Function? saveButton,
     Function? cancelButton,
@@ -286,6 +287,11 @@ class CustomDialog {
                       controller: _descNameController,
                       title: AppLocalizations.of(context)!.descMenu,
                       hintText: AppLocalizations.of(context)!.fillDescMenu,
+                    ),
+                    BuildTextFormField(
+                      controller: _menuTypeController,
+                      title: AppLocalizations.of(context)!.menuType,
+                      hintText: AppLocalizations.of(context)!.fillMenuType,
                     ),
                     BuildTextFormField(
                       keyboardType: TextInputType.number,

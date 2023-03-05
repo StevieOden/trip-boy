@@ -25,7 +25,6 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  User? user = FirebaseAuth.instance.currentUser!;
   String role = "";
 
   Future<bool> _onWillPop(BuildContext context) async {

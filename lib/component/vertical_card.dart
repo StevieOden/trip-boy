@@ -21,7 +21,7 @@ class VerticalCard extends StatefulWidget {
     required this.price,
     required this.rating,
     required this.imageUrl,
-    this.isShowRating = true,
+    this.isShowRating = false,
     this.isElevated = true,
     this.isUploadedPage = false,
     this.listContent,
@@ -91,13 +91,64 @@ class _VerticalCardState extends State<VerticalCard> {
                       ),
                     ],
                   ),
-                  widget.price.isEmpty
-                      ? Container()
-                      : Text(
-                          "Rp${widget.price.toString()}",
-                          style: AppTextStyles.appTitlew700s12(
-                              ColorValues().primaryColor),
-                        )
+                  Row(
+                    children: [
+                      widget.price.isEmpty
+                          ? Container()
+                          : Text(
+                              "Rp${widget.price.toString()}",
+                              style: AppTextStyles.appTitlew700s12(
+                                  ColorValues().primaryColor),
+                            ),
+                      Spacer(),
+                      widget.isUploadedPage
+                          ? Row(children: [
+                              Container(
+                                height: 25,
+                                child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.green),
+                                    onPressed: () {},
+                                    child: Row(children: [
+                                      Icon(Icons.save, size: 12),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        AppLocalizations.of(context)!.save,
+                                        textScaleFactor: 0.65,
+                                      )
+                                    ])),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Container(
+                                height: 25,
+                                child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            ColorValues().redColor),
+                                    onPressed: () {},
+                                    child: Row(children: [
+                                      Icon(Icons.delete, size: 12),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        AppLocalizations.of(context)!.delete,
+                                        textScaleFactor: 0.65,
+                                      )
+                                    ])),
+                              )
+                            ])
+                          : Icon(
+                              Icons.arrow_forward_ios,
+                              color: ColorValues().primaryColor,
+                              size: 12.sp,
+                            ),
+                    ],
+                  )
                 ],
               ),
             ),
@@ -120,51 +171,6 @@ class _VerticalCardState extends State<VerticalCard> {
                         ],
                       )
                     : Container(),
-                widget.isUploadedPage
-                    ? Row(children: [
-                        Container(
-                          height: 25,
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green),
-                              onPressed: () {},
-                              child: Row(children: [
-                                Icon(Icons.save, size: 12),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  AppLocalizations.of(context)!.save,
-                                  textScaleFactor: 0.65,
-                                )
-                              ])),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Container(
-                          height: 25,
-                          child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: ColorValues().redColor),
-                              onPressed: () {},
-                              child: Row(children: [
-                                Icon(Icons.delete, size: 12),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  AppLocalizations.of(context)!.delete,
-                                  textScaleFactor: 0.65,
-                                )
-                              ])),
-                        )
-                      ])
-                    : Icon(
-                        Icons.arrow_forward_ios,
-                        color: ColorValues().primaryColor,
-                        size: 12.sp,
-                      ),
               ],
             )
           ],

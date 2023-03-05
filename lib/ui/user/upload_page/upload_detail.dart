@@ -86,6 +86,7 @@ class _UploadDetailState extends State<UploadDetail> {
   late final TextEditingController menuNameController;
   late final TextEditingController menuDescController;
   late final TextEditingController menuPriceController;
+  late final TextEditingController menuTypeController;
 
   late final TextEditingController ticketNameController;
   late final TextEditingController ticketPriceController;
@@ -128,6 +129,7 @@ class _UploadDetailState extends State<UploadDetail> {
     menuNameController = TextEditingController();
     menuDescController = TextEditingController();
     menuPriceController = TextEditingController();
+    menuTypeController = TextEditingController();
 
     ticketNameController = TextEditingController();
     ticketPriceController = TextEditingController();
@@ -177,6 +179,7 @@ class _UploadDetailState extends State<UploadDetail> {
     menuNameController.dispose();
     menuDescController.dispose();
     menuPriceController.dispose();
+    menuTypeController.dispose();
     ticketNameController.dispose();
     ticketPriceController.dispose();
     _termsController.dispose();
@@ -223,6 +226,7 @@ class _UploadDetailState extends State<UploadDetail> {
     menuNameController.clear();
     menuDescController.clear();
     menuPriceController.clear();
+    menuTypeController.clear();
     ticketNameController.clear();
     ticketPriceController.clear();
     _termsController.clear();
@@ -739,8 +743,10 @@ class _UploadDetailState extends State<UploadDetail> {
                             menuNameController,
                             menuDescController,
                             menuPriceController,
+                            menuTypeController,
                             (val) => imageUrl = val, () {
                           menuList.add(MenuRestaurant(
+                            type: menuTypeController.text,
                               name: menuNameController.text,
                               desc: menuDescController.text,
                               price: int.parse(menuPriceController.text),
