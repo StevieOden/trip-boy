@@ -257,6 +257,7 @@ class _HomePageState extends State<HomePage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => DetailPage(
+                              menuRestaurantsList: [],
                               facilityList: [],
                               price: listAfterFilter[i].price,
                               roomList: [],
@@ -315,6 +316,10 @@ class _HomePageState extends State<HomePage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => DetailPage(
+                          menuRestaurantsList:
+                              allDataAfterFilter[i].type == "restaurant"
+                                  ? allDataAfterFilter[i].menu
+                                  : [],
                           facilityList: allDataAfterFilter[i].type == "hotel" ||
                                   allDataAfterFilter[i].type == "destination"
                               ? allDataAfterFilter[i].facility!
@@ -368,6 +373,7 @@ class _HomePageState extends State<HomePage> {
                       ));
                 },
                 child: VerticalCard(
+                  isShowRating: true,
                   title: allDataAfterFilter[i].name,
                   subDistrict:
                       allDataAfterFilter[i].address!.split(',')[0] == ""
@@ -429,6 +435,10 @@ class _HomePageState extends State<HomePage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailPage(
+                            menuRestaurantsList:
+                                allDataAfterFilter[i].type == "restaurant"
+                                    ? allDataAfterFilter[i].menu
+                                    : [],
                             facilityList: allDataAfterFilter[i].type ==
                                         "hotel" ||
                                     allDataAfterFilter[i].type == "destination"
@@ -487,6 +497,7 @@ class _HomePageState extends State<HomePage> {
                         ));
                   },
                   child: VerticalCard(
+                    isShowRating: true,
                     title: allDataAfterFilter[i].name,
                     subDistrict: allDataAfterFilter[i].type == "event"
                         ? ""

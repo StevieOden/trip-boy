@@ -8,7 +8,13 @@ import 'app_text_styles.dart';
 import 'color_values.dart';
 
 class SharedCode {
+  final BuildContext context;
+
+  SharedCode(this.context);
   static DateFormat dateFormat = DateFormat('dd MMM yyyy, hh:mm');
+
+  static EdgeInsetsGeometry globalMargin =
+      EdgeInsets.symmetric(horizontal: 25, vertical: 25);
 
   static final formKey = GlobalKey<FormState>();
 
@@ -21,6 +27,65 @@ class SharedCode {
     });
     await Future.delayed(const Duration(seconds: 1));
     return _user;
+  }
+
+  String? emptyValidator(value) {
+    return value.toString().trim().isEmpty || value == null
+        ? AppLocalizations.of(context)!.fieldCantEmpty
+        : null;
+  }
+
+  String? emailValidator(value) {
+    bool emailValid = RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(value);
+    return !emailValid
+        ? AppLocalizations.of(context)!.emailNotValid
+        : value.toString().isEmpty
+            ? null
+            : null;
+  }
+
+  String? nameValidator(value) {
+    return value.toString().trim().isEmpty
+        ? AppLocalizations.of(context)!.nameNotValid
+        : null;
+  }
+
+  String? phoneValidator(value) {
+    return value.toString().trim().isEmpty
+        ? AppLocalizations.of(context)!.phoneNotValid
+        : value.toString().length < 8
+            ? AppLocalizations.of(context)!.phoneNumberMustLonger
+            : null;
+  }
+
+  String? passwordValidator(value) {
+    bool passValid =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+            .hasMatch(value);
+    return !passValid ? AppLocalizations.of(context)!.passNotValid : null;
+  }
+
+  String? passwordEmpty(value) {
+    bool passValid =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+            .hasMatch(value);
+    return !passValid ? AppLocalizations.of(context)!.passEmpty : null;
+  }
+
+  String? passwordConfirmValidator(value) {
+    bool passValid =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+            .hasMatch(value);
+    return !passValid ? AppLocalizations.of(context)!.passConfirmEmpty : null;
+  }
+
+  String? passwordConfirmSameValidator(value) {
+    bool passValid =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+            .hasMatch(value);
+    return !passValid ? AppLocalizations.of(context)!.passConfirmSame : null;
   }
 
   static const shimmerGradient = LinearGradient(

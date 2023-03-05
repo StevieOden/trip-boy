@@ -8,11 +8,13 @@ import 'package:trip_boy/common/color_values.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:trip_boy/component/vertical_card.dart';
 import 'package:trip_boy/models/hotel_model.dart';
+import 'package:trip_boy/ui/user/detail_image.dart';
 import 'package:trip_boy/ui/user/menu_detail_restaurant.dart';
 import 'package:trip_boy/ui/user/reservation_ticket.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/content_model.dart';
+import '../../models/restaurant_model.dart';
 
 class DetailPage extends StatefulWidget {
   String type,
@@ -29,6 +31,7 @@ class DetailPage extends StatefulWidget {
   double rating;
   List imageList;
   List<RoomHotel> roomList;
+  List<MenuRestaurant> menuRestaurantsList;
   List facilityList;
   DetailPage(
       {super.key,
@@ -41,6 +44,7 @@ class DetailPage extends StatefulWidget {
       required this.fullLocation,
       required this.timeOpen,
       required this.timeClose,
+      required this.menuRestaurantsList,
       this.timeHeld,
       required this.description,
       required this.imageList,
@@ -210,35 +214,40 @@ class _DetailPageState extends State<DetailPage>
                 height: 5.sp,
               ),
               Wrap(
+                spacing: 2,
                 children: [
                   Text(
                     widget.description,
-                    maxLines: isReadMore ? null : 8,
+                    maxLines: isReadMore ? null : 3,
                     overflow: TextOverflow.fade,
                     style:
                         AppTextStyles.appTitlew400s12(ColorValues().blackColor),
                   ),
-                  isReadMore
-                      ? InkWell(
-                          onTap: () {
-                            setState(() {
-                              isReadMore = false;
-                            });
-                          },
-                          child: Text(AppLocalizations.of(context)!.readMore,
-                              style: AppTextStyles.appTitlew400s12(
-                                  ColorValues().primaryColor)),
-                        )
-                      : InkWell(
-                          onTap: () {
-                            setState(() {
-                              isReadMore = true;
-                            });
-                          },
-                          child: Text(AppLocalizations.of(context)!.readMore,
-                              style: AppTextStyles.appTitlew400s12(
-                                  ColorValues().primaryColor)),
-                        )
+                  widget.description.length < 100
+                      ? Container()
+                      : isReadMore
+                          ? InkWell(
+                              onTap: () {
+                                setState(() {
+                                  isReadMore = false;
+                                });
+                              },
+                              child: Text(
+                                  AppLocalizations.of(context)!.showLess,
+                                  style: AppTextStyles.appTitlew500s12(
+                                      ColorValues().primaryColor)),
+                            )
+                          : InkWell(
+                              onTap: () {
+                                setState(() {
+                                  isReadMore = true;
+                                });
+                              },
+                              child: Text(
+                                  AppLocalizations.of(context)!.readMore,
+                                  style: AppTextStyles.appTitlew500s12(
+                                      ColorValues().primaryColor)),
+                            )
                 ],
               ),
               SizedBox(
@@ -263,35 +272,55 @@ class _DetailPageState extends State<DetailPage>
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(12),
-                              child: widget.imageList[index]!.imageUrl == ""
-                                  ? Image.asset("assets/png_image/logo.png",
-                                      fit: BoxFit.cover,
-                                      filterQuality: FilterQuality.high)
-                                  : Image.network(
-                                      widget.imageList[index]!.imageUrl,
-                                      fit: BoxFit.cover,
-                                      filterQuality: FilterQuality.high),
+                              child: widget.imageList[index]!.imageUrl
+                                      .startsWith("/")
+                                  ? Image(
+                                      image: FileImage(
+                                      File(widget.imageList[index]!.imageUrl),
+                                    ))
+                                  : widget.imageList[index]!.imageUrl == ""
+                                      ? Image.asset("assets/png_image/logo.png",
+                                          fit: BoxFit.cover,
+                                          filterQuality: FilterQuality.high)
+                                      : Image.network(
+                                          widget.imageList[index]!.imageUrl,
+                                          fit: BoxFit.cover,
+                                          filterQuality: FilterQuality.high),
                             ),
-                            Container(
-                                decoration: BoxDecoration(
-                                  color: widget.imageList.length == 3
-                                      ? ColorValues()
-                                          .veryBlackColor
-                                          .withOpacity(0.6)
-                                      : ColorValues()
-                                          .veryBlackColor
-                                          .withOpacity(0.6),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: index == 2
-                                    ? Center(
-                                        child: Text(
-                                          "+ ${widget.imageList.length - 3}",
-                                          style: AppTextStyles.appTitlew400s18(
-                                              Colors.white),
-                                        ),
-                                      )
-                                    : Container()),
+                            GestureDetector(
+                              onTap: () {
+                                if (index == 2) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailImage(
+                                            imageList: widget.imageList),
+                                      ));
+                                }
+                              },
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    color: index != 2 ||
+                                            widget.imageList.length == 3
+                                        ? Colors.transparent
+                                        : ColorValues()
+                                            .veryBlackColor
+                                            .withOpacity(0.75),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: index == 2
+                                      ? widget.imageList.length == 3
+                                          ? Container()
+                                          : Center(
+                                              child: Text(
+                                                "+ ${widget.imageList.length - 3}",
+                                                style: AppTextStyles
+                                                    .appTitlew700s18(
+                                                        Colors.white),
+                                              ),
+                                            )
+                                      : Container()),
+                            ),
                           ],
                         );
                       },
@@ -303,7 +332,14 @@ class _DetailPageState extends State<DetailPage>
                 child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => MenuDetailPage(),
+                        builder: (context) => MenuDetailPage(
+                          listRestaurantsMenu: widget.menuRestaurantsList,
+                          restaurantName: widget.name,
+                          rating: widget.rating,
+                          address: widget.location,
+                          timeClosed: widget.timeClose,
+                          timeOpen: widget.timeOpen,
+                        ),
                       ));
                     },
                     child: Text(

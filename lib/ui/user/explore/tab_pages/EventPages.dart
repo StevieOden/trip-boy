@@ -63,7 +63,7 @@ class _EventPagesState extends State<EventPages> {
         )
         .toList();
     return _isLoading
-        ? EventSkeleton(list: eventData)
+        ? EventSkeleton()
         : Container(
             height: MediaQuery.of(context).size.height.sp,
             margin: EdgeInsets.only(left: 15.sp, right: 15.sp),
@@ -74,6 +74,7 @@ class _EventPagesState extends State<EventPages> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => DetailPage(
+                                menuRestaurantsList: [],
                                 facilityList: [],
                                 price: listAfterFilter[index].price,
                                 roomList: [],
@@ -108,8 +109,7 @@ class _EventPagesState extends State<EventPages> {
 }
 
 class EventSkeleton extends StatelessWidget {
-  List<EventModel> list;
-  EventSkeleton({Key? key, required this.list}) : super(key: key);
+  EventSkeleton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -117,21 +117,40 @@ class EventSkeleton extends StatelessWidget {
   }
 
   Widget eventSkeleton(context) {
-    return Container(
-      height: MediaQuery.of(context).size.height.sp,
-      margin: EdgeInsets.only(left: 15.sp, right: 15.sp),
-      child: ListView.separated(
-          itemBuilder: (context, index) => Container(
-                width: MediaQuery.of(context).size.width.sp,
-                height: 230.sp,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.black.withOpacity(0.04)),
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        width: MediaQuery.of(context).size.width.sp,
+        child: Column(
+          children: [
+            Container(
+                    height: 90.sp,
+                    width: MediaQuery.of(context).size.width.sp,
+                    decoration: BoxDecoration(
+                        
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12))),
+                  )
+                ,
+            
+            Divider(
+              thickness: 1,
+              color: Color(0xFFD7D7D7),
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 15.sp, right: 15.sp, bottom: 8.sp),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  
+                ],
               ),
-          separatorBuilder: (context, index) => Container(
-                height: 1.sp,
-              ),
-          itemCount: list.length),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

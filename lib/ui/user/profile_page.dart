@@ -121,31 +121,32 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget buildLogoutBtn() {
     return Container(
-      width: MediaQuery.of(context).size.width,
-      child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10))),
-          onPressed: () async {
-            setState(() {
-              final provider = Provider.of<AuthService>(context, listen: false);
-              provider.logout();
-            });
-          },
-          child: Row(
-            children: [
-              Icon(Icons.logout_outlined),
-              SizedBox(
-                width: 5,
-              ),
-              Text(
-                AppLocalizations.of(context)!.logout,
-                style: TextStyle(fontSize: 15),
-              ),
-            ],
-          )),
-    );
+          width: MediaQuery.of(context).size.width,
+          child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10))),
+              onPressed: () async {
+                setState(() {
+                  final provider = Provider.of<AuthService>(context, listen: false);
+                  provider.logout();
+                });
+              },
+              child: Row(
+                children: [
+                  Icon(Icons.logout_outlined),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.logout,
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ],
+              )),
+        );
+      
   }
 
   Widget buildEditProfileBtn() {

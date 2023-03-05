@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/component/BuildTextFormField.dart';
 import 'package:trip_boy/ui/user/detail_payment_method.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../common/color_values.dart';
 
 class DetailCheckout extends StatefulWidget {
   DetailCheckout({Key? key}) : super(key: key);
-    
+
   @override
   State<DetailCheckout> createState() => _DetailCheckoutState();
 }
@@ -205,7 +206,7 @@ class _DetailCheckoutState extends State<DetailCheckout> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Jumlah Anggota',
+                            AppLocalizations.of(context)!.numberOfGuests,
                             style: AppTextStyles.appTitlew400s14(
                                 ColorValues().blackColor),
                           ),

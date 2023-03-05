@@ -8,7 +8,7 @@ import 'package:trip_boy/component/custom_dialog.dart';
 import 'package:trip_boy/services/network_connectivity.dart';
 import 'package:trip_boy/ui/admin/dashboard.dart';
 import 'package:trip_boy/ui/user/dashboard_page.dart';
-import 'package:trip_boy/ui/user/landing_page/landing_page.dart';
+import 'package:trip_boy/ui/landing_page/landing_page.dart';
 
 import '../models/user_model.dart';
 import '../services/database_services.dart';
@@ -32,13 +32,10 @@ class _SplashScreenState extends State<SplashScreen> {
       final uid = user!.uid;
       UserModel userData = await DatabaseService().getUserData(uid);
       role = userData.role!;
-
-      if (uid.isNotEmpty) {
-        navigations();
-      }
     } catch (e) {
       print("error: " + e.toString());
     }
+    navigations();
   }
 
   Future<void> navigations() async {
@@ -58,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-  Future<void> checkInternet2() async {
+  Future<void> checkInternet() async {
     _networkConnectivity.initialise();
     _networkConnectivity.myStream.listen((source) {
       _source = source;
@@ -80,7 +77,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    checkInternet2();
+    checkInternet();
   }
 
   @override

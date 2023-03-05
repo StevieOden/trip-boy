@@ -143,7 +143,7 @@ class _EditProfileState extends State<EditProfile> {
             alignment: Alignment.bottomRight,
             child: InkWell(
               onTap: () async {
-                var pickedFile = await SharedCode().getFromGallery();
+                var pickedFile = await SharedCode(context).getFromGallery();
                 setState(() {
                   if (pickedFile != null) {
                     // file = File(pickedFile.path);

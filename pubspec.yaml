@@ -52,6 +52,8 @@ dependencies:
   flutter_staggered_grid_view:
   url_launcher:
   connectivity_plus: ^3.0.3
+  firebase_storage: ^11.0.14
+  shared_preferences: ^2.0.18
 
 dev_dependencies:
   flutter_test:

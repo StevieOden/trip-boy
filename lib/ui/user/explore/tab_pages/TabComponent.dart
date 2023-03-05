@@ -40,7 +40,6 @@ class _TabComponentState extends State<TabComponent> {
     // TODO: implement initState
     super.initState();
     getAllData();
-    print(widget.tabController.index);
   }
 
   Future<void> getAllData() async {
@@ -115,6 +114,10 @@ class _TabComponentState extends State<TabComponent> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailPage(
+                            menuRestaurantsList:
+                                listData[index].type == "restaurant"
+                                    ? listData[index].menu
+                                    : [],
                             facilityList: listData[index].type == "hotel" ||
                                     listData[index].type == "destination"
                                 ? listData[index].facility!
@@ -265,6 +268,10 @@ class _TabComponentState extends State<TabComponent> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => DetailPage(
+                                menuRestaurantsList:
+                                    list[index].type == "restaurant"
+                                        ? list[index].menu
+                                        : [],
                                 facilityList: list[index].type == "hotel" ||
                                         list[index].type == "destination"
                                     ? list[index].facility!
@@ -409,6 +416,9 @@ class _TabComponentState extends State<TabComponent> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => DetailPage(
+                          menuRestaurantsList: listData[i].type == "restaurant"
+                              ? listData[i].menu
+                              : [],
                           facilityList: listData[i].type == "hotel" ||
                                   listData[i].type == "destination"
                               ? listData[i].facility!
@@ -452,6 +462,7 @@ class _TabComponentState extends State<TabComponent> {
                       ));
                 },
                 child: VerticalCard(
+                  isShowRating: true,
                   title: listData[i].name,
                   subDistrict: listData[i].address!.split(',')[0] == ""
                       ? listData[i].address!.split(',')[0]

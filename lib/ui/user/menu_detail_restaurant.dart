@@ -1,12 +1,29 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:trip_boy/component/vertical_card.dart';
+import 'package:trip_boy/models/restaurant_model.dart';
 import 'package:trip_boy/ui/user/detail_checkout.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../common/user_data.dart';
+import '../../services/database_services.dart';
+
 class MenuDetailPage extends StatefulWidget {
-  MenuDetailPage({Key? key}) : super(key: key);
+  String restaurantName, address, timeOpen, timeClosed;
+  double rating;
+  List<MenuRestaurant> listRestaurantsMenu;
+  MenuDetailPage(
+      {Key? key,
+      required this.restaurantName,
+      required this.rating,
+      required this.address,
+      required this.timeOpen,
+      required this.timeClosed,
+      required this.listRestaurantsMenu})
+      : super(key: key);
 
   @override
   State<MenuDetailPage> createState() => _MenuDetailPageState();
@@ -32,6 +49,7 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
     // TODO: implement initState
     super.initState();
     _scrollController = ScrollController();
+    print(widget.listRestaurantsMenu);
   }
 
   @override
@@ -64,7 +82,7 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'D’ASMO RESTO',
+                  widget.restaurantName,
                   style:
                       AppTextStyles.appTitlew500s16(ColorValues().blackColor),
                 ),
@@ -84,7 +102,7 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
                         SizedBox(
                           width: 8,
                         ),
-                        Text('4.8 (32 Review)')
+                        Text(widget.rating.toString())
                       ],
                     ),
                     Row(
@@ -97,7 +115,7 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
                         SizedBox(
                           width: 8,
                         ),
-                        Text('Pulisen')
+                        Text(widget.address)
                       ],
                     ),
                   ],
@@ -126,7 +144,7 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
                         SizedBox(
                           width: 8,
                         ),
-                        Text('13:00-21:00')
+                        Text('${widget.timeOpen} - ${widget.timeClosed}')
                       ],
                     ),
                   ],
@@ -212,29 +230,43 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
 
   Widget builGridView() {
     return Container(
-      height: 400,
       margin: EdgeInsets.only(top: 10),
       child: GridView.builder(
         physics: NeverScrollableScrollPhysics(),
-        // shrinkWrap: true,
-        itemCount: gridViewMenu.length < 4 ? gridViewMenu.length : 4,
+        shrinkWrap: true,
+        itemCount: widget.listRestaurantsMenu.length < 4
+            ? widget.listRestaurantsMenu.length
+            : 4,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, mainAxisSpacing: 8, crossAxisSpacing: 8),
+            crossAxisCount: 2,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            childAspectRatio: 0.8),
         itemBuilder: (BuildContext context, int index) {
           return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
+              Container(
+                height: 150,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    gridViewMenu[index]["image"] == ""
-                        ? Image.asset("assets/png_image/logo.png",
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.high)
-                        : Image.network(gridViewMenu[index]["image"],
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.high),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: widget.listRestaurantsMenu[index].imageUrl.startsWith("/")
+                    ? Image(
+                        image: FileImage(
+                        File(widget.listRestaurantsMenu[index].imageUrl),
+                      ))
+                    :widget.listRestaurantsMenu[index].imageUrl == ""
+                          ? Image.asset("assets/png_image/logo.png",
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high)
+                          : Image.network(
+                              widget.listRestaurantsMenu[index].imageUrl,
+                              fit: BoxFit.cover,
+                              filterQuality: FilterQuality.high),
+                    ),
                     Container(
                       padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
                       alignment: Alignment.bottomCenter,
@@ -246,12 +278,15 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
                   ],
                 ),
               ),
+              SizedBox(
+                height: 10,
+              ),
               Text(
-                gridViewMenu[index]['name'],
+                widget.listRestaurantsMenu[index].name,
                 style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
               ),
               Text(
-                gridViewMenu[index]['price'].toString(),
+                widget.listRestaurantsMenu[index].price.toString(),
                 style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
               )
             ],
@@ -262,92 +297,111 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
   }
 
   Widget buildBlankCardDrink() {
-    return Container(
-      padding: EdgeInsets.only(top: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocalizations.of(context)!.drink,
-              style: AppTextStyles.appTitlew500s16(ColorValues().blackColor)),
-          SizedBox(
-            height: 8,
-          ),
-          ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return VerticalCard(
-                  isElevated: false,
-                  title: "",
-                  subDistrict: "",
-                  price: "",
-                  rating: "",
-                  imageUrl: "");
-            },
-          ),
-        ],
-      ),
-    );
+    List<MenuRestaurant> listRestaurantDrink = [];
+    listRestaurantDrink.addAll(widget.listRestaurantsMenu
+        .where((element) => element.type == "minuman"));
+    return listRestaurantDrink.isEmpty
+        ? Container()
+        : Container(
+            padding: EdgeInsets.only(top: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(AppLocalizations.of(context)!.drink,
+                    style: AppTextStyles.appTitlew500s16(
+                        ColorValues().blackColor)),
+                SizedBox(
+                  height: 8,
+                ),
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: listRestaurantDrink.length,
+                  itemBuilder: (context, index) {
+                    return VerticalCard(
+                        isElevated: false,
+                        isShowRating: false,
+                        title: listRestaurantDrink[index].name,
+                        subDistrict: "",
+                        price: listRestaurantDrink[index].price.toString(),
+                        rating: "",
+                        imageUrl: listRestaurantDrink[index].imageUrl);
+                  },
+                ),
+              ],
+            ),
+          );
   }
 
   Widget buildBlankCardFood() {
-    return Container(
-      padding: EdgeInsets.only(top: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocalizations.of(context)!.food,
-              style: AppTextStyles.appTitlew500s16(ColorValues().blackColor)),
-          SizedBox(
-            height: 8,
-          ),
-          ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return VerticalCard(
-                  isElevated: false,
-                  title: "",
-                  subDistrict: "",
-                  price: "",
-                  rating: "",
-                  imageUrl: "");
-            },
-          ),
-        ],
-      ),
-    );
+    List<MenuRestaurant> listRestaurantFood = [];
+    listRestaurantFood.addAll(widget.listRestaurantsMenu
+        .where((element) => element.type == "makanan"));
+    return listRestaurantFood.isEmpty
+        ? Container()
+        : Container(
+            padding: EdgeInsets.only(top: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(AppLocalizations.of(context)!.food,
+                    style: AppTextStyles.appTitlew500s16(
+                        ColorValues().blackColor)),
+                SizedBox(
+                  height: 8,
+                ),
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: listRestaurantFood.length,
+                  itemBuilder: (context, index) {
+                    return VerticalCard(
+                        isElevated: false,
+                        title: listRestaurantFood[index].name,
+                        subDistrict: listRestaurantFood[index].desc,
+                        price: listRestaurantFood[index].price.toString(),
+                        rating: "",
+                        imageUrl: listRestaurantFood[index].imageUrl);
+                  },
+                ),
+              ],
+            ),
+          );
   }
 
   Widget buildBlankCardSnack() {
-    return Container(
-      padding: EdgeInsets.only(top: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocalizations.of(context)!.snack,
-              style: AppTextStyles.appTitlew500s16(ColorValues().blackColor)),
-          SizedBox(
-            height: 8,
-          ),
-          ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: 3,
-            itemBuilder: (context, index) {
-              return VerticalCard(
-                  isElevated: false,
-                  title: "",
-                  subDistrict: "",
-                  price: "",
-                  rating: "",
-                  imageUrl: "");
-            },
-          ),
-        ],
-      ),
-    );
+    List<MenuRestaurant> listRestaurantSnack = [];
+    listRestaurantSnack.addAll(
+        widget.listRestaurantsMenu.where((element) => element.type == "snack"));
+    return listRestaurantSnack.isEmpty
+        ? Container()
+        : Container(
+            padding: EdgeInsets.only(top: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(AppLocalizations.of(context)!.snack,
+                    style: AppTextStyles.appTitlew500s16(
+                        ColorValues().blackColor)),
+                SizedBox(
+                  height: 8,
+                ),
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: listRestaurantSnack.length,
+                  itemBuilder: (context, index) {
+                    return VerticalCard(
+                        isElevated: false,
+                        title: listRestaurantSnack[index].name,
+                        subDistrict: listRestaurantSnack[index].desc,
+                        price: listRestaurantSnack[index].price.toString(),
+                        rating: "",
+                        imageUrl: listRestaurantSnack[index].imageUrl);
+                  },
+                ),
+              ],
+            ),
+          );
   }
 }
