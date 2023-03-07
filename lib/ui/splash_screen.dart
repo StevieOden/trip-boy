@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:trip_boy/component/custom_dialog.dart';
 import 'package:trip_boy/services/network_connectivity.dart';
 import 'package:trip_boy/ui/admin/dashboard.dart';
@@ -11,6 +12,7 @@ import 'package:trip_boy/ui/user/dashboard_page.dart';
 import 'package:trip_boy/ui/landing_page/landing_page.dart';
 
 import '../models/user_model.dart';
+import '../services/auth.dart';
 import '../services/database_services.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,12 +23,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final user = FirebaseAuth.instance.currentUser;
   String role = "";
   Map _source = {ConnectivityResult.none: false};
   final NetworkConnectivity _networkConnectivity = NetworkConnectivity.instance;
 
-  Future<void> getUserData() async {
+  Future<void> getUserData(ap) async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
       final uid = user!.uid;
@@ -35,15 +36,13 @@ class _SplashScreenState extends State<SplashScreen> {
     } catch (e) {
       print("error: " + e.toString());
     }
-    navigations();
+    navigations(ap);
   }
 
-  Future<void> navigations() async {
+  Future<void> navigations(AuthService ap) async {
     Future.delayed(Duration(seconds: 2), () {
-      if (user == null) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LandingPage()));
-      } else {
+      print("is sign in: " + ap.isSignedIn.toString());
+      if (ap.isSignedIn) {
         if (role == "user_customer") {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => DashboardPage()));
@@ -51,20 +50,23 @@ class _SplashScreenState extends State<SplashScreen> {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => DashboardAdmin()));
         }
+      } else {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => LandingPage()));
       }
     });
   }
 
-  Future<void> checkInternet() async {
+  Future<void> checkInternet(ap) async {
     _networkConnectivity.initialise();
     _networkConnectivity.myStream.listen((source) {
       _source = source;
       switch (_source.keys.toList()[0]) {
         case ConnectivityResult.mobile:
-          getUserData();
+          getUserData(ap);
           break;
         case ConnectivityResult.wifi:
-          getUserData();
+          getUserData(ap);
           break;
         case ConnectivityResult.none:
         default:
@@ -77,7 +79,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    checkInternet();
+    final ap = Provider.of<AuthService>(context, listen: false);
+    checkInternet(ap);
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -33,6 +34,18 @@ class _LoginPageState extends State<LoginPage> {
   late TextEditingController phoneForm;
   late TextEditingController passForm;
   static final loginFormKey = GlobalKey<FormState>();
+
+  Country selectedCountry = Country(
+      phoneCode: "62",
+      countryCode: "ID",
+      e164Sc: 0,
+      geographic: true,
+      level: 1,
+      name: "Indonesia",
+      example: "Indonesia",
+      displayName: "Indonesia",
+      displayNameNoCountryCode: "ID",
+      e164Key: "");
 
   Future<void> getUserData() async {
     try {
@@ -79,84 +92,61 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: GestureDetector(
         child: SafeArea(
-          child: StreamBuilder<User?>(
-              stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return FutureBuilder(
-                      future: getUserData(),
-                      builder: (context, snapshot) {
-                        return _isLoading
-                            ? Loading()
-                            : role == "user_customer"
-                                ? DashboardPage()
-                                : DashboardAdmin();
-                      });
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text("Something went wrong!"),
-                  );
-                } else if (!snapshot.hasData) {
-                  return SingleChildScrollView(
-                    child: Container(
-                      padding: SharedCode.globalMargin,
-                      child: Column(
-                        children: [
-                          buildImage(),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          buildLoginForm(),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                            AppLocalizations.of(context)!.or.toUpperCase(),
-                            style: AppTextStyles.appTitlew500s14(
-                                ColorValues().darkGreyColor),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          buildButtonGoogleLogin(),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Wrap(
-                            spacing: 2,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              Text(
-                                AppLocalizations.of(context)!.dontHaveAccount,
-                                style: AppTextStyles.appTitlew400s12(
-                                    ColorValues().darkGreyColor),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                RegisterPage()));
-                                  });
-                                },
-                                child: Text(
-                                  AppLocalizations.of(context)!.signup,
-                                  style: AppTextStyles.appTitlew500s12(
-                                      ColorValues().primaryColor),
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
+          child: SingleChildScrollView(
+            child: Container(
+              padding: SharedCode.globalMargin,
+              child: Column(
+                children: [
+                  buildImage(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  buildLoginForm(),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.or.toUpperCase(),
+                    style: AppTextStyles.appTitlew500s14(
+                        ColorValues().darkGreyColor),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  buildButtonGoogleLogin(),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Wrap(
+                    spacing: 2,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.dontHaveAccount,
+                        style: AppTextStyles.appTitlew400s12(
+                            ColorValues().darkGreyColor),
                       ),
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              }),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RegisterPage()));
+                          });
+                        },
+                        child: Text(
+                          AppLocalizations.of(context)!.signup,
+                          style: AppTextStyles.appTitlew500s12(
+                              ColorValues().primaryColor),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -191,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
       child: OutlinedButton(
           onPressed: () {
             final provider = Provider.of<AuthService>(context, listen: false);
-            provider.googleLogin();
+            provider.googleLogin(context);
           },
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: ColorValues().greyColor),
@@ -233,9 +223,30 @@ class _LoginPageState extends State<LoginPage> {
                     color: ColorValues().darkGreenColor,
                   )
                 : null,
-            prefix: Icon(
-              Icons.phone,
-              color: ColorValues().darkGreyColor.withOpacity(0.5),
+            prefix: Container(
+              margin: EdgeInsets.only(top: 15, bottom: 15, left: 5),
+              child: InkWell(
+                onTap: () {
+                  showCountryPicker(
+                      context: context,
+                      onSelect: (value) {
+                        setState(() {
+                          selectedCountry = value;
+                        });
+                      },
+                      countryListTheme: CountryListThemeData(
+                          borderRadius: BorderRadius.circular(20),
+                          textStyle: AppTextStyles.appTitlew400s14(
+                              ColorValues().blackColor),
+                          bottomSheetHeight:
+                              MediaQuery.of(context).size.height * 0.5));
+                },
+                child: Text(
+                  "${selectedCountry.flagEmoji} +${selectedCountry.phoneCode}",
+                  style:
+                      AppTextStyles.appTitlew500s12(ColorValues().blackColor),
+                ),
+              ),
             ),
             hintText: AppLocalizations.of(context)!.phoneNumber,
             title: "",
@@ -292,7 +303,9 @@ class _LoginPageState extends State<LoginPage> {
             height: 40,
             child: ElevatedButton(
                 onPressed: () {
-                  if (loginFormKey.currentState!.validate()) {}
+                  if (loginFormKey.currentState!.validate()) {
+                    sendPhoneNumber();
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorValues().primaryColor,
@@ -306,5 +319,12 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  void sendPhoneNumber() {
+    final ap = Provider.of<AuthService>(context, listen: false);
+    String phoneNumber =
+        "+${selectedCountry.phoneCode}${phoneForm.text.trim()}";
+    ap.signInWithPhone(context, phoneNumber, "", "");
   }
 }

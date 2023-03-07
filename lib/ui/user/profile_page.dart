@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:trip_boy/common/app_text_styles.dart';
+import 'package:trip_boy/common/color_values.dart';
 import 'package:trip_boy/common/user_data.dart';
 import 'package:trip_boy/component/loading.dart';
 import 'package:trip_boy/services/auth.dart';
@@ -82,6 +84,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     myLocale = Localizations.localeOf(context);
+    final provider = Provider.of<AuthService>(context, listen: false);
     return Scaffold(
       body: !_isAuthenticated
           ? LoginPage()
@@ -110,7 +113,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           buildEditProfileBtn(),
                           buildSettingBtn(),
                           Spacer(),
-                          buildLogoutBtn()
+                          buildLogoutBtn(provider)
                         ],
                       ),
                     ),
@@ -119,40 +122,47 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget buildLogoutBtn() {
+  Widget buildLogoutBtn(AuthService provider) {
     return Container(
-          width: MediaQuery.of(context).size.width,
-          child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10))),
-              onPressed: () async {
-                setState(() {
-                  final provider = Provider.of<AuthService>(context, listen: false);
-                  provider.logout();
-                });
-              },
-              child: Row(
-                children: [
-                  Icon(Icons.logout_outlined),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    AppLocalizations.of(context)!.logout,
-                    style: TextStyle(fontSize: 15),
-                  ),
-                ],
-              )),
-        );
-      
+      width: MediaQuery.of(context).size.width,
+      height: 40,
+      child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10))),
+          onPressed: () async {
+            setState(() {
+              provider.logout().then(
+                    (value) => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginPage(),
+                      ),
+                    ),
+                  );
+            });
+          },
+          child: Row(
+            children: [
+              Icon(Icons.logout_outlined),
+              SizedBox(
+                width: 5,
+              ),
+              Text(
+                AppLocalizations.of(context)!.logout,
+                style: TextStyle(fontSize: 15),
+              ),
+            ],
+          )),
+    );
   }
 
   Widget buildEditProfileBtn() {
     return Container(
-      margin: EdgeInsets.only(bottom: 5),
+      margin: EdgeInsets.only(bottom: 10),
       width: MediaQuery.of(context).size.width,
+      height: 40,
       child: ElevatedButton(
           style: ElevatedButton.styleFrom(
               backgroundColor: Color(0xff6F38C5),
@@ -177,6 +187,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       margin: EdgeInsets.only(bottom: 5),
       width: MediaQuery.of(context).size.width,
+      height: 40,
       child: ElevatedButton(
           style: ElevatedButton.styleFrom(
               backgroundColor: Color(0xff6F38C5),
@@ -206,21 +217,23 @@ class _ProfilePageState extends State<ProfilePage> {
       children: [
         Text(
           name,
-          style: TextStyle(
-              fontSize: 16,
-              color: Color(0xff3A354D),
-              fontWeight: FontWeight.w500),
+          style: AppTextStyles.appTitlew500s16(ColorValues().blackColor),
         ),
         SizedBox(
           height: 5,
         ),
-        Text(
-          email,
-          style: TextStyle(
-              fontSize: 13,
-              color: Color(0xff9598A6),
-              fontWeight: FontWeight.w500),
-        ),
+        email.isNotEmpty
+            ? Text(
+                email,
+                style: AppTextStyles.appTitlew500s14(ColorValues().greyColor),
+              )
+            : Container(),
+        phoneNumber.isNotEmpty
+            ? Text(
+                phoneNumber,
+                style: AppTextStyles.appTitlew500s14(ColorValues().greyColor),
+              )
+            : Container(),
         SizedBox(
           height: 30,
         ),
