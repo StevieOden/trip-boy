@@ -339,4 +339,100 @@ class CustomDialog {
       },
     );
   }
+
+  static showPhoneNumWarning(
+    BuildContext context,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            insetPadding: EdgeInsets.symmetric(horizontal: 20),
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.sp))),
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            Icons.cancel_outlined,
+                            color: ColorValues().blackColor,
+                          )),
+                    ),
+                    SvgPicture.asset(
+                      'assets/svg_image/fillPhoneNum.svg',
+                      height: 150,
+                    ),
+                    Text(
+                      AppLocalizations.of(context)!.warningPhoneNumber,
+                      style:
+                          AppTextStyles.appTitlew500s14(ColorValues().redColor),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static showEmailWarning(
+    BuildContext context,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            insetPadding: EdgeInsets.symmetric(horizontal: 20),
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.sp))),
+            content: Container(
+              width: MediaQuery.of(context).size.width,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(
+                            Icons.cancel_outlined,
+                            color: ColorValues().blackColor,
+                          )),
+                    ),
+                    SvgPicture.asset(
+                      'assets/svg_image/fillPhoneNum.svg',
+                      height: 150,
+                    ),
+                    Text(
+                      AppLocalizations.of(context)!.warningEmail,
+                      style:
+                          AppTextStyles.appTitlew500s16(ColorValues().redColor),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

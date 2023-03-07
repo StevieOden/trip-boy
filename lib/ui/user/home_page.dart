@@ -1,7 +1,11 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:trip_boy/component/circle_button.dart';
+import 'package:trip_boy/component/custom_dialog.dart';
 import 'package:trip_boy/component/horizontal_card.dart';
 import 'package:trip_boy/component/loading.dart';
 import 'package:trip_boy/component/search_bar.dart';
@@ -14,10 +18,12 @@ import 'package:trip_boy/models/hotel_model.dart';
 import 'package:trip_boy/models/restaurant_model.dart';
 import 'package:trip_boy/services/database_services.dart';
 import 'package:trip_boy/ui/user/detail_page.dart';
+import 'package:trip_boy/ui/user/edit_profile.dart';
 import '../../common/app_text_styles.dart';
 import '../../common/color_values.dart';
 import '../../common/user_data.dart';
 import '../../models/content_model.dart';
+import '../../models/user_model.dart';
 import 'dashboard_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -38,11 +44,23 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   List allDataFiltered = [];
   String query = "";
+  String phoneNumber = "";
+  String email = "";
+  String uid = "";
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    getAllData();
+  }
+
+  Future<void> _navigateAndDisplaySelection(BuildContext context) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EditProfile(uid: UserData().uid),
+        ));
+    if (!mounted) return;
     getAllData();
   }
 
@@ -52,11 +70,23 @@ class _HomePageState extends State<HomePage> {
     allData.addAll(hotelData);
     allData.sort((a, b) => b.rating.compareTo(a.rating));
     allDataFiltered = allData;
-    print(" data filtered length : ${allDataFiltered.length}");
+  }
+
+  Future<void> getUserData() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      uid = user!.uid;
+      UserModel userData = await DatabaseService().getUserData(uid);
+      phoneNumber = userData.phoneNumber!;
+      email = userData.email!;
+    } catch (e) {
+      throw ("error : " + e.toString());
+    }
   }
 
   Future<void> getAllData() async {
     setLoading(true);
+    getUserData();
     restaurantData =
         await DatabaseService().getRestaurantData(false, UserData().uid);
     eventData = await DatabaseService().getEventData(false, UserData().uid);
@@ -121,6 +151,110 @@ class _HomePageState extends State<HomePage> {
                             controller: _searchController,
                             onChanged: searchData,
                           )),
+                      email.isEmpty
+                          ? Container(
+                              margin: EdgeInsets.only(
+                                  left: 15.sp, right: 15.sp, top: 10.sp),
+                              child: Card(
+                                color: Colors.red[300],
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15)),
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                      left: 15.sp,
+                                      right: 15.sp,
+                                      top: 10.sp,
+                                      bottom: 10.sp),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/svg_image/fillPhoneNum.svg',
+                                        height: 60,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          AppLocalizations.of(context)!
+                                              .warningEmail,
+                                          style: AppTextStyles.appTitlew500s16(
+                                              Colors.white),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            _navigateAndDisplaySelection(
+                                                context);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.white),
+                                          child: Text(
+                                            AppLocalizations.of(context)!.add,
+                                            style:
+                                                AppTextStyles.appTitlew500s12(
+                                                    ColorValues().redColor),
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Container(),
+                      phoneNumber.isEmpty
+                          ? Container(
+                              margin: EdgeInsets.only(
+                                  left: 15.sp, right: 15.sp, top: 10.sp),
+                              child: Card(
+                                color: Colors.red[300],
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15)),
+                                child: Container(
+                                  margin: EdgeInsets.only(
+                                      left: 15.sp,
+                                      right: 15.sp,
+                                      top: 10.sp,
+                                      bottom: 10.sp),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SvgPicture.asset(
+                                        'assets/svg_image/fillPhoneNum.svg',
+                                        height: 60,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          AppLocalizations.of(context)!
+                                              .warningPhoneNumber,
+                                          style: AppTextStyles.appTitlew500s16(
+                                              Colors.white),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                          onPressed: () {
+                                            _navigateAndDisplaySelection(
+                                                context);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.white),
+                                          child: Text(
+                                            AppLocalizations.of(context)!.add,
+                                            style:
+                                                AppTextStyles.appTitlew500s12(
+                                                    ColorValues().redColor),
+                                          ))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Container(),
                       allDataFiltered.length != allData.length
                           ? Container(
                               margin: EdgeInsets.only(

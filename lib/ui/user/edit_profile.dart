@@ -27,11 +27,16 @@ class _EditProfileState extends State<EditProfile> {
   bool _isLoading = false;
   File? file;
 
+  static final formKey = GlobalKey<FormState>();
+
+  late TextEditingController nameEditingController;
+  late TextEditingController emailEditingController;
+  late TextEditingController phoneNumEditingController;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    profileUrl = UserData().profileImage!;
     getUserData();
   }
 
@@ -43,14 +48,23 @@ class _EditProfileState extends State<EditProfile> {
     phoneNumber = userData.phoneNumber!;
     profileUrl = userData.profileImage!;
     uidGlobal = userData.uid!;
+
+    nameEditingController = TextEditingController(text: name);
+    emailEditingController = TextEditingController(text: email);
+    phoneNumEditingController =
+        TextEditingController(text: phoneNumber == null ? "" : phoneNumber);
     setLoading(false);
   }
 
-  Future<void> updateProfile(
-      phoneNumEditingController, nameEditingController) async {
+  Future<void> updateProfile(phoneNumEditingController, emailEditingController,
+      nameEditingController) async {
     setLoading(true);
-    await DatabaseService().updateUserData(widget.uid,
-        phoneNumEditingController.text, nameEditingController.text, profileUrl);
+    await DatabaseService().updateUserData(
+        widget.uid,
+        phoneNumEditingController.text,
+        emailEditingController.text,
+        nameEditingController.text,
+        profileUrl);
 
     Navigator.pop(context, true);
     setLoading(false);
@@ -68,10 +82,6 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController nameEditingController =
-        TextEditingController(text: name);
-    TextEditingController phoneNumEditingController =
-        TextEditingController(text: phoneNumber == null ? "" : phoneNumber);
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: ColorValues().primaryColor),
@@ -81,43 +91,63 @@ class _EditProfileState extends State<EditProfile> {
       body: _isLoading
           ? Loading()
           : Container(
-              alignment: Alignment.center,
               margin: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 15.sp),
-              child: Column(
-                children: [
-                  buildProfileImage(),
-                  SizedBox(
-                    height: 10.sp,
+              child: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      buildProfileImage(),
+                      SizedBox(
+                        height: 10.sp,
+                      ),
+                      BuildTextFormField(
+                        controller: nameEditingController,
+                        hintText: AppLocalizations.of(context)!.enterName,
+                        title: AppLocalizations.of(context)!.name,
+                      ),
+                      SizedBox(
+                        height: 10.sp,
+                      ),
+                      BuildTextFormField(
+                        controller: emailEditingController,
+                        hintText: AppLocalizations.of(context)!.enterEmail,
+                        title: AppLocalizations.of(context)!.email,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: SharedCode(context).emailValidator,
+                      ),
+                      SizedBox(
+                        height: 10.sp,
+                      ),
+                      BuildTextFormField(
+                          keyboardType: TextInputType.phone,
+                          controller: phoneNumEditingController,
+                          hintText:
+                              AppLocalizations.of(context)!.enterPhoneNumber,
+                          title: AppLocalizations.of(context)!.phoneNumber),
+                      Container(
+                        width: MediaQuery.of(context).size.width.sp,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (formKey.currentState!.validate()) {
+                              setState(() {
+                                updateProfile(
+                                    phoneNumEditingController,
+                                    emailEditingController,
+                                    nameEditingController);
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: ColorValues().primaryColor,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12))),
+                          child: Text(AppLocalizations.of(context)!.save),
+                        ),
+                      )
+                    ],
                   ),
-                  BuildTextFormField(
-                      controller: nameEditingController,
-                      hintText: AppLocalizations.of(context)!.enterName,
-                      title: AppLocalizations.of(context)!.name),
-                  SizedBox(
-                    height: 10.sp,
-                  ),
-                  BuildTextFormField(
-                      keyboardType: TextInputType.phone,
-                      controller: phoneNumEditingController,
-                      hintText: AppLocalizations.of(context)!.enterPhoneNumber,
-                      title: AppLocalizations.of(context)!.phoneNumber),
-                  Container(
-                    width: MediaQuery.of(context).size.width.sp,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          updateProfile(
-                              phoneNumEditingController, nameEditingController);
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorValues().primaryColor,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12))),
-                      child: Text(AppLocalizations.of(context)!.save),
-                    ),
-                  )
-                ],
+                ),
               ),
             ),
     );

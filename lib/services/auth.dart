@@ -6,9 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:trip_boy/services/database_services.dart';
 import 'package:trip_boy/ui/login_page.dart';
+import 'package:trip_boy/ui/otp_page.dart';
 import 'package:trip_boy/ui/user/dashboard_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../common/color_values.dart';
 import '../models/user_model.dart';
+import '../ui/admin/dashboard.dart';
 
 class AuthService extends ChangeNotifier {
   final googleSignIn = GoogleSignIn();
@@ -19,7 +23,23 @@ class AuthService extends ChangeNotifier {
 
   GoogleSignInAccount get user => _user!;
 
-  Future googleLogin() async {
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+  String? _uid;
+  String get uid => _uid!;
+
+  bool _isSignedIn = false;
+  bool get isSignedIn => _isSignedIn;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  AuthService() {
+    checkSignIn();
+  }
+
+  Future googleLogin(BuildContext context) async {
     try {
       await googleSignIn.disconnect();
       await FirebaseAuth.instance.signOut();
@@ -41,13 +61,37 @@ class AuthService extends ChangeNotifier {
       );
       UserCredential result =
           await FirebaseAuth.instance.signInWithCredential(credential);
+
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool("is_signed", true);
+      _isSignedIn = true;
+
       await DatabaseService().addDefaultPatientUser(
           result.user!.uid,
           result.user!.email!,
           "",
           result.user!.displayName!,
           result.user!.phoneNumber == null ? "" : result.user!.phoneNumber!,
-          result.user!.photoURL!);
+          result.user!.photoURL!,
+          "user_customer");
+
+      await DatabaseService().getUserData(result.user!.uid).then((value) {
+        if (value.role == "user_customer") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DashboardPage(),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DashboardAdmin(),
+            ),
+          );
+        }
+      });
 
       notifyListeners();
     } catch (e) {
@@ -55,50 +99,120 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future registerUser(BuildContext context, String? email, String password,
-      String name, String? phoneNumber, String? photoUrl) async {
-    try {
-      const _chars =
-          'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-      Random _rnd = Random();
-
-      String getRandomString(int length) =>
-          String.fromCharCodes(Iterable.generate(
-              length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
-
-      QuerySnapshot querySnapshot =
-          await users.where("user_email", isEqualTo: email).get();
-      UserModel userModel = UserModel(
-          role: "user_customer",
-          email: email,
-          name: name,
-          password: password,
-          phoneNumber: phoneNumber == null ? "" : phoneNumber,
-          profileImage: photoUrl,
-          uid: getRandomString(20));
-      if (querySnapshot.docs.isEmpty) {
-        await users.add(userModel.toJson()).then((value) {
-          print('User Registered');
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LoginPage(),
-              ));
-        }).catchError((error) => print("Error: " + error.toString()));
-      } else {
-        print("user already added");
-      }
-    } catch (e) {}
-  }
-
   Future logout() async {
     try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.clear();
+      _isSignedIn = false;
       await googleSignIn.disconnect();
-      await FirebaseAuth.instance.signOut();
-
+      await firebaseAuth.signOut();
       notifyListeners();
     } catch (e) {
       print("logout error: " + e.toString());
+    }
+  }
+
+  void checkSignIn() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      _isSignedIn = prefs.getBool("is_signed") ?? false;
+      notifyListeners();
+    } catch (e) {
+      print("check sign in error: " + e.toString());
+    }
+  }
+
+  void signInWithPhone(
+    BuildContext context,
+    String phoneNumber,
+    String name,
+    String password,
+  ) async {
+    try {
+      await firebaseAuth.verifyPhoneNumber(
+        forceResendingToken: 3,
+        phoneNumber: phoneNumber,
+        verificationCompleted: (phoneAuthCredential) async {
+          await firebaseAuth.signInWithCredential(phoneAuthCredential);
+        },
+        verificationFailed: (error) {
+          throw Exception(error.message);
+        },
+        codeSent: (verificationId, forceResendingToken) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OtpPage(
+                  verificationId: verificationId,
+                  name: name,
+                  password: password,
+                  phoneNumber: phoneNumber,
+                ),
+              ));
+        },
+        codeAutoRetrievalTimeout: (verificationId) {},
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        elevation: 0,
+        backgroundColor: ColorValues().primaryColor.withOpacity(0.5),
+        content: Text(e.message.toString()),
+      ));
+    }
+  }
+
+  void verifyOtp(
+      {required BuildContext context,
+      required String verificationId,
+      required String userOtp,
+      required String name,
+      required String password,
+      required Function onSuccess}) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
+          verificationId: verificationId, smsCode: userOtp);
+      UserCredential user =
+          await FirebaseAuth.instance.signInWithCredential(phoneAuthCredential);
+
+      if (user != null) {
+        _uid = user.user!.uid;
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setBool("is_signed", true);
+        _isSignedIn = true;
+        checkExistingUser().then((value) async {
+          if (value == false) {
+            await DatabaseService().addDefaultPatientUser(user.user!.uid, "",
+                password, name, user.user!.phoneNumber, "", "user_customer");
+          }
+        });
+        onSuccess();
+      }
+
+      _isLoading = false;
+      notifyListeners();
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        elevation: 0,
+        backgroundColor: ColorValues().primaryColor.withOpacity(0.5),
+        content: Text(e.message.toString()),
+      ));
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> checkExistingUser() async {
+    DocumentSnapshot snap =
+        await firebaseFirestore.collection("users").doc(_uid).get();
+    if (snap.exists) {
+      print("user exists");
+      return true;
+    } else {
+      print("new user");
+      return false;
     }
   }
 }

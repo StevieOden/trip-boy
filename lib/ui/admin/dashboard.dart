@@ -7,9 +7,11 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
+import '../../common/user_data.dart';
 import '../../models/user_model.dart';
 import '../../services/auth.dart';
 import '../../services/database_services.dart';
+import '../login_page.dart';
 import 'detail_confirmation_restaurant.dart';
 
 class DashboardAdmin extends StatefulWidget {
@@ -25,7 +27,6 @@ class _DashboardAdminState extends State<DashboardAdmin> {
   String profileUrl = "";
   bool _isLoading = true;
   bool _isAuthenticated = false;
-  User? user = FirebaseAuth.instance.currentUser!;
   bool selected = true;
   int _choiceIndex = 0;
 
@@ -40,14 +41,13 @@ class _DashboardAdminState extends State<DashboardAdmin> {
 
   Future<void> getUserData() async {
     setLoading(true);
-    final uid = user!.uid;
-    if (uid == null) {
+    if (UserData().uid == null) {
       _isAuthenticated = false;
       print("Not authanticated");
     } else {
       print("authanticated");
       _isAuthenticated = true;
-      UserModel userData = await DatabaseService().getUserData(uid);
+      UserModel userData = await DatabaseService().getUserData(UserData().uid);
       name = userData.name!;
       email = userData.email!;
 
@@ -75,6 +75,7 @@ class _DashboardAdminState extends State<DashboardAdmin> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<AuthService>(context, listen: false);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -118,10 +119,13 @@ class _DashboardAdminState extends State<DashboardAdmin> {
                         IconButton(
                             onPressed: () {
                               setState(() {
-                                final provider = Provider.of<AuthService>(
-                                    context,
-                                    listen: false);
-                                provider.logout();
+                                provider.logout().then(
+                                    (value) => Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => LoginPage(),
+                                        ),
+                                        (route) => false));
                               });
                             },
                             icon: Icon(

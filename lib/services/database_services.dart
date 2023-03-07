@@ -16,15 +16,21 @@ class DatabaseService {
   CollectionReference destination =
       FirebaseFirestore.instance.collection('destination');
 
-  Future<dynamic> addDefaultPatientUser(String uid, String? email, String? password, String name,
-      String? phoneNumber, String photoUrl) async {
+  Future<UserModel?> addDefaultPatientUser(
+      String uid,
+      String? email,
+      String? password,
+      String name,
+      String? phoneNumber,
+      String photoUrl,
+      String role) async {
     QuerySnapshot querySnapshot =
         await users.where("uid", isEqualTo: uid).get();
     UserModel userModel = UserModel(
-        role: "user_customer",
+        role: role,
         email: email,
         name: name,
-        password: password == null ? "": password,
+        password: password == null ? "" : password,
         phoneNumber: phoneNumber == null ? "" : phoneNumber,
         profileImage: photoUrl,
         uid: uid);
@@ -34,9 +40,10 @@ class DatabaseService {
           .then((value) => print('User Added'))
           .catchError((error) => print("Error: " + error.toString()));
     }
+    return null;
   }
 
-  Future<dynamic> getUserData(uid) async {
+  Future<UserModel> getUserData(uid) async {
     Map<String, dynamic> data = {};
     QuerySnapshot querySnapshot =
         await users.where("uid", isEqualTo: uid).get();
@@ -46,7 +53,8 @@ class DatabaseService {
     return UserModel.fromMap(data);
   }
 
-  Future<dynamic> updateUserData(uid, phoneNumber, name, imageUrl) async {
+  Future<dynamic> updateUserData(
+      uid, phoneNumber, email, name, imageUrl) async {
     QuerySnapshot querySnapshot =
         await users.where("uid", isEqualTo: uid).get();
     for (var i = 0; i < querySnapshot.size; i++) {
@@ -55,7 +63,8 @@ class DatabaseService {
           .update({
             "user_name": name,
             "user_phone_number": phoneNumber,
-            "user_profile_image": imageUrl
+            "user_profile_image": imageUrl,
+            "user_email": email
           })
           .then((value) => print('User Updated'))
           .catchError((error) => print("Error: " + error.toString()));
@@ -131,7 +140,7 @@ class DatabaseService {
       String name,
       String googleMapsLink,
       List<RoomHotel> roomsList,
-       List<PaymentMethodHotel> paymentMethod) async {
+      List<PaymentMethodHotel> paymentMethod) async {
     HotelModel data = HotelModel(
         type: "hotel",
         address: alamat,
@@ -160,7 +169,7 @@ class DatabaseService {
       double rating,
       List<TermEvent> termList,
       String ticketType,
-       List<PaymentMethodEvent> paymentMethod) async {
+      List<PaymentMethodEvent> paymentMethod) async {
     EventModel data = EventModel(
         timeHeld: timeHeld,
         description: description,
@@ -181,17 +190,16 @@ class DatabaseService {
   }
 
   Future addRestaurantData(
-    String alamat,
-    String description,
-    String googleMapsLink,
-    List<ImageModelRestaurant> images,
-    List<MenuRestaurant> menus,
-    String name,
-    double rating,
-    String timeClosed,
-    String timeOpen,
-    List<PaymentMethodRestaurant> paymentMethod
-  ) async {
+      String alamat,
+      String description,
+      String googleMapsLink,
+      List<ImageModelRestaurant> images,
+      List<MenuRestaurant> menus,
+      String name,
+      double rating,
+      String timeClosed,
+      String timeOpen,
+      List<PaymentMethodRestaurant> paymentMethod) async {
     RestaurantModel data = RestaurantModel(
         type: "restaurant",
         address: alamat,

@@ -54,6 +54,8 @@ dependencies:
   connectivity_plus: ^3.0.3
   firebase_storage: ^11.0.14
   shared_preferences: ^2.0.18
+  pin_code_fields: ^7.4.0
+  country_picker: ^2.0.19
 
 dev_dependencies:
   flutter_test:

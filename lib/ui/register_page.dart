@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +39,18 @@ class _RegisterPageState extends State<RegisterPage> {
   late TextEditingController passForm;
   late TextEditingController passConForm;
   static final registerFormKey = GlobalKey<FormState>();
+
+  Country selectedCountry = Country(
+      phoneCode: "62",
+      countryCode: "ID",
+      e164Sc: 0,
+      geographic: true,
+      level: 1,
+      name: "Indonesia",
+      example: "Indonesia",
+      displayName: "Indonesia",
+      displayNameNoCountryCode: "ID",
+      e164Key: "");
 
   Future<void> getUserData() async {
     try {
@@ -80,94 +94,72 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    phoneForm.selection =
+        TextSelection.fromPosition(TextPosition(offset: phoneForm.text.length));
     return Scaffold(
-      body: GestureDetector(
-        child: SafeArea(
-            child: StreamBuilder<User?>(
-                stream: FirebaseAuth.instance.authStateChanges(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return FutureBuilder(
-                        future: getUserData(),
-                        builder: (context, snapshot) {
-                          return _isLoading
-                              ? Loading()
-                              : role == "user_customer"
-                                  ? DashboardPage()
-                                  : DashboardAdmin();
-                        });
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text("Something went wrong!"),
-                    );
-                  } else if (!snapshot.hasData) {
-                    return SingleChildScrollView(
-                      child: Container(
-                        margin: SharedCode.globalMargin,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            buildImage(),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            buildLoginForm(),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              child: Text(
-                                AppLocalizations.of(context)!.or.toUpperCase(),
-                                textAlign: TextAlign.center,
-                                style: AppTextStyles.appTitlew500s14(
-                                    ColorValues().darkGreyColor),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            buildButtonGoogleLogin(),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Container(
-                              width: MediaQuery.of(context).size.width,
-                              alignment: Alignment.center,
-                              child: Wrap(
-                                spacing: 2,
-                                children: [
-                                  Text(
-                                    AppLocalizations.of(context)!
-                                        .alreadyHaveAccount,
-                                    style: AppTextStyles.appTitlew400s12(
-                                        ColorValues().darkGreyColor),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => LoginPage(),
-                                          ));
-                                    },
-                                    child: Text(
-                                      AppLocalizations.of(context)!
-                                          .login_button,
-                                      style: AppTextStyles.appTitlew500s12(
-                                          ColorValues().primaryColor),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            margin: SharedCode.globalMargin,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildImage(),
+                SizedBox(
+                  height: 10,
+                ),
+                buildLoginForm(),
+                SizedBox(
+                  height: 15,
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Text(
+                    AppLocalizations.of(context)!.or.toUpperCase(),
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.appTitlew500s14(
+                        ColorValues().darkGreyColor),
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                buildButtonGoogleLogin(),
+                SizedBox(
+                  height: 15,
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  alignment: Alignment.center,
+                  child: Wrap(
+                    spacing: 2,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.alreadyHaveAccount,
+                        style: AppTextStyles.appTitlew400s12(
+                            ColorValues().darkGreyColor),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginPage(),
+                              ));
+                        },
+                        child: Text(
+                          AppLocalizations.of(context)!.login_button,
+                          style: AppTextStyles.appTitlew500s12(
+                              ColorValues().primaryColor),
                         ),
                       ),
-                    );
-                  }
-                  return Container();
-                })),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -201,7 +193,7 @@ class _RegisterPageState extends State<RegisterPage> {
       child: OutlinedButton(
           onPressed: () {
             final provider = Provider.of<AuthService>(context, listen: false);
-            provider.googleLogin();
+            provider.googleLogin(context);
           },
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: ColorValues().greyColor),
@@ -247,18 +239,18 @@ class _RegisterPageState extends State<RegisterPage> {
               }
             },
           ),
-          BuildTextFormField(
-            cursorColor: ColorValues().primaryColor,
-            controller: emailForm,
-            prefix: Icon(
-              Icons.mail,
-              color: ColorValues().darkGreyColor.withOpacity(0.5),
-            ),
-            hintText: AppLocalizations.of(context)!.email,
-            title: "",
-            isTitle: false,
-            validator: SharedCode(context).emailValidator,
-          ),
+          // BuildTextFormField(
+          //   cursorColor: ColorValues().primaryColor,
+          //   controller: emailForm,
+          //   prefix: Icon(
+          //     Icons.mail,
+          //     color: ColorValues().darkGreyColor.withOpacity(0.5),
+          //   ),
+          //   hintText: AppLocalizations.of(context)!.email,
+          //   title: "",
+          //   isTitle: false,
+          //   validator: SharedCode(context).emailValidator,
+          // ),
           BuildTextFormField(
             cursorColor: ColorValues().primaryColor,
             controller: phoneForm,
@@ -273,10 +265,35 @@ class _RegisterPageState extends State<RegisterPage> {
                     color: ColorValues().darkGreenColor,
                   )
                 : null,
-            prefix: Icon(
-              Icons.phone,
-              color: ColorValues().darkGreyColor.withOpacity(0.5),
+            prefix: Container(
+              margin: EdgeInsets.only(top: 15, bottom: 15, left: 5),
+              child: InkWell(
+                onTap: () {
+                  showCountryPicker(
+                      context: context,
+                      onSelect: (value) {
+                        setState(() {
+                          selectedCountry = value;
+                        });
+                      },
+                      countryListTheme: CountryListThemeData(
+                          borderRadius: BorderRadius.circular(20),
+                          textStyle: AppTextStyles.appTitlew400s14(
+                              ColorValues().blackColor),
+                          bottomSheetHeight:
+                              MediaQuery.of(context).size.height * 0.5));
+                },
+                child: Text(
+                  "${selectedCountry.flagEmoji} +${selectedCountry.phoneCode}",
+                  style:
+                      AppTextStyles.appTitlew500s12(ColorValues().blackColor),
+                ),
+              ),
             ),
+            inputFormatters: [
+              FilteringTextInputFormatter.deny(RegExp(r'^0+')),
+              FilteringTextInputFormatter.allow(RegExp('[0-9]+')),
+            ],
             hintText: AppLocalizations.of(context)!.phoneNumber,
             title: "",
             isTitle: false,
@@ -355,8 +372,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: ElevatedButton(
                 onPressed: () {
                   if (registerFormKey.currentState!.validate()) {
-                    AuthService().registerUser(context, emailForm.text,
-                        passConForm.text, nameForm.text, phoneForm.text, "");
+                    sendPhoneNumber();
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -371,5 +387,12 @@ class _RegisterPageState extends State<RegisterPage> {
         ],
       ),
     );
+  }
+
+  void sendPhoneNumber() {
+    final ap = Provider.of<AuthService>(context, listen: false);
+    String phoneNumber =
+        "+${selectedCountry.phoneCode}${phoneForm.text.trim()}";
+    ap.signInWithPhone(context, phoneNumber, nameForm.text, passConForm.text);
   }
 }
