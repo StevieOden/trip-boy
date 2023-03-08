@@ -69,7 +69,6 @@ class AuthService extends ChangeNotifier {
       await DatabaseService().addDefaultPatientUser(
           result.user!.uid,
           result.user!.email!,
-          "",
           result.user!.displayName!,
           result.user!.phoneNumber == null ? "" : result.user!.phoneNumber!,
           result.user!.photoURL!,
@@ -125,8 +124,6 @@ class AuthService extends ChangeNotifier {
   void signInWithPhone(
     BuildContext context,
     String phoneNumber,
-    String name,
-    String password,
   ) async {
     try {
       await firebaseAuth.verifyPhoneNumber(
@@ -144,8 +141,6 @@ class AuthService extends ChangeNotifier {
               MaterialPageRoute(
                 builder: (context) => OtpPage(
                   verificationId: verificationId,
-                  name: name,
-                  password: password,
                   phoneNumber: phoneNumber,
                 ),
               ));
@@ -165,8 +160,6 @@ class AuthService extends ChangeNotifier {
       {required BuildContext context,
       required String verificationId,
       required String userOtp,
-      required String name,
-      required String password,
       required Function onSuccess}) async {
     _isLoading = true;
     notifyListeners();
@@ -185,7 +178,7 @@ class AuthService extends ChangeNotifier {
         checkExistingUser().then((value) async {
           if (value == false) {
             await DatabaseService().addDefaultPatientUser(user.user!.uid, "",
-                password, name, user.user!.phoneNumber, "", "user_customer");
+                 "", user.user!.phoneNumber, "", "user_customer");
           }
         });
         onSuccess();

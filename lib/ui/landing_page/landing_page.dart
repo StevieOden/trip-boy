@@ -160,7 +160,7 @@ class _LandingPageState extends State<LandingPage> {
           Expanded(
             child: Container(
               height: 40,
-              child: OutlinedButton(
+              child: ElevatedButton(
                 onPressed: (() {
                   setState(() {
                     Navigator.push(context,
@@ -169,32 +169,6 @@ class _LandingPageState extends State<LandingPage> {
                 }),
                 child: Text(
                   AppLocalizations.of(context)!.login_button.toUpperCase(),
-                  style: AppTextStyles.appTitlew500s12(
-                      ColorValues().darkGreyColor),
-                ),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: ColorValues().greyColor),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            child: Container(
-              height: 40,
-              child: ElevatedButton(
-                onPressed: (() {
-                  setState(() {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterPage()));
-                  });
-                }),
-                child: Text(
-                  AppLocalizations.of(context)!.signup.toUpperCase(),
                   style: AppTextStyles.appTitlew500s12(Colors.white),
                 ),
                 style: ButtonStyle(
@@ -204,6 +178,32 @@ class _LandingPageState extends State<LandingPage> {
               ),
             ),
           ),
+          // SizedBox(
+          //   width: 10,
+          // ),
+          // Expanded(
+          //   child: Container(
+          //     height: 40,
+          //     child: ElevatedButton(
+          //       onPressed: (() {
+          //         setState(() {
+          //           Navigator.push(
+          //               context,
+          //               MaterialPageRoute(
+          //                   builder: (context) => RegisterPage()));
+          //         });
+          //       }),
+          //       child: Text(
+          //         AppLocalizations.of(context)!.login_button.toUpperCase(),
+          //         style: AppTextStyles.appTitlew500s12(Colors.white),
+          //       ),
+          //       style: ButtonStyle(
+          //         backgroundColor: MaterialStateProperty.all<Color>(
+          //             Color.fromRGBO(111, 56, 197, 1)),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

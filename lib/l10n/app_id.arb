@@ -143,6 +143,7 @@
      "errorOtp":"Masukkan 6 digit kode",
      "warningPhoneNumber":"Masukkan nomor hp anda terlebih dahulu",
      "warningEmail":"Masukkan email anda terlebih dahulu",
+     "edit":"Ubah",
 
       "@_Event-Reservation":{},
       "fillName":"Masukkan nama anda",

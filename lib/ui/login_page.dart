@@ -117,32 +117,32 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(
                     height: 15,
                   ),
-                  Wrap(
-                    spacing: 2,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.dontHaveAccount,
-                        style: AppTextStyles.appTitlew400s12(
-                            ColorValues().darkGreyColor),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RegisterPage()));
-                          });
-                        },
-                        child: Text(
-                          AppLocalizations.of(context)!.signup,
-                          style: AppTextStyles.appTitlew500s12(
-                              ColorValues().primaryColor),
-                        ),
-                      ),
-                    ],
-                  )
+                  // Wrap(
+                  //   spacing: 2,
+                  //   crossAxisAlignment: WrapCrossAlignment.center,
+                  //   children: [
+                  //     Text(
+                  //       AppLocalizations.of(context)!.dontHaveAccount,
+                  //       style: AppTextStyles.appTitlew400s12(
+                  //           ColorValues().darkGreyColor),
+                  //     ),
+                  //     GestureDetector(
+                  //       onTap: () {
+                  //         setState(() {
+                  //           Navigator.push(
+                  //               context,
+                  //               MaterialPageRoute(
+                  //                   builder: (context) => RegisterPage()));
+                  //         });
+                  //       },
+                  //       child: Text(
+                  //         AppLocalizations.of(context)!.signup,
+                  //         style: AppTextStyles.appTitlew500s12(
+                  //             ColorValues().primaryColor),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
             ),
@@ -224,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                   )
                 : null,
             prefix: Container(
-              margin: EdgeInsets.only(top: 15, bottom: 15, left: 5),
+              margin: EdgeInsets.only(top: 15, bottom: 15, left: 5, right: 5),
               child: InkWell(
                 onTap: () {
                   showCountryPicker(
@@ -255,49 +255,49 @@ class _LoginPageState extends State<LoginPage> {
             keyboardType: TextInputType.phone,
             validator: SharedCode(context).phoneValidator,
           ),
-          BuildTextFormField(
-            cursorColor: ColorValues().primaryColor,
-            controller: passForm,
-            focusNode: focusNode,
-            prefix: Icon(
-              Icons.fingerprint,
-              color: ColorValues().darkGreyColor.withOpacity(0.5),
-            ),
-            suffix: IconButton(
-                onPressed: () {
-                  setState(() {
-                    isShowPassword = !isShowPassword;
-                  });
-                },
-                icon: Icon(
-                  isShowPassword ? Icons.visibility : Icons.visibility_off,
-                  color: ColorValues().darkGreyColor.withOpacity(0.5),
-                )),
-            hintText: AppLocalizations.of(context)!.passwords,
-            obsecure: !isShowPassword,
-            title: "",
-            isTitle: false,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return SharedCode(context).passwordEmpty(value);
-              }
-              if (value.isNotEmpty) {
-                return SharedCode(context).passwordValidator(value);
-              }
-            },
-          ),
-          Row(
-            children: [
-              Spacer(),
-              TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    AppLocalizations.of(context)!.forgotPassword,
-                    style: AppTextStyles.appTitlew500s12(
-                        ColorValues().primaryColor),
-                  ))
-            ],
-          ),
+          // BuildTextFormField(
+          //   cursorColor: ColorValues().primaryColor,
+          //   controller: passForm,
+          //   focusNode: focusNode,
+          //   prefix: Icon(
+          //     Icons.fingerprint,
+          //     color: ColorValues().darkGreyColor.withOpacity(0.5),
+          //   ),
+          //   suffix: IconButton(
+          //       onPressed: () {
+          //         setState(() {
+          //           isShowPassword = !isShowPassword;
+          //         });
+          //       },
+          //       icon: Icon(
+          //         isShowPassword ? Icons.visibility : Icons.visibility_off,
+          //         color: ColorValues().darkGreyColor.withOpacity(0.5),
+          //       )),
+          //   hintText: AppLocalizations.of(context)!.passwords,
+          //   obsecure: !isShowPassword,
+          //   title: "",
+          //   isTitle: false,
+          //   validator: (value) {
+          //     if (value!.isEmpty) {
+          //       return SharedCode(context).passwordEmpty(value);
+          //     }
+          //     if (value.isNotEmpty) {
+          //       return SharedCode(context).passwordValidator(value);
+          //     }
+          //   },
+          // ),
+          // Row(
+          //   children: [
+          //     Spacer(),
+          //     TextButton(
+          //         onPressed: () {},
+          //         child: Text(
+          //           AppLocalizations.of(context)!.forgotPassword,
+          //           style: AppTextStyles.appTitlew500s12(
+          //               ColorValues().primaryColor),
+          //         ))
+          //   ],
+          // ),
           Container(
             width: MediaQuery.of(context).size.width,
             height: 40,
@@ -325,6 +325,6 @@ class _LoginPageState extends State<LoginPage> {
     final ap = Provider.of<AuthService>(context, listen: false);
     String phoneNumber =
         "+${selectedCountry.phoneCode}${phoneForm.text.trim()}";
-    ap.signInWithPhone(context, phoneNumber, "", "");
+    ap.signInWithPhone(context, phoneNumber);
   }
 }

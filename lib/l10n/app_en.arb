@@ -142,6 +142,7 @@
      "errorOtp":"Enter 6 digit code",
      "warningPhoneNumber":"Fill your phone number first",
      "warningEmail":"Fill your email first",
+     "edit":"Edit",
 
      "@_Event-Reservation":{},
      "fillName":"Fill your name",
