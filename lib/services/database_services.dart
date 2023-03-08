@@ -19,7 +19,6 @@ class DatabaseService {
   Future<UserModel?> addDefaultPatientUser(
       String uid,
       String? email,
-      String? password,
       String name,
       String? phoneNumber,
       String photoUrl,
@@ -30,7 +29,7 @@ class DatabaseService {
         role: role,
         email: email,
         name: name,
-        password: password == null ? "" : password,
+        password: "",
         phoneNumber: phoneNumber == null ? "" : phoneNumber,
         profileImage: photoUrl,
         uid: uid);

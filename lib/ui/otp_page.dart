@@ -20,13 +20,11 @@ import 'admin/dashboard.dart';
 
 class OtpPage extends StatefulWidget {
   final String verificationId;
-  final String name, password, phoneNumber;
+  final String phoneNumber;
   OtpPage(
       {Key? key,
       required this.verificationId,
-      required this.name,
-      required this.phoneNumber,
-      required this.password})
+      required this.phoneNumber})
       : super(key: key);
 
   @override
@@ -198,7 +196,7 @@ class _OtpPageState extends State<OtpPage> {
   void sendPhoneNumber() {
     final ap = Provider.of<AuthService>(context, listen: false);
     ap.signInWithPhone(
-        context, widget.phoneNumber, widget.name, widget.password);
+        context, widget.phoneNumber);
   }
 
   void verifyOtp(BuildContext context, String otpCode) async {
@@ -207,8 +205,6 @@ class _OtpPageState extends State<OtpPage> {
         context: context,
         verificationId: widget.verificationId,
         userOtp: otpCode,
-        name: widget.name,
-        password: widget.password,
         onSuccess: () {
           getUserData();
         });

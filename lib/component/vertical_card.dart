@@ -95,12 +95,13 @@ class _VerticalCardState extends State<VerticalCard> {
                     children: [
                       widget.price.isEmpty
                           ? Container()
-                          : Text(
-                              "Rp${widget.price.toString()}",
-                              style: AppTextStyles.appTitlew700s12(
-                                  ColorValues().primaryColor),
+                          : Expanded(
+                              child: Text(
+                                "Rp${widget.price.toString()}",
+                                style: AppTextStyles.appTitlew700s12(
+                                    ColorValues().primaryColor),
+                              ),
                             ),
-                      Spacer(),
                       widget.isUploadedPage
                           ? Row(children: [
                               Container(
@@ -110,12 +111,12 @@ class _VerticalCardState extends State<VerticalCard> {
                                         backgroundColor: Colors.green),
                                     onPressed: () {},
                                     child: Row(children: [
-                                      Icon(Icons.save, size: 12),
+                                      Icon(Icons.edit, size: 12),
                                       SizedBox(
                                         width: 5,
                                       ),
                                       Text(
-                                        AppLocalizations.of(context)!.save,
+                                        AppLocalizations.of(context)!.edit,
                                         textScaleFactor: 0.65,
                                       )
                                     ])),
@@ -142,11 +143,7 @@ class _VerticalCardState extends State<VerticalCard> {
                                     ])),
                               )
                             ])
-                          : Icon(
-                              Icons.arrow_forward_ios,
-                              color: ColorValues().primaryColor,
-                              size: 12.sp,
-                            ),
+                          : Container(),
                     ],
                   )
                 ],
@@ -171,6 +168,13 @@ class _VerticalCardState extends State<VerticalCard> {
                         ],
                       )
                     : Container(),
+                !widget.isUploadedPage
+                    ? Icon(
+                        Icons.arrow_forward_ios,
+                        color: ColorValues().primaryColor,
+                        size: 12.sp,
+                      )
+                    : Container()
               ],
             )
           ],
