@@ -155,7 +155,6 @@ class _DashboardAdminState extends State<DashboardAdmin> {
                                 ? Colors.white
                                 : ColorValues().blackColor),
                         onSelected: (bool isSelect) {
-                          // print("hihihhiha");
                           setState(() {
                             _choiceIndex = isSelect ? index : 0;
                           });

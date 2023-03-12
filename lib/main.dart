@@ -7,12 +7,13 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/services/auth.dart';
 import 'package:trip_boy/ui/splash_screen.dart';
+import 'package:trip_boy/ui/user/detail_menu.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
-  ]).then((value) async{
+  ]).then((value) async {
     await Firebase.initializeApp();
     runApp(MyApp());
   });
