@@ -316,7 +316,7 @@ class _DetailConfirmationRestaurantState
               AppLocalizations.of(context)!.upload + " " + widget.hintTextType,
               style: AppTextStyles.appTitlew500s16(ColorValues().blackColor),
             ),
-            backgroundColor: Colors.transparent,
+            backgroundColor: Color.fromARGB(0, 239, 234, 234),
           ),
           body: _isLoading
               ? Loading()

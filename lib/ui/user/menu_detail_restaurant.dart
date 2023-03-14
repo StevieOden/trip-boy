@@ -7,6 +7,7 @@ import 'package:trip_boy/component/vertical_card.dart';
 import 'package:trip_boy/models/restaurant_model.dart';
 import 'package:trip_boy/ui/user/detail_checkout.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:trip_boy/ui/user/detail_menu.dart';
 
 import '../../common/user_data.dart';
 import '../../services/database_services.dart';
@@ -253,19 +254,20 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(15),
-                      child: widget.listRestaurantsMenu[index].imageUrl.startsWith("/")
-                    ? Image(
-                        image: FileImage(
-                        File(widget.listRestaurantsMenu[index].imageUrl),
-                      ))
-                    :widget.listRestaurantsMenu[index].imageUrl == ""
-                          ? Image.asset("assets/png_image/logo.png",
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.high)
-                          : Image.network(
-                              widget.listRestaurantsMenu[index].imageUrl,
-                              fit: BoxFit.cover,
-                              filterQuality: FilterQuality.high),
+                      child: widget.listRestaurantsMenu[index].imageUrl
+                              .startsWith("/")
+                          ? Image(
+                              image: FileImage(
+                              File(widget.listRestaurantsMenu[index].imageUrl),
+                            ))
+                          : widget.listRestaurantsMenu[index].imageUrl == ""
+                              ? Image.asset("assets/png_image/logo.png",
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high)
+                              : Image.network(
+                                  widget.listRestaurantsMenu[index].imageUrl,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high),
                     ),
                     Container(
                       padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
@@ -318,17 +320,52 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
                   shrinkWrap: true,
                   itemCount: listRestaurantDrink.length,
                   itemBuilder: (context, index) {
-                    return VerticalCard(
-                      deleteFunction: () {
+                    // return VerticalCard(
+                    //   deleteFunction: () {
+                        
+                    //   },
+                    //     isElevated: false,
+                    //     isShowRating: false,
+                    //     title: listRestaurantDrink[index].name,
+                    //     subDistrict: "",
+                    //     price: listRestaurantDrink[index].price.toString(),
+                    //     rating: "",
+                    //     imageUrl: listRestaurantDrink[index].imageUrl);
+                    return Container(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailMenu(
+                                    type: "",
+                                    imageUrl: "",
+                                    name: "",
+                                    location: "",
+                                    fullLocation: "",
+                                    timeOpen: "",
+                                    timeClose: "",
+                                    description: "",
+                                    googleMapsUrl: "",
+                                    timeHeld: "",
+                                    price: "",
+                                    rating: 0,
+                                    imageList: []),
+                              ));
+                        },
+                        child: VerticalCard(
+                          deleteFunction: () {
                         
                       },
-                        isElevated: false,
-                        isShowRating: false,
-                        title: listRestaurantDrink[index].name,
-                        subDistrict: "",
-                        price: listRestaurantDrink[index].price.toString(),
-                        rating: "",
-                        imageUrl: listRestaurantDrink[index].imageUrl);
+                            isElevated: false,
+                            isShowRating: false,
+                            title: listRestaurantDrink[index].name,
+                            subDistrict: "",
+                            price: listRestaurantDrink[index].price.toString(),
+                            rating: "",
+                            imageUrl: listRestaurantDrink[index].imageUrl),
+                      ),
+                    );
                   },
                 ),
               ],
@@ -342,35 +379,57 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
         .where((element) => element.type == "makanan"));
     return listRestaurantFood.isEmpty
         ? Container()
-        : Container(
-            padding: EdgeInsets.only(top: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(AppLocalizations.of(context)!.food,
-                    style: AppTextStyles.appTitlew500s16(
-                        ColorValues().blackColor)),
-                SizedBox(
-                  height: 8,
-                ),
-                ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: listRestaurantFood.length,
-                  itemBuilder: (context, index) {
-                    return VerticalCard(
-                       deleteFunction: () {
-                        
-                      },
-                        isElevated: false,
-                        title: listRestaurantFood[index].name,
-                        subDistrict: listRestaurantFood[index].desc,
-                        price: listRestaurantFood[index].price.toString(),
-                        rating: "",
-                        imageUrl: listRestaurantFood[index].imageUrl);
-                  },
-                ),
-              ],
+        : InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailMenu(
+                        type: "",
+                        imageUrl: "",
+                        name: "",
+                        location: "",
+                        fullLocation: "",
+                        timeOpen: "",
+                        timeClose: "",
+                        description: "",
+                        googleMapsUrl: "",
+                        timeHeld: "",
+                        price: "",
+                        rating: 0,
+                        imageList: []),
+                  ));
+            },
+            child: Container(
+              padding: EdgeInsets.only(top: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(AppLocalizations.of(context)!.food,
+                      style: AppTextStyles.appTitlew500s16(
+                          ColorValues().blackColor)),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: listRestaurantFood.length,
+                    itemBuilder: (context, index) {
+                      return VerticalCard(
+                        deleteFunction: () {
+                          
+                        },
+                          isElevated: false,
+                          title: listRestaurantFood[index].name,
+                          subDistrict: listRestaurantFood[index].desc,
+                          price: listRestaurantFood[index].price.toString(),
+                          rating: "",
+                          imageUrl: listRestaurantFood[index].imageUrl);
+                    },
+                  ),
+                ],
+              ),
             ),
           );
   }

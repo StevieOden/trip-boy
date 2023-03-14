@@ -77,8 +77,6 @@ flutter:
   assets:
       - assets/png_image/
       - assets/svg_image/
-      - assets/png_image/playground.png
-      - assets/png_image/kulinerFood.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
