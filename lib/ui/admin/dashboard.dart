@@ -7,12 +7,18 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
+import 'package:trip_boy/component/activity_list.dart';
+import 'package:trip_boy/component/vertical_card.dart';
+import 'package:trip_boy/models/booking_model.dart';
+import '../../activity_list_admin.dart';
 import '../../common/user_data.dart';
+import '../../component/custom_dialog.dart';
 import '../../models/user_model.dart';
 import '../../services/auth.dart';
 import '../../services/database_services.dart';
 import '../login_page.dart';
 import 'detail_confirmation_restaurant.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DashboardAdmin extends StatefulWidget {
   const DashboardAdmin({super.key});
@@ -29,9 +35,10 @@ class _DashboardAdminState extends State<DashboardAdmin> {
   bool _isAuthenticated = false;
   bool selected = true;
   int _choiceIndex = 0;
+  List<BookingModel> orderData = [];
 
   List<String> choicesList = [
-    "Semua",
+    "Semua Acc",
     "Acc Destinasi Wisata",
     "Acc Restoran",
     "Acc Penginapan",
@@ -52,6 +59,8 @@ class _DashboardAdminState extends State<DashboardAdmin> {
       email = userData.email!;
 
       profileUrl = userData.profileImage!;
+      orderData = await DatabaseService().getOrderAdmin();
+      print(orderData);
     }
     setLoading(false);
   }
@@ -119,13 +128,21 @@ class _DashboardAdminState extends State<DashboardAdmin> {
                         IconButton(
                             onPressed: () {
                               setState(() {
-                                provider.logout().then(
-                                    (value) => Navigator.pushAndRemoveUntil(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => LoginPage(),
+                                CustomDialog.showConfirmation(context, () {
+                                  provider.logout().then(
+                                        (value) => Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => LoginPage(),
+                                          ),
                                         ),
-                                        (route) => false));
+                                      );
+                                },
+                                    Text(
+                                        AppLocalizations.of(context)!
+                                            .logoutConfirmation,
+                                        style: AppTextStyles.appTitlew400s12(
+                                            ColorValues().blackColor)));
                               });
                             },
                             icon: Icon(
@@ -155,7 +172,6 @@ class _DashboardAdminState extends State<DashboardAdmin> {
                                 ? Colors.white
                                 : ColorValues().blackColor),
                         onSelected: (bool isSelect) {
-                          // print("hihihhiha");
                           setState(() {
                             _choiceIndex = isSelect ? index : 0;
                           });
@@ -164,134 +180,134 @@ class _DashboardAdminState extends State<DashboardAdmin> {
                 },
               ),
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    for (int i = 0; i < 5; i++)
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => DetailConfirmationRestaurant(
-                                hintTextType: "",
-                                index: 0,
-                                isEditForm: false,
-                                hintText: ""),
-                          ));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(3),
-                                topRight: Radius.circular(3),
-                                bottomLeft: Radius.circular(3),
-                                bottomRight: Radius.circular(3)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color.fromARGB(255, 213, 213, 213)
-                                    .withOpacity(0.3),
-                                // spreadRadius: 5,
-                                blurRadius: 15,
-                                offset:
-                                    Offset(0, 3), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          width: MediaQuery.of(context).size.width,
-                          padding: EdgeInsets.all(10),
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                          height: 100,
-                          child: Row(
-                            children: [
-                              Container(
-                                child: Image.asset(
-                                  "assets/png_image/kulinerFood.png",
-                                  height: 80,
-                                  width: 80,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Expanded(
-                                child: Container(
-                                  child: Column(
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          Text(
-                                            "Warung Makan IGA Pak Wid",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 13),
-                                          ),
-                                          SizedBox(
-                                            height: 2,
-                                          ),
-                                          Text("29/11/2022",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 12)),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 27,
-                                      ),
-                                      Row(
-                                        children: [
-                                          Expanded(child: SizedBox()),
-                                          Container(
-                                            width: 70,
-                                            height: 20,
-                                            child: ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    primary: Color.fromARGB(
-                                                        255, 15, 199, 55)),
-                                                onPressed: () {},
-                                                child: Text(
-                                                  "Terima",
-                                                  style: TextStyle(
-                                                    fontSize: 11,
-                                                  ),
-                                                )),
-                                          ),
-                                          SizedBox(
-                                            width: 4,
-                                          ),
-                                          Container(
-                                            width: 70,
-                                            height: 20,
-                                            child: ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                    primary: Color.fromARGB(
-                                                        255, 232, 17, 17)),
-                                                onPressed: () {},
-                                                child: Text(
-                                                  "Tolak",
-                                                  style: TextStyle(
-                                                    fontSize: 11,
-                                                  ),
-                                                )),
-                                          )
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
+            _choiceIndex == 5 ? buildPaymentConfirmation() : Container()
+            // Expanded(
+            //   child: SingleChildScrollView(
+            //     child: Column(
+            //       children: [
+            //         for (int i = 0; i < 5; i++)
+            //           InkWell(
+            //             onTap: () {
+            //               Navigator.of(context).push(MaterialPageRoute(
+            //                 builder: (context) => DetailConfirmationRestaurant(
+            //                     hintTextType: "",
+            //                     index: 0,
+            //                     isEditForm: false,
+            //                     hintText: ""),
+            //               ));
+            //             },
+            //             child: Container(
+            //               decoration: BoxDecoration(
+            //                 color: Colors.white,
+            //                 borderRadius: BorderRadius.only(
+            //                     topLeft: Radius.circular(3),
+            //                     topRight: Radius.circular(3),
+            //                     bottomLeft: Radius.circular(3),
+            //                     bottomRight: Radius.circular(3)),
+            //                 boxShadow: [
+            //                   BoxShadow(
+            //                     color: Color.fromARGB(255, 213, 213, 213)
+            //                         .withOpacity(0.3),
+            //                     blurRadius: 15,
+            //                     offset:
+            //                         Offset(0, 3), // changes position of shadow
+            //                   ),
+            //                 ],
+            //               ),
+            //               width: MediaQuery.of(context).size.width,
+            //               padding: EdgeInsets.all(10),
+            //               margin:
+            //                   EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+            //               height: 100,
+            //               child: Row(
+            //                 children: [
+            //                   Container(
+            //                     child: Image.asset(
+            //                       "assets/png_image/kulinerFood.png",
+            //                       height: 80,
+            //                       width: 80,
+            //                       fit: BoxFit.cover,
+            //                     ),
+            //                   ),
+            //                   SizedBox(
+            //                     width: 5,
+            //                   ),
+            //                   Expanded(
+            //                     child: Container(
+            //                       child: Column(
+            //                         children: [
+            //                           Column(
+            //                             crossAxisAlignment:
+            //                                 CrossAxisAlignment.stretch,
+            //                             children: [
+            //                               Text(
+            //                                 "Warung Makan IGA Pak Wid",
+            //                                 style: TextStyle(
+            //                                     fontWeight: FontWeight.w600,
+            //                                     fontSize: 13),
+            //                               ),
+            //                               SizedBox(
+            //                                 height: 2,
+            //                               ),
+            //                               Text("29/11/2022",
+            //                                   style: TextStyle(
+            //                                       fontWeight: FontWeight.w400,
+            //                                       fontSize: 12)),
+            //                             ],
+            //                           ),
+            //                           SizedBox(
+            //                             height: 27,
+            //                           ),
+            //                           Row(
+            //                             children: [
+            //                               Expanded(child: SizedBox()),
+            //                               Container(
+            //                                 width: 70,
+            //                                 height: 20,
+            //                                 child: ElevatedButton(
+            //                                     style: ElevatedButton.styleFrom(
+            //                                         primary: Color.fromARGB(
+            //                                             255, 15, 199, 55)),
+            //                                     onPressed: () {},
+            //                                     child: Text(
+            //                                       "Terima",
+            //                                       style: TextStyle(
+            //                                         fontSize: 11,
+            //                                       ),
+            //                                     )),
+            //                               ),
+            //                               SizedBox(
+            //                                 width: 4,
+            //                               ),
+            //                               Container(
+            //                                 width: 70,
+            //                                 height: 20,
+            //                                 child: ElevatedButton(
+            //                                     style: ElevatedButton.styleFrom(
+            //                                         primary: Color.fromARGB(
+            //                                             255, 232, 17, 17)),
+            //                                     onPressed: () {},
+            //                                     child: Text(
+            //                                       "Tolak",
+            //                                       style: TextStyle(
+            //                                         fontSize: 11,
+            //                                       ),
+            //                                     )),
+            //                               )
+            //                             ],
+            //                           )
+            //                         ],
+            //                       ),
+            //                     ),
+            //                   )
+            //                 ],
+            //               ),
+            //             ),
+            //           ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -311,6 +327,15 @@ class _DashboardAdminState extends State<DashboardAdmin> {
           : CircleAvatar(
               backgroundImage: NetworkImage(profileUrl),
             ),
+    );
+  }
+
+  Widget buildPaymentConfirmation() {
+    return Container(
+      child: ActivityListAdmin(
+          data: orderData
+              .where((element) => element.paymentStatus == "in-review")
+              .toList()),
     );
   }
 }

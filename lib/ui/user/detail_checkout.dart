@@ -237,7 +237,13 @@ class _DetailCheckoutState extends State<DetailCheckout> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DetailPaymentMethod(),
+                        builder: (context) => DetailPaymentMethod(
+                          selectedPaymentMethod: "",
+                          paymentList: [],
+                          paymentMethod: (val) {
+                            
+                          },
+                        ),
                       ));
                 },
                 child: Container(

@@ -2,11 +2,13 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:trip_boy/component/vertical_card.dart';
+import 'package:trip_boy/models/event_model.dart';
 import 'package:trip_boy/models/hotel_model.dart';
 import 'package:trip_boy/ui/user/detail_image.dart';
 import 'package:trip_boy/ui/user/menu_detail_restaurant.dart';
@@ -14,7 +16,9 @@ import 'package:trip_boy/ui/user/event_reservation_ticket.dart';
 import 'package:trip_boy/ui/user/tour_reservation_ticket.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../common/shared_code.dart';
 import '../../models/content_model.dart';
+import '../../models/destination_model.dart';
 import '../../models/restaurant_model.dart';
 
 class DetailPage extends StatefulWidget {
@@ -27,12 +31,15 @@ class DetailPage extends StatefulWidget {
       timeClose,
       description,
       googleMapsUrl;
-  String? timeHeld;
+  String? timeHeld, ticketType;
   var price;
   double rating;
   List imageList;
   List<RoomHotel> roomList;
   List<MenuRestaurant> menuRestaurantsList;
+  List<TermEvent>? termList;
+  List<PaymentMethodEvent>? paymentMethodEvent;
+  List? paymentMethod;
   List facilityList;
   DetailPage(
       {super.key,
@@ -46,7 +53,11 @@ class DetailPage extends StatefulWidget {
       required this.timeOpen,
       required this.timeClose,
       required this.menuRestaurantsList,
+      this.termList,
       this.timeHeld,
+      this.ticketType,
+      this.paymentMethodEvent,
+      this.paymentMethod,
       required this.description,
       required this.imageList,
       required this.googleMapsUrl,
@@ -108,18 +119,16 @@ class _DetailPageState extends State<DetailPage>
                   ],
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
-                    child: Container(
-                      // height: MediaQuery.of(context).size.height * 0.7.sp,
-                      width: MediaQuery.of(context).size.width.sp,
-                      child: widget.type == "restaurant"
-                          ? buildRestaurantDetail(length)
-                          : widget.type == "hotel"
-                              ? buildHotelDetail(length)
-                              : widget.type == "event"
-                                  ? buildEventDetail()
-                                  : buildDestinationDetail(),
-                    ),
+                  child: Container(
+                    // height: MediaQuery.of(context).size.height * 0.7.sp,
+                    width: MediaQuery.of(context).size.width.sp,
+                    child: widget.type == "restaurant"
+                        ? buildRestaurantDetail(length)
+                        : widget.type == "hotel"
+                            ? buildHotelDetail(length)
+                            : widget.type == "event"
+                                ? buildEventDetail()
+                                : buildDestinationDetail(),
                   ),
                 ),
               ],
@@ -527,6 +536,9 @@ class _DetailPageState extends State<DetailPage>
         itemCount: widget.roomList.length,
         itemBuilder: (context, index) {
           return VerticalCard(
+             deleteFunction: () {
+                        
+                      },
             title: widget.roomList[index].sizeRoom,
             subDistrict: "",
             price: widget.roomList[index].priceRoom.toString(),
@@ -950,172 +962,227 @@ class _DetailPageState extends State<DetailPage>
   }
 
   buildEventDetail() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          height: 170.sp,
-          width: MediaQuery.of(context).size.width.sp,
-          child: Stack(
-            children: [
-              widget.imageUrl == ""
-                  ? Image.asset("",
-                      fit: BoxFit.cover, filterQuality: FilterQuality.high)
-                  : Image.network(widget.imageUrl,
-                      fit: BoxFit.cover, filterQuality: FilterQuality.high),
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, ColorValues().veryBlackColor],
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 170.sp,
+            width: MediaQuery.of(context).size.width.sp,
+            child: Stack(
+              children: [
+                widget.imageUrl.startsWith("/")
+                    ? Image(
+                        image: FileImage(
+                        File(widget.imageUrl),
+                      ))
+                    : widget.imageUrl == ""
+                        ? Image.asset("assets/png_image/logo.png",
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high)
+                        : Image.network(widget.imageUrl,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high),
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        ColorValues().veryBlackColor
+                      ],
+                    ),
+                    color: ColorValues().veryBlackColor.withOpacity(0.45),
                   ),
-                  color: ColorValues().veryBlackColor.withOpacity(0.45),
                 ),
-              ),
-              Container(
-                alignment: Alignment.bottomLeft,
-                margin: EdgeInsets.only(
-                  left: 12.sp,
-                  bottom: 12.sp,
+                Container(
+                  alignment: Alignment.bottomLeft,
+                  margin: EdgeInsets.only(
+                    left: 12.sp,
+                    right: 12.sp,
+                    bottom: 12.sp,
+                  ),
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.name,
+                        style: AppTextStyles.appTitlew500s18(Colors.white),
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, top: 10),
+                            child: Icon(
+                              Icons.star,
+                              size: 20,
+                              color: ColorValues().starColor,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10, top: 10),
+                            child: Text(
+                              widget.rating.toString(),
+                              style:
+                                  AppTextStyles.appTitlew400s14(Colors.white),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                child: Text(
-                  widget.name,
-                  style: AppTextStyles.appTitlew500s18(Colors.white),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        buildDescFestival()
-      ],
+          Expanded(child: buildDescFestival()),
+          Container(
+              margin: SharedCode.globalMargin,
+              width: MediaQuery.of(context).size.width,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorValues().primaryColor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15)))),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => EventReservationTicket(
+                        title: widget.name,
+                        ticketPrice: widget.price,
+                        terms: widget.termList!,
+                        contentDesc: widget.description,
+                        contentType: widget.type,
+                        contentRating: widget.rating,
+                        dateHeld: widget.timeClose,
+                        paymentMethods: widget.paymentMethodEvent!))),
+                child: Text(AppLocalizations.of(context)!.reserveTicket,
+                    style: AppTextStyles.appTitlew500s14(
+                      Colors.white,
+                    )),
+              ))
+        ],
+      ),
     );
   }
 
   Widget buildDescFestival() {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Padding(
-        padding: const EdgeInsets.only(
-          left: 20,
-          top: 20,
-        ),
-        child: (Text(
-          'Deskripsi',
-          style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
-        )),
-      ),
-      Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
-        child: Text(
-          '''
-Event kali ini cukup berbeda dengan mengusung tema makanan yaitu street food indonesia yang khsusnya adalah makanan khas Boyolali. Dengan berbagai macam rasa bentuk dari masing masing wilayah Boyolali.....selengkapnya''',
-          style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
-        ),
-      ),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20, top: 20),
-            child: Icon(
-              Icons.location_on_outlined,
-              size: 20,
-            ),
+    return SingleChildScrollView(
+      child: Container(
+        margin: SharedCode.globalMargin,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(
+            AppLocalizations.of(context)!.description,
+            style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 20, top: 20),
+            padding: const EdgeInsets.only(top: 5),
             child: Text(
-              'Alun-Alun Kidul Boyolali',
-              style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
-            ),
-          )
-        ],
-      ),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20, top: 10),
-            child: Icon(
-              Icons.date_range,
-              size: 20,
+              widget.description,
+              textAlign: TextAlign.justify,
+              style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20, top: 10),
-            child: Text(
-              '03-10 Desember 2022',
-              style: AppTextStyles.appTitlew400s14(ColorValues().blackColor),
-            ),
-          )
-        ],
-      ),
-      Padding(
-        padding: const EdgeInsets.only(left: 20, top: 20),
-        child: Text(
-          'Informasi Lainnya',
-          style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.only(left: 20, top: 10),
-        child: Text(
-          '''
-Buka:
-Senin - Sabtu mulai jam 10.00
-Minggu mulai 06.00''',
-          style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.only(left: 20, top: 10),
-        child: Text(
-          '''Pemesanan tiket dapat dilakukan minimal 
-6 jam sebelum festival dimulai
-''',
-          style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.only(left: 20, top: 10),
-        child: Text(
-          'Ketentuan Pengunjung',
-          style: AppTextStyles.appTitlew500s14(ColorValues().blackColor),
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.only(left: 20, top: 10),
-        child: Text(
-          '''
-1.) Sebelum Kunjungan, Pastikan Pengunjung telah  memiliki tiket digital yang telah di booking melalui Aplikasi T-Boy, tunjukkan tiket digital tersebut kepada petugas untuk dilakukan pengecekkan agar dapat di tukar menjadi tiket gelang.
-
-2.) 1 Akun T-Boy hanya berlaku untuk 1 Orang.
-
-3.)Pengunjung Festival harus dalam kondisi sehat, apabila terjadi gejala tidak sehat (flu, batuk, demam di atas 37,3 C) maka tidak diperkenankan untuk masuk kearea festival.
-
-4.)Setiap Pengunjung wajib menggunakan masker dan mengikuti pengukuran suhu tubuh dan wajib scan di Aplikasi Peduli Lindungi.''',
-          style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
-        ),
-      ),
-      Container(
-          margin: EdgeInsets.only(bottom: 10, top: 15),
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Icon(
+                  Icons.confirmation_number,
+                  size: 20,
+                  color: ColorValues().blackColor,
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10, top: 10),
+                    child: widget.price == 0
+                        ? Text(
+                            "Free",
+                            style: AppTextStyles.appTitlew500s14(
+                                ColorValues().blackColor),
+                          )
+                        : Text(
+                            "Rp${widget.price.toString()} / guest",
+                            style: AppTextStyles.appTitlew500s14(
+                                ColorValues().blackColor),
+                          ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10, top: 10),
+                    child: Text(
+                      widget.ticketType![0].toUpperCase() +
+                          widget.ticketType!.substring(1),
+                      style: AppTextStyles.appTitlew500s14(
+                          ColorValues().blackColor),
+                    ),
+                  ),
+                ],
+              )
+            ],
           ),
-          width: MediaQuery.of(context).size.width,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                backgroundColor: ColorValues().primaryColor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(15)))),
-            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => EventReservationTicket())),
-            child: Text('Pesan Tiket',
-                style: AppTextStyles.appTitlew500s14(
-                  Colors.white,
-                )),
-          ))
-    ]);
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Icon(
+                  Icons.date_range,
+                  size: 20,
+                  color: ColorValues().blackColor,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, top: 10),
+                child: Text(
+                  widget.timeClose,
+                  style:
+                      AppTextStyles.appTitlew500s14(ColorValues().blackColor),
+                ),
+              )
+            ],
+          ),
+          widget.termList!.isEmpty
+              ? Container()
+              : Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    AppLocalizations.of(context)!.termTitle,
+                    style:
+                        AppTextStyles.appTitlew500s14(ColorValues().blackColor),
+                  ),
+                ),
+          for (int i = 0; i < widget.termList!.length; i++)
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 10,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("${(i + 1).toString()})"),
+                  SizedBox(
+                    width: 2,
+                  ),
+                  Expanded(
+                    child: Text(
+                      "${widget.termList![i].text}",
+                      textAlign: TextAlign.justify,
+                      style: AppTextStyles.appTitlew400s12(
+                          ColorValues().blackColor),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ]),
+      ),
+    );
   }
 }

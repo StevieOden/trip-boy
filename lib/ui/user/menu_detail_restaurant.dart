@@ -319,6 +319,9 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
                   itemCount: listRestaurantDrink.length,
                   itemBuilder: (context, index) {
                     return VerticalCard(
+                      deleteFunction: () {
+                        
+                      },
                         isElevated: false,
                         isShowRating: false,
                         title: listRestaurantDrink[index].name,
@@ -356,6 +359,9 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
                   itemCount: listRestaurantFood.length,
                   itemBuilder: (context, index) {
                     return VerticalCard(
+                       deleteFunction: () {
+                        
+                      },
                         isElevated: false,
                         title: listRestaurantFood[index].name,
                         subDistrict: listRestaurantFood[index].desc,
@@ -392,6 +398,9 @@ class _MenuDetailPageState extends State<MenuDetailPage> {
                   itemCount: listRestaurantSnack.length,
                   itemBuilder: (context, index) {
                     return VerticalCard(
+                       deleteFunction: () {
+                        
+                      },
                         isElevated: false,
                         title: listRestaurantSnack[index].name,
                         subDistrict: listRestaurantSnack[index].desc,

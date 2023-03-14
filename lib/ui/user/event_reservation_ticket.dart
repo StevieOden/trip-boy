@@ -3,28 +3,49 @@ import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:trip_boy/component/BuildTextFormField.dart';
+import 'package:trip_boy/models/event_model.dart';
 import 'package:trip_boy/ui/user/event_resevartion_cart.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'detail_page.dart';
-
 class EventReservationTicket extends StatefulWidget {
-  EventReservationTicket({Key? key}) : super(key: key);
+  String title, contentType, contentDesc, dateHeld;
+  double contentRating;
+  int ticketPrice;
+  List<TermEvent> terms;
+  List<PaymentMethodEvent> paymentMethods;
+  EventReservationTicket(
+      {Key? key,
+      required this.title,
+      required this.ticketPrice,
+      required this.terms,
+      required this.contentType,
+      required this.contentDesc,
+      required this.contentRating,
+      required this.dateHeld,
+      required this.paymentMethods})
+      : super(key: key);
 
   @override
   State<EventReservationTicket> createState() => _EventReservationTicketState();
 }
 
 class _EventReservationTicketState extends State<EventReservationTicket> {
-  TextEditingController name = TextEditingController();
   TextEditingController desc = TextEditingController();
   TextEditingController dateCheckIn = TextEditingController();
-  TextEditingController dateCheckOut = TextEditingController();
+  final ValueNotifier<int> totalPrice = ValueNotifier<int>(0);
+
+  int guestCount = 1;
+
+  static final dateForm = GlobalKey<FormState>();
 
   @override
   void initState() {
-    name.text = '';
     desc.text = '';
+    totalPrice.value = widget.ticketPrice;
+    dateCheckIn = TextEditingController(
+        text:
+            "${widget.dateHeld.split(", ")[0]}, ${widget.dateHeld.split(", ")[1]}");
+    print("paymentMethod: " + widget.paymentMethods.toString());
     super.initState();
   }
 
@@ -35,12 +56,12 @@ class _EventReservationTicketState extends State<EventReservationTicket> {
           backgroundColor: Colors.white,
           centerTitle: true,
           title: Text(
-            'Alam Sutra Boyolali',
+            widget.title,
             style: AppTextStyles.appTitlew500s16(ColorValues().blackColor),
           ),
           leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop(DetailPage);
+              Navigator.of(context).pop();
             },
             icon: Icon(
               Icons.arrow_back_ios,
@@ -48,113 +69,217 @@ class _EventReservationTicketState extends State<EventReservationTicket> {
             ),
           ),
         ),
-        body: SingleChildScrollView(
+        body: Form(
+          key: dateForm,
           child: Container(
             padding: EdgeInsets.all(15),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BuildTextFormField(
-                    hintText: AppLocalizations.of(context)!.fillName,
-                    title: AppLocalizations.of(context)!.name),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(AppLocalizations.of(context)!.checkInDate),
-                      TextButton(
-                          onPressed: () {},
-                          child: Text(AppLocalizations.of(context)!.clear))
-                    ]),
-                BuildTextFormField(
-                  hintText: AppLocalizations.of(context)!.enterCheckInDate,
-                  title: "",
-                  isTitle: false,
-                  isDateForm: true,
-                  dateController: dateCheckIn,
-                ),
-                BuildTextFormField(
-                  hintText: AppLocalizations.of(context)!.enterCheckOutDate,
-                  title: AppLocalizations.of(context)!.checkOutDate,
-                  isDateForm: true,
-                  dateController: dateCheckOut,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(AppLocalizations.of(context)!.guest),
-                    TextButton(
-                        onPressed: () {},
-                        child: Text(AppLocalizations.of(context)!.clear))
-                  ],
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 10, right: 10),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Tiket Masuk",
-                              style: AppTextStyles.appTitlew400s10(
-                                  ColorValues().blackColor)),
-                          Text(
-                            "Belum termasuk parkir dll",
-                            style: AppTextStyles.appTitlew400s10(
-                                ColorValues().lightGrayColor),
-                          )
-                        ],
-                      ),
                       Row(
-                        children: [
-                          IconButton(
-                              onPressed: () {}, icon: Icon(Icons.remove)),
-                          Text("2"),
-                          IconButton(onPressed: () {}, icon: Icon(Icons.add))
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(top: 20),
-                  child: Text(
-                    'Informasi Lainya',
-                    style:
-                        AppTextStyles.appTitlew500s14(ColorValues().blackColor),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Text(
-                    '''Buka :
-Senin - Jumat mulai jam 10.00 WIB
-Sabtu - Minggu mulai jam 09.00 WIB
-        
-Harap hadir tepat waktu minimal 30 menit sebelum Sesi dimulai dan maksimal toleransi keterlambatan adalah 10 menit dari waktu Sesi yang dipilh''',
-                    style:
-                        AppTextStyles.appTitlew400s12(ColorValues().blackColor),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(top: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Total',
-                        style: AppTextStyles.appTitlew500s14(
-                            ColorValues().blackColor),
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.date,
+                              style: AppTextStyles.appTitlew400s14(
+                                  ColorValues().blackColor),
+                            ),
+                            TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    dateCheckIn.clear();
+                                  });
+                                },
+                                child: Text(
+                                  AppLocalizations.of(context)!.clear,
+                                  style: AppTextStyles.appTitlew500s12(
+                                      ColorValues().primaryColor),
+                                ))
+                          ]),
+                      BuildTextFormField(
+                        hintText: AppLocalizations.of(context)!.enterDate,
+                        title: "",
+                        isTitle: false,
+                        isDateForm: true,
+                        dateController: dateCheckIn,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return AppLocalizations.of(context)!.dateWarning;
+                          }
+                          return null;
+                        },
                       ),
                       Text(
-                        'Rp75000',
-                        style: AppTextStyles.appTitlew500s14(
+                        AppLocalizations.of(context)!.guest,
+                        style: AppTextStyles.appTitlew400s14(
                             ColorValues().blackColor),
-                      )
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.ticketAlert,
+                        style: AppTextStyles.appTitlew400s12(
+                            ColorValues().blackColor),
+                      ),
+                      SizedBox(
+                        height: 2,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(AppLocalizations.of(context)!.entryTicket,
+                                    style: AppTextStyles.appTitlew400s10(
+                                        ColorValues().blackColor)),
+                                Text(
+                                  AppLocalizations.of(context)!.ticketDesc,
+                                  style: AppTextStyles.appTitlew400s10(
+                                      ColorValues().lightGrayColor),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        if (guestCount != 1) {
+                                          guestCount--;
+                                          totalPrice.value =
+                                              widget.ticketPrice * guestCount;
+                                        }
+                                      });
+                                    },
+                                    icon: Icon(Icons.remove)),
+                                Text(guestCount.toString()),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        guestCount++;
+                                        totalPrice.value = totalPrice.value =
+                                            widget.ticketPrice * guestCount;
+                                        ;
+                                      });
+                                    },
+                                    icon: Icon(Icons.add))
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        thickness: 2,
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!.otherInfo,
+                        style: AppTextStyles.appTitlew400s14(
+                            ColorValues().blackColor),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Wrap(
+                        spacing: 3,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.eventTime + " :",
+                            style: AppTextStyles.appTitlew400s12(
+                                ColorValues().blackColor),
+                          ),
+                          Text(
+                            widget.dateHeld,
+                            style: AppTextStyles.appTitlew400s12(
+                                ColorValues().blackColor),
+                          ),
+                        ],
+                      ),
+                      widget.terms.isEmpty
+                          ? Container()
+                          : Container(
+                              padding: EdgeInsets.only(top: 20),
+                              child: Text(
+                                AppLocalizations.of(context)!.termTitle,
+                                style: AppTextStyles.appTitlew500s14(
+                                    ColorValues().blackColor),
+                              ),
+                            ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              for (int i = 0; i < widget.terms.length; i++)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 10,
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text("${(i + 1).toString()})"),
+                                      SizedBox(
+                                        width: 2,
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          "${widget.terms[i].text}",
+                                          textAlign: TextAlign.justify,
+                                          style: AppTextStyles.appTitlew400s12(
+                                              ColorValues().blackColor),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
+                  ),
+                ),
+                ValueListenableBuilder(
+                  valueListenable: totalPrice,
+                  builder: (context, value, child) => Container(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Total',
+                          style: AppTextStyles.appTitlew500s14(
+                              ColorValues().blackColor),
+                        ),
+                        totalPrice.value == 0
+                            ? Text(
+                                "Free",
+                                style: AppTextStyles.appTitlew500s14(
+                                    ColorValues().blackColor),
+                              )
+                            : Text(
+                                "Rp${totalPrice.value.toString()}",
+                                style: AppTextStyles.appTitlew500s14(
+                                    ColorValues().blackColor),
+                              )
+                      ],
+                    ),
                   ),
                 ),
                 Container(
@@ -167,15 +292,26 @@ Harap hadir tepat waktu minimal 30 menit sebelum Sesi dimulai dan maksimal toler
                           shape: RoundedRectangleBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(15)))),
-                      onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => EventResevartionCart())),
+                      onPressed: () {
+                        if (dateForm.currentState!.validate()) {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => EventResevartionCart(
+                                    title: widget.title,
+                                    dateCheckIn: dateCheckIn.text,
+                                    ticketCount: guestCount,
+                                    totalPrice: totalPrice.value,
+                                    contentType: widget.contentType,
+                                    contentDesc: widget.contentDesc,
+                                    contentRating: widget.contentRating,
+                                    paymentMethodsEvent: widget.paymentMethods,
+                                  )));
+                        }
+                      },
                       child: Text(AppLocalizations.of(context)!.booking,
                           style: AppTextStyles.appTitlew500s14(
                             Colors.white,
                           )),
-                    )
-                    )
+                    ))
               ],
             ),
           ),

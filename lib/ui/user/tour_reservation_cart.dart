@@ -181,7 +181,11 @@ class _TourReservationCartState extends State<TourReservationCart> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DetailPaymentMethod(),
+                      builder: (context) => DetailPaymentMethod(
+                        selectedPaymentMethod: "",
+                        paymentList: [],
+                        paymentMethod: (val) {},
+                      ),
                     ));
               },
               child: Container(

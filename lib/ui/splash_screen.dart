@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:trip_boy/component/custom_dialog.dart';
 import 'package:trip_boy/services/network_connectivity.dart';

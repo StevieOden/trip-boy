@@ -157,19 +157,21 @@ class _DetailConfirmationRestaurantState
 
     _termsController = TextEditingController();
 
-    nameController = TextEditingController();
-    descController = TextEditingController();
-    timeOpenController = TextEditingController();
-    timeClosedController = TextEditingController();
+    nameController = TextEditingController(text: "Warung Makan Iga Pak Wid");
+    descController = TextEditingController(
+        text:
+            "Tempat nyaman,Masakan enak varian menu banyak mulai dr makanan ringan sampai makanan berat cocok untuk keluarga mulai dari anak kecil sampai orang tua.Recomended Iganya enak bikin ketagihan.");
+    timeOpenController = TextEditingController(text: "07:00");
+    timeClosedController = TextEditingController(text: "18:00");
     timeHeldController = TextEditingController();
     timeHeldCloseController = TextEditingController();
     dateHeldController = TextEditingController();
-    roadNameController = TextEditingController();
-    hamletNameController = TextEditingController();
-    urbanVillageNameController = TextEditingController();
-    subDistrictNameController = TextEditingController();
-    districtNameController = TextEditingController();
-    provinceNameController = TextEditingController();
+    roadNameController = TextEditingController(text: "Jl. pisang");
+    hamletNameController = TextEditingController(text: "Gondangmanis");
+    urbanVillageNameController = TextEditingController(text: "Bae");
+    subDistrictNameController = TextEditingController(text: "Kudus");
+    districtNameController = TextEditingController(text: "Kudus");
+    provinceNameController = TextEditingController(text: "Jawa Tengah");
     googleMapsController = TextEditingController();
     ratingController = TextEditingController();
   }
@@ -342,15 +344,35 @@ class _DetailConfirmationRestaurantState
                           ),
                         ),
                       ),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                backgroundColor: ColorValues().primaryColor),
-                            child: Text(AppLocalizations.of(context)!.save)),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    backgroundColor:
+                                        ColorValues().primaryColor),
+                                child:
+                                    Text(AppLocalizations.of(context)!.accept)),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    backgroundColor: ColorValues().redColor),
+                                child:
+                                    Text(AppLocalizations.of(context)!.reject)),
+                          )
+                        ],
                       )
                     ],
                   ),
@@ -377,14 +399,14 @@ class _DetailConfirmationRestaurantState
             isTimeForm: true,
             title: AppLocalizations.of(context)!.timeOpen,
             hintText: hintTextTimeOpen,
-            controller: timeOpenController,
+            timeController: timeOpenController,
           ),
           BuildTextFormField(
             isTimeForm: true,
             title: AppLocalizations.of(context)!.timeClose,
             hintText:
                 AppLocalizations.of(context)!.hintTextTimeCloseDestination,
-            controller: timeClosedController,
+            timeController: timeClosedController,
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -465,7 +487,7 @@ class _DetailConfirmationRestaurantState
                           menuTypeController,
                           (val) => imageUrl = val, () {
                         menuList.add(MenuRestaurant(
-                          type: menuTypeController.text,
+                            type: menuTypeController.text,
                             name: menuNameController.text,
                             desc: menuDescController.text,
                             price: int.parse(menuPriceController.text),

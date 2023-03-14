@@ -5,9 +5,18 @@ import 'package:trip_boy/common/app_text_styles.dart';
 import 'package:trip_boy/common/color_values.dart';
 import '../ui/user/upload_page/upload_detail.dart';
 
+typedef void IntCallback(int val);
+
 class UploadList extends StatelessWidget {
   List<Map> uploadList;
-  UploadList({Key? key, required this.uploadList}) : super(key: key);
+  Function() navPush;
+  IntCallback indexCallback;
+  UploadList(
+      {Key? key,
+      required this.uploadList,
+      required this.navPush,
+      required this.indexCallback})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +31,16 @@ class UploadList extends StatelessWidget {
             );
           },
           itemBuilder: (context, index) {
+            indexCallback(index);
             return InkWell(
               onTap: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => UploadDetail(index: index,hintTextType: uploadList[index]["title"],),
+                      builder: (context) => UploadDetail(
+                        index: index,
+                        hintTextType: uploadList[index]["title"],
+                      ),
                     ));
               },
               child: Container(

@@ -1,5 +1,10 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:trip_boy/common/shared_code.dart';
 import 'package:trip_boy/common/user_data.dart';
+import 'package:trip_boy/models/booking_model.dart';
+import 'package:trip_boy/models/content_model.dart';
 import 'package:trip_boy/models/destination_model.dart';
 import 'package:trip_boy/models/event_model.dart';
 import 'package:trip_boy/models/hotel_model.dart';
@@ -16,13 +21,8 @@ class DatabaseService {
   CollectionReference destination =
       FirebaseFirestore.instance.collection('destination');
 
-  Future<UserModel?> addDefaultPatientUser(
-      String uid,
-      String? email,
-      String name,
-      String? phoneNumber,
-      String photoUrl,
-      String role) async {
+  Future<UserModel?> addDefaultPatientUser(String uid, String? email,
+      String name, String? phoneNumber, String photoUrl, String role) async {
     QuerySnapshot querySnapshot =
         await users.where("uid", isEqualTo: uid).get();
     UserModel userModel = UserModel(
@@ -248,5 +248,272 @@ class DatabaseService {
         .add(data.toJson())
         .then((value) => print('Destination Added'))
         .catchError((error) => print("Error: " + error.toString()));
+  }
+
+  Future addBookingDataEvent(
+      int paymentTotal,
+      String bookingDate,
+      String note,
+      String paymentMethod,
+      String contentName,
+      String contentType,
+      double contentRating,
+      String contentDesc,
+      List<PaymentMethodEvent> paymentMethods) async {
+    const _chars =
+        'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+    Random _rnd = Random();
+
+    String getRandomString(int length) =>
+        String.fromCharCodes(Iterable.generate(
+            length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+
+    var paymentExpired = SharedCode.dateAndTimeFormat
+        .format(DateTime.now().add(Duration(hours: 1)));
+
+    BookingModel dataBooking = BookingModel(
+        id: getRandomString(28),
+        userId: UserData().uid,
+        booking: Booking(
+            note: note,
+            content: ContentModel(
+                paymentMethod: paymentMethods,
+                description: contentDesc,
+                name: contentName,
+                rating: contentRating,
+                type: contentType,
+                userId: UserData().uid),
+            bookingDate: bookingDate,
+            paymentMethod: paymentMethod,
+            paymentTotal: paymentTotal),
+        payment: Payment(
+            id: "",
+            receiptImage: "",
+            paymentMethod: paymentMethod,
+            paymentAmount: paymentTotal,
+            paymentStatus: paymentTotal == 0 ? "done" : "process",
+            receiptSentAt: "",
+            paymentExpiresAt: paymentExpired),
+        paymentStatus: paymentTotal == 0 ? "done" : "process",
+        createdAt: SharedCode.dateAndTimeFormat.format(DateTime.now()),
+        updatedAt: SharedCode.dateAndTimeFormat.format(DateTime.now()));
+    QuerySnapshot snapshot =
+        await users.where("uid", isEqualTo: UserData().uid).get();
+    for (var data in snapshot.docs) {
+      await users
+              .doc(data.id)
+              .collection("order")
+              .add(dataBooking.toJson())
+              .then((value) => print('Booking Data Added'))
+          // .catchError((error) => print("Error: " + error.toString()))
+          ;
+    }
+  }
+
+  Future<bool> checkPayment() async {
+    List<BookingModel> list = [];
+    bool isAny = false;
+    QuerySnapshot snapshot =
+        await users.where("uid", isEqualTo: UserData().uid).get();
+    for (var data in snapshot.docs) {
+      QuerySnapshot snapshot2 = await users
+          .doc(data.id)
+          .collection("order")
+          .where("payment_status", isEqualTo: "process")
+          .get();
+      for (var data in snapshot2.docs) {
+        Map<String, dynamic> mapData = data.data() as Map<String, dynamic>;
+        BookingModel model = BookingModel.fromJson(mapData);
+        list.add(model);
+      }
+    }
+    isAny = list.isNotEmpty ? true : false;
+    return isAny;
+  }
+
+  Future<List<BookingModel>> getBookingData() async {
+    List<BookingModel> list = [];
+    QuerySnapshot snapshot =
+        await users.where("uid", isEqualTo: UserData().uid).get();
+    for (var data in snapshot.docs) {
+      QuerySnapshot snapshot2 =
+          await users.doc(data.id).collection("order").get();
+      for (var data in snapshot2.docs) {
+        Map<String, dynamic> mapData = data.data() as Map<String, dynamic>;
+        BookingModel model = BookingModel.fromJson(mapData);
+        list.add(model);
+      }
+    }
+
+    return list;
+  }
+
+  Future<List<String>> getBookingId() async {
+    List<String> bookingIdList = [];
+    QuerySnapshot snapshot =
+        await users.where("uid", isEqualTo: UserData().uid).get();
+    for (var data in snapshot.docs) {
+      QuerySnapshot snapshot2 =
+          await users.doc(data.id).collection("order").get();
+      for (var data in snapshot2.docs) {
+        bookingIdList.add(data.id);
+      }
+    }
+
+    return bookingIdList;
+  }
+
+  Future<void> deleteContent(String contentId, String type) async {
+    type == "restaurant"
+        ? await restaurants.doc(contentId).delete()
+        : type == "event"
+            ? await events.doc(contentId).delete()
+            : type == "hotel"
+                ? await hotels.doc(contentId).delete()
+                : await destination.doc(contentId).delete();
+  }
+
+  Future<List<String>> getContentId(String type) async {
+    List<String> contentIdList = [];
+    QuerySnapshot snapshot = type == "restaurant"
+        ? await restaurants.get()
+        : type == "event"
+            ? await events.get()
+            : type == "hotel"
+                ? await hotels.get()
+                : await destination.get();
+
+    for (var i in snapshot.docs) {
+      contentIdList.add(i.id);
+    }
+    return contentIdList;
+  }
+
+  Future<void> updateReceiptPayment(receiptImage, orderId) async {
+    QuerySnapshot querySnapshot =
+        await users.where("uid", isEqualTo: UserData().uid).get();
+
+    for (var i = 0; i < querySnapshot.size; i++) {
+      await users
+          .doc(querySnapshot.docs[i].id)
+          .collection("order")
+          .doc(orderId)
+          .set({
+            "payment": {
+              "payment_status": "in-review",
+              "receipt_image": receiptImage,
+              "receipt_sent_at":
+                  SharedCode.dateAndTimeFormat.format(DateTime.now())
+            },
+            "updated_at": SharedCode.dateAndTimeFormat.format(DateTime.now()),
+            "payment_status": "in-review",
+          }, SetOptions(merge: true))
+          .then((value) => print('Receipt Payment Updated'))
+          .catchError((error) => print("Error: " + error.toString()));
+    }
+  }
+
+  Future<String> getOrderId(String id) async {
+    String orderId = "";
+    QuerySnapshot snapshot =
+        await users.where("uid", isEqualTo: UserData().uid).get();
+
+    for (var i in snapshot.docs) {
+      QuerySnapshot snapshot = await users
+          .doc(i.id)
+          .collection("order")
+          .where("id", isEqualTo: id)
+          .get();
+      for (var i in snapshot.docs) {
+        orderId = i.id;
+      }
+    }
+    return orderId;
+  }
+
+  Future<List<BookingModel>> getOrderAdmin() async {
+    List<BookingModel> listData = [];
+    QuerySnapshot snapshot = await users.get();
+
+    for (var i in snapshot.docs) {
+      QuerySnapshot snap = await users.doc(i.id).collection("order").get();
+      for (var i in snap.docs) {
+        Map<String, dynamic> mapData = i.data() as Map<String, dynamic>;
+        BookingModel model = BookingModel.fromJson(mapData);
+        listData.add(model);
+      }
+    }
+    return listData;
+  }
+
+  Future<UserModel> getOrderUserData(uid) async {
+    Map<String, dynamic> data = {};
+    QuerySnapshot querySnapshot =
+        await users.where("uid", isEqualTo: uid).get();
+    for (var index in querySnapshot.docs) {
+      data = index.data() as Map<String, dynamic>;
+    }
+    return UserModel.fromMap(data);
+  }
+
+  Future<void> updatePaymentAccept(userId, orderId) async {
+    QuerySnapshot querySnapshot =
+        await users.where("uid", isEqualTo: userId).get();
+
+    print("orderId: " + orderId);
+    for (var i = 0; i < querySnapshot.size; i++) {
+      await users
+          .doc(querySnapshot.docs[i].id)
+          .collection("order")
+          .doc(orderId)
+          .set({
+            "payment": {
+              "payment_status": "done",
+            },
+            "updated_at": SharedCode.dateAndTimeFormat.format(DateTime.now()),
+            "payment_status": "done",
+          }, SetOptions(merge: true))
+          .then((value) => print('updatePaymentAccept Updated'))
+          .catchError((error) => print("Error: " + error.toString()));
+    }
+  }
+
+  Future<void> updatePaymentReject(userId,orderId) async {
+    QuerySnapshot querySnapshot =
+        await users.where("uid", isEqualTo: userId).get();
+
+    for (var i = 0; i < querySnapshot.size; i++) {
+      await users
+          .doc(querySnapshot.docs[i].id)
+          .collection("order")
+          .doc(orderId)
+          .set({
+            "payment": {
+              "payment_status": "canceled",
+            },
+            "updated_at": SharedCode.dateAndTimeFormat.format(DateTime.now()),
+            "payment_status": "canceled",
+          }, SetOptions(merge: true))
+          .then((value) => print('updatePaymentReject Updated'))
+          .catchError((error) => print("Error: " + error.toString()));
+    }
+  }
+
+  Future<String> getOrderIdAdmin(String userId, String id) async {
+    String orderId = "";
+    QuerySnapshot snapshot =
+        await users.where("uid", isEqualTo: userId).get();
+
+    for (var i in snapshot.docs) {
+      QuerySnapshot snapshot = await users
+          .doc(i.id)
+          .collection("order")
+          .where("id", isEqualTo: id)
+          .get();
+      for (var i in snapshot.docs) {
+        orderId = i.id;
+      }
+    }
+    return orderId;
   }
 }

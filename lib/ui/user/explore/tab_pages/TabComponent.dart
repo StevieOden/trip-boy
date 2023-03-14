@@ -176,20 +176,30 @@ class _TabComponentState extends State<TabComponent> {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        listData[index].images!.first.imageUrl.startsWith("/")
-                            ? Image(
-                                image: FileImage(
-                                File(listData[index].images!.first.imageUrl),
-                              ))
-                            : listData[index].images!.first.imageUrl == "" ||
-                                    listData[index].images!.isEmpty == ""
-                                ? Image.asset("assets/png_image/logo.png",
-                                    fit: BoxFit.cover,
-                                    filterQuality: FilterQuality.high)
-                                : Image.network(
-                                    listData[index].images!.first.imageUrl,
-                                    fit: BoxFit.cover,
-                                    filterQuality: FilterQuality.high),
+                        listData[index].images!.isEmpty
+                            ? Image.asset("assets/png_image/logo.png",
+                                fit: BoxFit.cover,
+                                filterQuality: FilterQuality.high)
+                            : listData[index]
+                                    .images!
+                                    .first
+                                    .imageUrl
+                                    .startsWith("/")
+                                ? Image(
+                                    image: FileImage(
+                                    File(
+                                        listData[index].images!.first.imageUrl),
+                                  ))
+                                : listData[index].images!.first.imageUrl ==
+                                            "" ||
+                                        listData[index].images!.isEmpty == ""
+                                    ? Image.asset("assets/png_image/logo.png",
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.high)
+                                    : Image.network(
+                                        listData[index].images!.first.imageUrl,
+                                        fit: BoxFit.cover,
+                                        filterQuality: FilterQuality.high),
                         Container(
                           padding:
                               EdgeInsets.only(left: 10, right: 10, bottom: 10),
@@ -277,7 +287,13 @@ class _TabComponentState extends State<TabComponent> {
                                     ? list[index].facility!
                                     : [],
                                 price: list[index].type == "restaurant"
-                                    ? list[index].menu!.first.price.toString()
+                                    ? list[index].menu!.isEmpty
+                                        ? ""
+                                        : list[index]
+                                            .menu!
+                                            .first
+                                            .price
+                                            .toString()
                                     : list[index].type == "hotel"
                                         ? list[index]
                                             .rooms!
@@ -299,7 +315,10 @@ class _TabComponentState extends State<TabComponent> {
                                 location:
                                     list[index].address!.split(',')[0] == ""
                                         ? list[index].address!.split(',')[0]
-                                        : list[index].address!.split(',')[3],
+                                        : list[index]
+                                            .address!
+                                            .split(',')[3]
+                                            .split('.')[1],
                                 fullLocation: list[index].address!,
                                 timeClose: list[index].type == "restaurant" ||
                                         list[index].type == "destination"
@@ -321,20 +340,31 @@ class _TabComponentState extends State<TabComponent> {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            list[index].images!.first.imageUrl.startsWith("/")
-                                ? Image(
-                                    image: FileImage(
-                                    File(list[index].images!.first.imageUrl),
-                                  ))
-                                : list[index].images!.first.imageUrl == "" ||
-                                        list[index].images!.isEmpty == ""
-                                    ? Image.asset("assets/png_image/logo.png",
-                                        fit: BoxFit.cover,
-                                        filterQuality: FilterQuality.high)
-                                    : Image.network(
-                                        list[index].images!.first.imageUrl,
-                                        fit: BoxFit.cover,
-                                        filterQuality: FilterQuality.high),
+                            list[index].images!.isEmpty
+                                ? Image.asset("assets/png_image/logo.png",
+                                    fit: BoxFit.cover,
+                                    filterQuality: FilterQuality.high)
+                                : list[index]
+                                        .images!
+                                        .first
+                                        .imageUrl
+                                        .startsWith("/")
+                                    ? Image(
+                                        image: FileImage(
+                                        File(
+                                            list[index].images!.first.imageUrl),
+                                      ))
+                                    : list[index].images!.first.imageUrl ==
+                                                "" ||
+                                            list[index].images!.isEmpty == ""
+                                        ? Image.asset(
+                                            "assets/png_image/logo.png",
+                                            fit: BoxFit.cover,
+                                            filterQuality: FilterQuality.high)
+                                        : Image.network(
+                                            list[index].images!.first.imageUrl,
+                                            fit: BoxFit.cover,
+                                            filterQuality: FilterQuality.high),
                             Container(
                               padding: EdgeInsets.only(
                                   left: 10, right: 10, bottom: 10),
@@ -385,7 +415,6 @@ class _TabComponentState extends State<TabComponent> {
   }
 
   buildListAll(List listData) {
-    print("dwadasdwa: " + listData.first.address!);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -462,6 +491,7 @@ class _TabComponentState extends State<TabComponent> {
                       ));
                 },
                 child: VerticalCard(
+                  deleteFunction: () {},
                   isShowRating: true,
                   title: listData[i].name,
                   subDistrict: listData[i].address!.split(',')[0] == ""

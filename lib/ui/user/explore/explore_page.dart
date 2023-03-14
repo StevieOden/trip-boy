@@ -275,6 +275,9 @@ class _ExplorePageState extends State<ExplorePage>
                           ));
                     },
                     child: VerticalCard(
+                       deleteFunction: () {
+                        
+                      },
                       isShowRating: true,
                       title: allDataAfterFilter[i].name,
                       subDistrict: allDataAfterFilter[i].type != "event"

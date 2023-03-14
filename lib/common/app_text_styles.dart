@@ -99,6 +99,14 @@ class AppTextStyles {
     );
   }
 
+  static appTitlew400s20(Color color) {
+    return GoogleFonts.poppins(
+      fontWeight: FontWeight.w400,
+      fontSize: 20,
+      color: color,
+    );
+  }
+
   static appTitlew500s8(Color color) {
     return GoogleFonts.poppins(
       fontWeight: FontWeight.w500,
@@ -153,5 +161,13 @@ class AppTextStyles {
       fontSize: 20.0,
       color: color,
     );
+  }
+
+  static accountNumber(Color color) {
+    return GoogleFonts.poppins(
+        fontWeight: FontWeight.w500,
+        fontSize: 20.0,
+        color: color,
+        letterSpacing: 8);
   }
 }

@@ -340,46 +340,53 @@ class CustomDialog {
     );
   }
 
-  static showPhoneNumWarning(
-    BuildContext context,
-  ) {
+  static showWarningProfileIncomplete(
+      BuildContext context, Function() navigate) {
     showDialog(
+      barrierColor: Colors.black54,
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) => AlertDialog(
-            insetPadding: EdgeInsets.symmetric(horizontal: 20),
+            backgroundColor: Colors.red[300],
+            contentPadding: EdgeInsets.all(0),
+            insetPadding: EdgeInsets.all(10),
             clipBehavior: Clip.antiAliasWithSaveLayer,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10.sp))),
             content: Container(
-              width: MediaQuery.of(context).size.width,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.cancel_outlined,
-                            color: ColorValues().blackColor,
-                          )),
+              padding: EdgeInsets.only(right: 15.sp, top: 5.sp, bottom: 5.sp),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SvgPicture.asset(
+                    'assets/svg_image/fillPhoneNum.svg',
+                    height: 90,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.of(context)!
+                          .warningIncompleteProfileData,
+                      style: AppTextStyles.appTitlew500s14(Colors.white),
                     ),
-                    SvgPicture.asset(
-                      'assets/svg_image/fillPhoneNum.svg',
-                      height: 150,
-                    ),
-                    Text(
-                      AppLocalizations.of(context)!.warningPhoneNumber,
-                      style:
-                          AppTextStyles.appTitlew500s14(ColorValues().redColor),
-                    )
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  ElevatedButton(
+                      onPressed: navigate,
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white),
+                      child: Text(
+                        AppLocalizations.of(context)!.warningButton,
+                        style: AppTextStyles.appTitlew500s10(
+                            ColorValues().redColor),
+                      ))
+                ],
               ),
             ),
           ),
@@ -388,48 +395,78 @@ class CustomDialog {
     );
   }
 
-  static showEmailWarning(
-    BuildContext context,
-  ) {
+  static showConfirmation(
+      BuildContext context, Function() action, Widget content) {
     showDialog(
+      barrierColor: Colors.black54,
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) => AlertDialog(
-            insetPadding: EdgeInsets.symmetric(horizontal: 20),
             clipBehavior: Clip.antiAliasWithSaveLayer,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10.sp))),
             content: Container(
-              width: MediaQuery.of(context).size.width,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.cancel_outlined,
-                            color: ColorValues().blackColor,
-                          )),
-                    ),
-                    SvgPicture.asset(
-                      'assets/svg_image/fillPhoneNum.svg',
-                      height: 150,
-                    ),
-                    Text(
-                      AppLocalizations.of(context)!.warningEmail,
-                      style:
-                          AppTextStyles.appTitlew500s16(ColorValues().redColor),
-                    )
-                  ],
+                padding: EdgeInsets.only(right: 15.sp, top: 5.sp, bottom: 5.sp),
+                child: content),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    'No',
+                    style: AppTextStyles.appTitlew400s14(
+                        ColorValues().primaryColor),
+                  )),
+              TextButton(
+                onPressed: action,
+                child: Text(
+                  'Yes',
+                  style:
+                      AppTextStyles.appTitlew400s14(ColorValues().primaryColor),
                 ),
               ),
-            ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  static showPaymentConfirmationAdmin(
+      BuildContext context, Function() action,Function() rejectAction, Widget content) {
+    showDialog(
+      barrierColor: Colors.black54,
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            insetPadding: EdgeInsets.all(20),
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10.sp))),
+            content: Container(
+                padding: EdgeInsets.only(
+                    left: 15.sp, right: 15.sp, top: 5.sp, bottom: 5.sp),
+                child: content),
+            actions: [
+              TextButton(
+                  onPressed: rejectAction,
+                  child: Text(
+                    'Reject',
+                    style: AppTextStyles.appTitlew400s14(
+                        ColorValues().primaryColor),
+                  )),
+              TextButton(
+                onPressed: action,
+                child: Text(
+                  'Accept',
+                  style:
+                      AppTextStyles.appTitlew400s14(ColorValues().primaryColor),
+                ),
+              ),
+            ],
           ),
         );
       },

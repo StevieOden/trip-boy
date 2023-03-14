@@ -27,13 +27,13 @@ class AlertDialogComponent extends StatelessWidget {
       content: content,
       actions: <Widget>[
         TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => Navigator.of(context).pop(),
             child: Text(
               'No',
               style: AppTextStyles.appTitlew400s14(ColorValues().primaryColor),
             )),
         TextButton(
-          onPressed: () => exitButton ? exit(0):onPressedYes,
+          onPressed: () => exitButton ? exit(0) : onPressedYes,
           child: Text(
             'Yes',
             style: AppTextStyles.appTitlew400s14(ColorValues().primaryColor),
