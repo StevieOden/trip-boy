@@ -12,6 +12,7 @@ import 'package:trip_boy/component/search_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/component/vertical_card.dart';
+import 'package:trip_boy/models/booking_model.dart';
 import 'package:trip_boy/models/destination_model.dart';
 import 'package:trip_boy/models/event_model.dart';
 import 'package:trip_boy/models/hotel_model.dart';
@@ -22,6 +23,7 @@ import 'package:trip_boy/ui/user/edit_profile.dart';
 import '../../common/app_text_styles.dart';
 import '../../common/color_values.dart';
 import '../../common/user_data.dart';
+import '../../component/alert_dialog.dart';
 import '../../models/content_model.dart';
 import '../../models/user_model.dart';
 import 'dashboard_page.dart';
@@ -36,6 +38,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   DateFormat format = DateFormat("dd-MM-yyyy");
   bool _isLoading = true;
+  List<BookingModel> bookingData = [];
   List<RestaurantModel> restaurantData = [];
   List<EventModel> eventData = [];
   List<DestinationModel> destinationData = [];
@@ -46,7 +49,9 @@ class _HomePageState extends State<HomePage> {
   String query = "";
   String phoneNumber = "";
   String email = "";
+  String name = "";
   String uid = "";
+  ValueNotifier<bool> isPayed = ValueNotifier<bool>(true);
 
   @override
   void initState() {
@@ -61,13 +66,12 @@ class _HomePageState extends State<HomePage> {
           builder: (context) => EditProfile(uid: UserData().uid),
         ));
     if (!mounted) return;
-    getAllData();
+    Navigator.pop(context);
+    getUserData();
   }
 
   Future<void> combineAllList() async {
-    allData.addAll(restaurantData);
-    allData.addAll(destinationData);
-    allData.addAll(hotelData);
+    allData = [...restaurantData, ...destinationData, ...hotelData];
     allData.sort((a, b) => b.rating.compareTo(a.rating));
     allDataFiltered = allData;
   }
@@ -77,8 +81,19 @@ class _HomePageState extends State<HomePage> {
       User? user = FirebaseAuth.instance.currentUser;
       uid = user!.uid;
       UserModel userData = await DatabaseService().getUserData(uid);
+      name = userData.name!;
       phoneNumber = userData.phoneNumber!;
       email = userData.email!;
+      name.isEmpty || phoneNumber.isEmpty || email.isEmpty
+          ? CustomDialog.showWarningProfileIncomplete(
+              context,
+              () {
+                setState(() {
+                  _navigateAndDisplaySelection(context);
+                });
+              },
+            )
+          : null;
     } catch (e) {
       throw ("error : " + e.toString());
     }
@@ -87,6 +102,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> getAllData() async {
     setLoading(true);
     getUserData();
+    isPayed.value = await DatabaseService().checkPayment();
     restaurantData =
         await DatabaseService().getRestaurantData(false, UserData().uid);
     eventData = await DatabaseService().getEventData(false, UserData().uid);
@@ -151,110 +167,6 @@ class _HomePageState extends State<HomePage> {
                             controller: _searchController,
                             onChanged: searchData,
                           )),
-                      email.isEmpty
-                          ? Container(
-                              margin: EdgeInsets.only(
-                                  left: 15.sp, right: 15.sp, top: 10.sp),
-                              child: Card(
-                                color: Colors.red[300],
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15)),
-                                child: Container(
-                                  padding: EdgeInsets.only(
-                                      left: 15.sp,
-                                      right: 15.sp,
-                                      top: 10.sp,
-                                      bottom: 10.sp),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/svg_image/fillPhoneNum.svg',
-                                        height: 60,
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          AppLocalizations.of(context)!
-                                              .warningEmail,
-                                          style: AppTextStyles.appTitlew500s16(
-                                              Colors.white),
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            _navigateAndDisplaySelection(
-                                                context);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.white),
-                                          child: Text(
-                                            AppLocalizations.of(context)!.add,
-                                            style:
-                                                AppTextStyles.appTitlew500s12(
-                                                    ColorValues().redColor),
-                                          ))
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Container(),
-                      phoneNumber.isEmpty
-                          ? Container(
-                              margin: EdgeInsets.only(
-                                  left: 15.sp, right: 15.sp, top: 10.sp),
-                              child: Card(
-                                color: Colors.red[300],
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15)),
-                                child: Container(
-                                  margin: EdgeInsets.only(
-                                      left: 15.sp,
-                                      right: 15.sp,
-                                      top: 10.sp,
-                                      bottom: 10.sp),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/svg_image/fillPhoneNum.svg',
-                                        height: 60,
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                          AppLocalizations.of(context)!
-                                              .warningPhoneNumber,
-                                          style: AppTextStyles.appTitlew500s16(
-                                              Colors.white),
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            _navigateAndDisplaySelection(
-                                                context);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.white),
-                                          child: Text(
-                                            AppLocalizations.of(context)!.add,
-                                            style:
-                                                AppTextStyles.appTitlew500s12(
-                                                    ColorValues().redColor),
-                                          ))
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Container(),
                       allDataFiltered.length != allData.length
                           ? Container(
                               margin: EdgeInsets.only(
@@ -264,6 +176,85 @@ class _HomePageState extends State<HomePage> {
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                ValueListenableBuilder(
+                                  valueListenable: isPayed,
+                                  builder: (context, value, child) =>
+                                      !isPayed.value
+                                          ? Container()
+                                          : Card(
+                                              color:
+                                                  ColorValues().lightRedColor,
+                                              margin: EdgeInsets.only(
+                                                  left: 15.sp,
+                                                  right: 15.sp,
+                                                  top: 15),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10)),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(10.0),
+                                                child: Container(
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceAround,
+                                                    children: [
+                                                      SvgPicture.asset(
+                                                        'assets/svg_image/paymentWarning.svg',
+                                                        height: 100,
+                                                      ),
+                                                      Expanded(
+                                                        child: Column(
+                                                          children: [
+                                                            Text(
+                                                              AppLocalizations.of(
+                                                                      context)!
+                                                                  .paymentWarning,
+                                                              style: AppTextStyles
+                                                                  .appTitlew700s16(
+                                                                      ColorValues()
+                                                                          .blackColor),
+                                                            ),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Container(
+                                                              width: 100,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        Navigator.pushReplacement(
+                                                                            context,
+                                                                            MaterialPageRoute(
+                                                                              builder: (context) => DashboardPage(
+                                                                                selectedIndex: 2,
+                                                                              ),
+                                                                            ));
+                                                                      },
+                                                                      style: ElevatedButton.styleFrom(
+                                                                          backgroundColor: ColorValues()
+                                                                              .redColor),
+                                                                      child:
+                                                                          Text(
+                                                                        "Pay",
+                                                                        style: AppTextStyles.appTitlew500s12(
+                                                                            Colors.white),
+                                                                      )),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )),
+                                ),
                                 Container(
                                   margin: EdgeInsets.only(
                                       left: 15.sp, right: 15.sp, top: 15),
@@ -296,7 +287,7 @@ class _HomePageState extends State<HomePage> {
           title: AppLocalizations.of(context)!.restaurant,
           onTap: () {
             setState(() {
-              Navigator.pushReplacement(
+              Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => DashboardPage(
@@ -391,18 +382,22 @@ class _HomePageState extends State<HomePage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => DetailPage(
+                              paymentMethodEvent:
+                                  listAfterFilter[i].paymentMethod,
                               menuRestaurantsList: [],
                               facilityList: [],
                               price: listAfterFilter[i].price,
                               roomList: [],
-                              googleMapsUrl: listAfterFilter[i].meetLink,
+                              googleMapsUrl: listAfterFilter[i].meetLink!,
                               type: listAfterFilter[i].type,
-                              imageUrl: listAfterFilter[i].imageUrl,
+                              imageUrl: listAfterFilter[i].imageUrl!,
                               name: listAfterFilter[i].name,
-                              rating: listAfterFilter[i].rating,
+                              rating: listAfterFilter[i].rating!,
+                              ticketType: listAfterFilter[i].ticketType,
+                              termList: listAfterFilter[i].terms,
                               location: "",
                               fullLocation: "",
-                              timeClose: listAfterFilter[i].timeHeld,
+                              timeClose: listAfterFilter[i].timeHeld!,
                               timeOpen: "",
                               description: listAfterFilter[i].description,
                               imageList: [],
@@ -414,7 +409,7 @@ class _HomePageState extends State<HomePage> {
                       rating: listAfterFilter[i].rating,
                       heldAt: listAfterFilter[i].timeHeld,
                       price: listAfterFilter[i].price.toString(),
-                      imageUrl: listAfterFilter[i].imageUrl,
+                      imageUrl: listAfterFilter[i].imageUrl!,
                     ),
                   )
               ],
@@ -450,6 +445,7 @@ class _HomePageState extends State<HomePage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => DetailPage(
+                          paymentMethod: allDataAfterFilter[i].paymentMethod,
                           menuRestaurantsList:
                               allDataAfterFilter[i].type == "restaurant"
                                   ? allDataAfterFilter[i].menu
@@ -507,6 +503,7 @@ class _HomePageState extends State<HomePage> {
                       ));
                 },
                 child: VerticalCard(
+                  deleteFunction: () {},
                   isShowRating: true,
                   title: allDataAfterFilter[i].name,
                   subDistrict:
@@ -569,6 +566,10 @@ class _HomePageState extends State<HomePage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => DetailPage(
+                            paymentMethod:
+                                allDataAfterFilter[i].paymentMethod.isEmpty
+                                    ? []
+                                    : allDataAfterFilter[i].paymentMethod,
                             menuRestaurantsList:
                                 allDataAfterFilter[i].type == "restaurant"
                                     ? allDataAfterFilter[i].menu
@@ -631,6 +632,7 @@ class _HomePageState extends State<HomePage> {
                         ));
                   },
                   child: VerticalCard(
+                    deleteFunction: () {},
                     isShowRating: true,
                     title: allDataAfterFilter[i].name,
                     subDistrict: allDataAfterFilter[i].type == "event"

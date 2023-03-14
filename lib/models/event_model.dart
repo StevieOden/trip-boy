@@ -11,31 +11,31 @@ String eventModelToJson(EventModel data) => json.encode(data.toJson());
 class EventModel {
     EventModel({
         required this.description,
-        required this.imageUrl,
-        required this.meetLink,
+        this.imageUrl,
+        this.meetLink,
         required this.name,
-        required this.price,
-        required this.rating,
-        required this.terms,
-        required this.paymentMethod,
-        required this.ticketType,
-        required this.timeHeld,
+        this.price,
+        this.rating,
+        this.terms,
+        this.paymentMethod,
+        this.ticketType,
+        this.timeHeld,
         required this.type,
-        required this.userId,
+        this.userId,
     });
 
     String description;
-    String imageUrl;
-    String meetLink;
+    String? imageUrl;
+    String? meetLink;
     String name;
-    int price;
-    double rating;
-    List<TermEvent> terms;
-    List<PaymentMethodEvent> paymentMethod;
-    String ticketType;
-    String timeHeld;
+    int? price;
+    double?  rating;
+    List<TermEvent>?  terms;
+    List<PaymentMethodEvent>?  paymentMethod;
+    String ? ticketType;
+    String?  timeHeld;
     String type;
-    String userId;
+    String ? userId;
 
     factory EventModel.fromJson(Map<String, dynamic> json) => EventModel(
         description: json["description"],
@@ -59,8 +59,8 @@ class EventModel {
         "name": name,
         "price": price,
         "rating": rating,
-        "terms": List<dynamic>.from(terms.map((x) => x.toJson())),
-        "payment_method": List<dynamic>.from(paymentMethod.map((x) => x.toJson())),
+        "terms": List<dynamic>.from(terms!.map((x) => x.toJson())),
+        "payment_method": List<dynamic>.from(paymentMethod!.map((x) => x.toJson())),
         "ticket_type": ticketType,
         "time_held": timeHeld,
         "type": type,

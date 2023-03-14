@@ -3,16 +3,54 @@ import 'package:flutter/material.dart';
 import '../../common/app_text_styles.dart';
 import '../../common/color_values.dart';
 
+import '../../models/content_model.dart';
+import '../../models/event_model.dart';
+
+typedef void StringCallback(String val);
+
 class DetailPaymentMethod extends StatefulWidget {
-  DetailPaymentMethod({Key? key}) : super(key: key);
+  StringCallback paymentMethod;
+  String selectedPaymentMethod;
+  List<PaymentMethodEvent> paymentList;
+  DetailPaymentMethod(
+      {Key? key,
+      required this.paymentMethod,
+      required this.selectedPaymentMethod,
+      required this.paymentList})
+      : super(key: key);
 
   @override
   State<DetailPaymentMethod> createState() => _DetailPaymentMethodState();
 }
 
 class _DetailPaymentMethodState extends State<DetailPaymentMethod> {
-  List<String> paymentMethods = ['OVO', 'Cash', 'BCA', 'BRI', 'Mandiri'];
-  String selectedPaymentMethods = 'OVO';
+  List<Map> paymentMethods = [
+    {"image": "assets/png_image/bca-logo.png", "name": "bca"},
+    {"image": 'assets/png_image/mandiri-logo.png', "name": "mandiri"},
+    {"image": 'assets/png_image/bri-logo.png', "name": "bri"},
+    {"image": 'assets/png_image/bni-logo.png', "name": "bni"},
+    {"image": 'assets/png_image/ovo-logo.png', "name": "ovo"},
+    {"image": 'assets/png_image/dana-logo.png', "name": "dana"},
+  ];
+  String selectedPaymentMethods = '';
+
+  //payment method variable
+  bool bcaValue = false;
+  bool mandiriValue = false;
+  bool briValue = false;
+  bool bniValue = false;
+  bool ovoValue = false;
+  bool danaValue = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selectedPaymentMethods = widget.selectedPaymentMethod.isEmpty
+        ? 'BCA'
+        : widget.selectedPaymentMethod;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,58 +82,33 @@ class _DetailPaymentMethodState extends State<DetailPaymentMethod> {
                 style: AppTextStyles.appTitlew500s16(ColorValues().blackColor),
               ),
             ),
-            for (var pm in paymentMethods)
+            for (var pm in widget.paymentList)
               RadioListTile(
                 controlAffinity: ListTileControlAffinity.trailing,
                 dense: true,
-                value: pm,
+                value: pm.method,
                 groupValue: selectedPaymentMethods,
                 title: Row(
                   children: [
-                    Container(
-                        margin: EdgeInsets.only(top: 10),
+                    Image(
                         width: 60,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: ColorValues().greyColor),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        padding: EdgeInsets.all(5),
-                        child: Text(
-                          pm,
-                          style: AppTextStyles.appTitlew500s12(
-                              ColorValues().greyColor),
-                        )),
+                        height: 30,
+                        image: AssetImage(paymentMethods[
+                                paymentMethods.indexWhere(
+                                    (element) => element["name"] == pm.method)]
+                            ["image"])),
                     Expanded(child: Container())
                   ],
                 ),
                 onChanged: (currentUser) {
                   setState(() {
                     selectedPaymentMethods = currentUser!;
+                    widget.paymentMethod(currentUser);
                   });
                 },
                 selected: selectedPaymentMethods == pm,
                 activeColor: ColorValues().primaryColor,
               ),
-            // Row(
-            //   children: [
-            //     Container(
-            //         margin: EdgeInsets.only(top: 10),
-            //         width: 60,
-            //         alignment: Alignment.center,
-            //         decoration: BoxDecoration(
-            //           border: Border.all(color: ColorValues().greyColor),
-            //           borderRadius: BorderRadius.circular(6),
-            //         ),
-            //         padding: EdgeInsets.all(5),
-            //         child: Text(
-            //           paymentMethods[i],
-            //           style: AppTextStyles.appTitlew500s12(
-            //               ColorValues().greyColor),
-            //         )),
-            //     RadioBu
-            //   ],
-            // ),
           ],
         ),
       ),

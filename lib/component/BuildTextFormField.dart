@@ -8,6 +8,7 @@ import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/color_values.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:trip_boy/common/shared_code.dart';
 import 'package:trip_boy/component/custom_dialog.dart';
 
 import '../common/app_text_styles.dart';
@@ -298,6 +299,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
 
   Widget buildDateForm() {
     return TextFormField(
+      readOnly: true,
       focusNode: FocusNode(canRequestFocus: false),
       controller: widget.dateController,
       style: AppTextStyles.appTitlew400s12(ColorValues().darkGreyColor),
@@ -314,7 +316,7 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
         if (pickedDate != null) {
           setState(() {
             widget.dateController!.text =
-                DateFormat('dd - MM - yy').format(pickedDate);
+                SharedCode.dateFormat.format(pickedDate);
           });
         }
       },
@@ -348,12 +350,14 @@ class _BuildTextFormFieldState extends State<BuildTextFormField> {
 
   Widget buildTimeForm() {
     return TextFormField(
+      readOnly: true,
       focusNode: FocusNode(canRequestFocus: false),
       controller: widget.timeController,
       style: AppTextStyles.appTitlew400s12(ColorValues().darkGreyColor),
       onTap: () async {
         TimeOfDay? pickedTime = await showTimePicker(
           initialTime: TimeOfDay.now(),
+          initialEntryMode: TimePickerEntryMode.input,
           context: context,
         );
 

@@ -21,10 +21,7 @@ import 'admin/dashboard.dart';
 class OtpPage extends StatefulWidget {
   final String verificationId;
   final String phoneNumber;
-  OtpPage(
-      {Key? key,
-      required this.verificationId,
-      required this.phoneNumber})
+  OtpPage({Key? key, required this.verificationId, required this.phoneNumber})
       : super(key: key);
 
   @override
@@ -33,7 +30,6 @@ class OtpPage extends StatefulWidget {
 
 class _OtpPageState extends State<OtpPage> {
   String? otpCode;
-  String role = "";
 
   @override
   Widget build(BuildContext context) {
@@ -179,6 +175,7 @@ class _OtpPageState extends State<OtpPage> {
       User? user = FirebaseAuth.instance.currentUser;
       final uid = user!.uid;
       await DatabaseService().getUserData(uid).then((value) {
+        print(value.role);
         if (value.role == "user_customer") {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => DashboardPage()));
@@ -187,7 +184,6 @@ class _OtpPageState extends State<OtpPage> {
               MaterialPageRoute(builder: (context) => DashboardAdmin()));
         }
       });
-      // role = userData.role!;
     } catch (e) {
       print("error: " + e.toString());
     }
@@ -195,8 +191,7 @@ class _OtpPageState extends State<OtpPage> {
 
   void sendPhoneNumber() {
     final ap = Provider.of<AuthService>(context, listen: false);
-    ap.signInWithPhone(
-        context, widget.phoneNumber);
+    ap.signInWithPhone(context, widget.phoneNumber);
   }
 
   void verifyOtp(BuildContext context, String otpCode) async {
@@ -205,8 +200,9 @@ class _OtpPageState extends State<OtpPage> {
         context: context,
         verificationId: widget.verificationId,
         userOtp: otpCode,
-        onSuccess: () {
-          getUserData();
-        });
+        // onSuccess: () {
+        //   getUserData();
+        // }
+        );
   }
 }

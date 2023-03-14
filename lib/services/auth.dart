@@ -159,8 +159,7 @@ class AuthService extends ChangeNotifier {
   void verifyOtp(
       {required BuildContext context,
       required String verificationId,
-      required String userOtp,
-      required Function onSuccess}) async {
+      required String userOtp}) async {
     _isLoading = true;
     notifyListeners();
 
@@ -178,10 +177,22 @@ class AuthService extends ChangeNotifier {
         checkExistingUser().then((value) async {
           if (value == false) {
             await DatabaseService().addDefaultPatientUser(user.user!.uid, "",
-                 "", user.user!.phoneNumber, "", "user_customer");
+                "", user.user!.phoneNumber, "", "user_customer");
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => DashboardPage()));
+          } else {
+            await DatabaseService().getUserData(user.user!.uid).then((value) {
+              print(value.role);
+              if (value.role == "user_customer") {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => DashboardPage()));
+              } else {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => DashboardAdmin()));
+              }
+            });
           }
         });
-        onSuccess();
       }
 
       _isLoading = false;

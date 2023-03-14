@@ -11,12 +11,14 @@ class SharedCode {
   final BuildContext context;
 
   SharedCode(this.context);
-  static DateFormat dateFormat = DateFormat('dd MMM yyyy, hh:mm');
+  static DateFormat dateAndTimeFormat = DateFormat('dd MMM yyyy, hh:mm');
+
+  static DateFormat dateFormat = DateFormat('EEE, dd-MMM-yyyy');
 
   static EdgeInsetsGeometry globalMargin =
       EdgeInsets.symmetric(horizontal: 25, vertical: 25);
 
-  static final formKey = GlobalKey<FormState>();
+  // static final formKey = GlobalKey<FormState>();
 
   static Future<User?> checkUser() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;

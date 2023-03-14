@@ -68,36 +68,40 @@ class _EventPagesState extends State<EventPages> {
             height: MediaQuery.of(context).size.height.sp,
             margin: EdgeInsets.only(left: 15.sp, right: 15.sp),
             child: ListView.separated(
-                itemBuilder: (context, index) => InkWell(
+                itemBuilder: (context, i) => InkWell(
                       onTap: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => DetailPage(
+                                paymentMethodEvent:
+                                    listAfterFilter[i].paymentMethod,
                                 menuRestaurantsList: [],
                                 facilityList: [],
-                                price: listAfterFilter[index].price,
+                                price: listAfterFilter[i].price,
                                 roomList: [],
-                                googleMapsUrl: "",
-                                type: listAfterFilter[index].type,
-                                imageUrl: listAfterFilter[index].imageUrl,
-                                name: listAfterFilter[index].name,
-                                rating: listAfterFilter[index].rating,
+                                googleMapsUrl: listAfterFilter[i].meetLink!,
+                                type: listAfterFilter[i].type,
+                                imageUrl: listAfterFilter[i].imageUrl!,
+                                name: listAfterFilter[i].name,
+                                rating: listAfterFilter[i].rating!,
+                                ticketType: listAfterFilter[i].ticketType,
+                                termList: listAfterFilter[i].terms,
                                 location: "",
                                 fullLocation: "",
-                                timeClose: "",
+                                timeClose: listAfterFilter[i].timeHeld!,
                                 timeOpen: "",
-                                description: listAfterFilter[index].description,
+                                description: listAfterFilter[i].description,
                                 imageList: [],
                               ),
                             ));
                       },
                       child: EventCardItem(
-                        asset: listAfterFilter[index].imageUrl,
-                        title: listAfterFilter[index].name,
-                        dateHeld: listAfterFilter[index].timeHeld,
-                        price: listAfterFilter[index].price,
-                        ticketType: listAfterFilter[index].ticketType,
+                        asset: listAfterFilter[i].imageUrl,
+                        title: listAfterFilter[i].name,
+                        dateHeld: listAfterFilter[i].timeHeld!,
+                        price: listAfterFilter[i].price!,
+                        ticketType: listAfterFilter[i].ticketType!,
                       ),
                     ),
                 separatorBuilder: (context, index) => Container(
@@ -125,16 +129,13 @@ class EventSkeleton extends StatelessWidget {
         child: Column(
           children: [
             Container(
-                    height: 90.sp,
-                    width: MediaQuery.of(context).size.width.sp,
-                    decoration: BoxDecoration(
-                        
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12))),
-                  )
-                ,
-            
+              height: 90.sp,
+              width: MediaQuery.of(context).size.width.sp,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12))),
+            ),
             Divider(
               thickness: 1,
               color: Color(0xFFD7D7D7),
@@ -143,9 +144,7 @@ class EventSkeleton extends StatelessWidget {
               margin: EdgeInsets.only(left: 15.sp, right: 15.sp, bottom: 8.sp),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  
-                ],
+                children: [],
               ),
             )
           ],

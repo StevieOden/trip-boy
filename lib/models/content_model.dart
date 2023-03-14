@@ -12,29 +12,28 @@ ContentModel contentModelFromJson(String str) =>
 String contentModelToJson(ContentModel data) => json.encode(data.toJson());
 
 class ContentModel {
-  ContentModel({
-    this.address,
-    required this.description,
-    this.facility,
-    this.googleMapsLink,
-    this.images,
-    required this.name,
-    required this.rating,
-    this.tickets,
-    this.timeClosed,
-    this.timeOpen,
-    required this.type,
-    required this.userId,
-    this.imageUrl,
-    this.meetLink,
-    this.price,
-    this.terms,
-    this.ticketType,
-    this.timeHeld,
-    this.rooms,
-    this.menu,
-    this.paymentMethod
-  });
+  ContentModel(
+      {this.address,
+      required this.description,
+      this.facility,
+      this.googleMapsLink,
+      this.images,
+      required this.name,
+      required this.rating,
+      this.tickets,
+      this.timeClosed,
+      this.timeOpen,
+      required this.type,
+      required this.userId,
+      this.imageUrl,
+      this.meetLink,
+      this.price,
+      this.terms,
+      this.ticketType,
+      this.timeHeld,
+      this.rooms,
+      this.menu,
+      this.paymentMethod});
 
   String? address;
   String description;
@@ -56,8 +55,7 @@ class ContentModel {
   String? timeHeld;
   List<Room>? rooms;
   List<Menu>? menu;
-      List<PaymentMethod>? paymentMethod;
-
+  List? paymentMethod;
 
   factory ContentModel.fromJson(Map<String, dynamic> json) {
     return ContentModel(
@@ -77,7 +75,8 @@ class ContentModel {
       tickets: json["tickets"] == null
           ? []
           : List<Ticket>.from(json["tickets"]!.map((x) => Ticket.fromJson(x))),
-          paymentMethod: List<PaymentMethod>.from(json["payment_method"].map((x) => PaymentMethod.fromJson(x))),
+      paymentMethod: List<PaymentMethod>.from(
+          json["payment_method"].map((x) => PaymentMethod.fromJson(x))),
       timeClosed: json["time_closed"],
       timeOpen: json["time_open"],
       type: json["type"],
@@ -89,7 +88,7 @@ class ContentModel {
           ? []
           : List<Term>.from(json["terms"]!.map((x) => Term.fromJson(x))),
       ticketType: json["ticket_type"],
-      timeHeld:  json["time_held"],
+      timeHeld: json["time_held"],
       rooms: json["rooms"] == null
           ? []
           : List<Room>.from(json["rooms"]!.map((x) => Room.fromJson(x))),
@@ -125,7 +124,9 @@ class ContentModel {
             ? []
             : List<dynamic>.from(terms!.map((x) => x.toJson())),
         "ticket_type": ticketType,
-        "payment_method": List<dynamic>.from(paymentMethod!.map((x) => x.toJson())),
+        "payment_method": paymentMethod == null
+            ? []
+            : List<dynamic>.from(paymentMethod!.map((x) => x.toJson())),
         "time_held": timeHeld,
         "rooms": rooms == null
             ? []
@@ -153,23 +154,23 @@ class Facility {
 }
 
 class PaymentMethod {
-    PaymentMethod({
-        required this.method,
-        required this.number,
-    });
+  PaymentMethod({
+    required this.method,
+    required this.number,
+  });
 
-    String method;
-    String number;
+  String method;
+  String number;
 
-    factory PaymentMethod.fromJson(Map<String, dynamic> json) => PaymentMethod(
+  factory PaymentMethod.fromJson(Map<String, dynamic> json) => PaymentMethod(
         method: json["method"],
         number: json["number"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "method": method,
         "number": number,
-    };
+      };
 }
 
 class ImageModel {

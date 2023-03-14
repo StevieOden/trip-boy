@@ -65,11 +65,17 @@ class _HorizontalCardState extends State<HorizontalCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Rp${widget.price}",
-                  style:
-                      AppTextStyles.appTitlew500s10(ColorValues().primaryColor),
-                ),
+                widget.price == "0"
+                    ? Text(
+                        "Free",
+                        style: AppTextStyles.appTitlew500s10(
+                            ColorValues().primaryColor),
+                      )
+                    : Text(
+                        "Rp${widget.price}",
+                        style: AppTextStyles.appTitlew500s10(
+                            ColorValues().primaryColor),
+                      ),
                 Icon(
                   Icons.arrow_forward_ios,
                   color: ColorValues().primaryColor,

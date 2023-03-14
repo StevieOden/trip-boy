@@ -3,9 +3,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
 import 'package:trip_boy/common/user_data.dart';
+import 'package:trip_boy/component/alert_dialog.dart';
+import 'package:trip_boy/component/custom_dialog.dart';
 import 'package:trip_boy/component/loading.dart';
 import 'package:trip_boy/component/vertical_card.dart';
 import 'package:trip_boy/models/content_model.dart';
+import 'package:trip_boy/ui/user/upload_page/upload_detail.dart';
 
 import '../../../common/app_text_styles.dart';
 import '../../../common/color_values.dart';
@@ -26,19 +29,21 @@ class UploadPage extends StatefulWidget {
 
 class _UploadPageState extends State<UploadPage> {
   int tabIndex = 0;
-  bool _isLoading = true;
+  bool _isLoading = false;
   List<Map> uploadList = [];
   List<RestaurantModel> restaurantData = [];
   List<EventModel> eventData = [];
   List<DestinationModel> destinationData = [];
   List<HotelModel> hotelData = [];
+  List<String> contentId = [];
   List allData = [];
+  int indexUploadData = 0;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getAllData();
+    // getAllData();
   }
 
   Future<void> combineAllList() async {
@@ -93,74 +98,80 @@ class _UploadPageState extends State<UploadPage> {
       }
     ];
     return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width.sp,
-            margin: EdgeInsets.only(
-                left: 15.sp, right: 15.sp, top: 10.sp, bottom: 10.sp),
-            alignment: Alignment.center,
-            child: Row(
+      body: _isLoading
+          ? Loading()
+          : Column(
               children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        tabIndex = 0;
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(10.sp),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: tabIndex != 0
-                              ? ColorValues().tabColor
-                              : ColorValues().primaryColor,
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              bottomLeft: Radius.circular(20))),
-                      child: Text(
-                        AppLocalizations.of(context)!.upload,
-                        style: AppTextStyles.appTitlew500s12(tabIndex == 0
-                            ? Colors.white
-                            : ColorValues().primaryColor),
+                Container(
+                  width: MediaQuery.of(context).size.width.sp,
+                  margin: EdgeInsets.only(
+                      left: 15.sp, right: 15.sp, top: 10.sp, bottom: 10.sp),
+                  alignment: Alignment.center,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              tabIndex = 0;
+                            });
+                            allData.clear();
+                            getAllData();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10.sp),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                color: tabIndex != 0
+                                    ? ColorValues().tabColor
+                                    : ColorValues().primaryColor,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    bottomLeft: Radius.circular(20))),
+                            child: Text(
+                              AppLocalizations.of(context)!.upload,
+                              style: AppTextStyles.appTitlew500s12(tabIndex == 0
+                                  ? Colors.white
+                                  : ColorValues().primaryColor),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              tabIndex = 1;
+                            });
+                            allData.clear();
+                            getAllData();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10.sp),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(20),
+                                  bottomRight: Radius.circular(20)),
+                              color: tabIndex != 1
+                                  ? ColorValues().tabColor
+                                  : ColorValues().primaryColor,
+                            ),
+                            child: Text(
+                              AppLocalizations.of(context)!.added,
+                              style: AppTextStyles.appTitlew500s12(tabIndex != 1
+                                  ? ColorValues().primaryColor
+                                  : Colors.white),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 ),
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        tabIndex = 1;
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(10.sp),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(20),
-                            bottomRight: Radius.circular(20)),
-                        color: tabIndex != 1
-                            ? ColorValues().tabColor
-                            : ColorValues().primaryColor,
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context)!.added,
-                        style: AppTextStyles.appTitlew500s12(tabIndex != 1
-                            ? ColorValues().primaryColor
-                            : Colors.white),
-                      ),
-                    ),
-                  ),
-                )
+                tabIndex == 0 ? buildUploadList() : addedList()
               ],
             ),
-          ),
-          tabIndex == 0 ? buildUploadList() : addedList()
-        ],
-      ),
     );
   }
 
@@ -180,12 +191,43 @@ class _UploadPageState extends State<UploadPage> {
     );
   }
 
+  Future<void> _navigateAndDisplaySelection(BuildContext context) async {
+    await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => UploadDetail(
+            index: indexUploadData,
+            hintTextType: uploadList[indexUploadData]["title"],
+          ),
+        ));
+    if (!mounted) return;
+    Navigator.pop(context);
+    allData.clear();
+    getAllData();
+  }
+
   buildUploadList() {
     return _isLoading
         ? Expanded(child: Loading())
         : UploadList(
+            indexCallback: (val) => indexUploadData = val,
+            navPush: () {
+              _navigateAndDisplaySelection(context);
+            },
             uploadList: uploadList,
           );
+  }
+
+  Future<void> deleteContentData(index) async {
+    contentId = await DatabaseService().getContentId(allData[index].type);
+    for (var i = 0; i < contentId.length; i++) {
+      setState(() {
+        DatabaseService().deleteContent(contentId[i], allData[index].type);
+      });
+    }
+    Navigator.pop(context);
+    getAllData();
+    allData.clear();
   }
 
   addedList() {
@@ -197,12 +239,22 @@ class _UploadPageState extends State<UploadPage> {
               child: ListView.builder(
                 itemCount: allData.length,
                 itemBuilder: (context, index) => VerticalCard(
-                  isUploadedPage: true,
+                    deleteFunction: () {
+                      CustomDialog.showConfirmation(
+                          context,
+                          () => deleteContentData(index),
+                          Text(AppLocalizations.of(context)!.deleteConfirmation,
+                              style: AppTextStyles.appTitlew400s12(
+                                  ColorValues().blackColor)));
+                    },
+                    isUploadedPage: true,
                     imageUrl: allData[index].type == "event"
                         ? allData[index].imageUrl
-                        : allData[index].images!.first.imageUrl != ""
-                            ? allData[index].images!.first.imageUrl
-                            : "",
+                        : allData[index].images!.isEmpty
+                            ? ""
+                            : allData[index].images!.first.imageUrl != ""
+                                ? allData[index].images!.first.imageUrl
+                                : "",
                     title: allData[index].name,
                     subDistrict: allData[index].type == "event"
                         ? ""

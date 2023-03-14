@@ -14,6 +14,7 @@ import 'package:trip_boy/ui/login_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:trip_boy/ui/user/setting_page.dart';
 
+import '../../component/custom_dialog.dart';
 import '../../models/user_model.dart';
 import 'edit_profile.dart';
 
@@ -133,14 +134,19 @@ class _ProfilePageState extends State<ProfilePage> {
                   borderRadius: BorderRadius.circular(10))),
           onPressed: () async {
             setState(() {
-              provider.logout().then(
-                    (value) => Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LoginPage(),
+              CustomDialog.showConfirmation(context, () {
+                provider.logout().then(
+                      (value) => Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginPage(),
+                        ),
                       ),
-                    ),
-                  );
+                    );
+              },
+                  Text(AppLocalizations.of(context)!.logoutConfirmation,
+                      style: AppTextStyles.appTitlew400s12(
+                          ColorValues().blackColor)));
             });
           },
           child: Row(

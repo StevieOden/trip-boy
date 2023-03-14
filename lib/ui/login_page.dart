@@ -8,10 +8,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:trip_boy/common/shared_code.dart';
 import 'package:trip_boy/component/BuildTextFormField.dart';
-import 'package:trip_boy/component/loading.dart';
-import 'package:trip_boy/ui/admin/dashboard.dart';
-import 'package:trip_boy/ui/register_page.dart';
-import 'package:trip_boy/ui/user/dashboard_page.dart';
 
 import '../../common/app_text_styles.dart';
 import '../../common/color_values.dart';
@@ -33,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   late FocusNode focusNode;
   late TextEditingController phoneForm;
   late TextEditingController passForm;
-  static final loginFormKey = GlobalKey<FormState>();
+  // static final loginFormKey = GlobalKey<FormState>();
 
   Country selectedCountry = Country(
       phoneCode: "62",
@@ -90,61 +86,59 @@ class _LoginPageState extends State<LoginPage> {
     phoneForm.selection =
         TextSelection.fromPosition(TextPosition(offset: phoneForm.text.length));
     return Scaffold(
-      body: GestureDetector(
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Container(
-              padding: SharedCode.globalMargin,
-              child: Column(
-                children: [
-                  buildImage(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  buildLoginForm(),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    AppLocalizations.of(context)!.or.toUpperCase(),
-                    style: AppTextStyles.appTitlew500s14(
-                        ColorValues().darkGreyColor),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  buildButtonGoogleLogin(),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  // Wrap(
-                  //   spacing: 2,
-                  //   crossAxisAlignment: WrapCrossAlignment.center,
-                  //   children: [
-                  //     Text(
-                  //       AppLocalizations.of(context)!.dontHaveAccount,
-                  //       style: AppTextStyles.appTitlew400s12(
-                  //           ColorValues().darkGreyColor),
-                  //     ),
-                  //     GestureDetector(
-                  //       onTap: () {
-                  //         setState(() {
-                  //           Navigator.push(
-                  //               context,
-                  //               MaterialPageRoute(
-                  //                   builder: (context) => RegisterPage()));
-                  //         });
-                  //       },
-                  //       child: Text(
-                  //         AppLocalizations.of(context)!.signup,
-                  //         style: AppTextStyles.appTitlew500s12(
-                  //             ColorValues().primaryColor),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // )
-                ],
-              ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: SharedCode.globalMargin,
+            child: Column(
+              children: [
+                buildImage(),
+                SizedBox(
+                  height: 10,
+                ),
+                buildLoginForm(),
+                SizedBox(
+                  height: 15,
+                ),
+                Text(
+                  AppLocalizations.of(context)!.or.toUpperCase(),
+                  style: AppTextStyles.appTitlew500s14(
+                      ColorValues().darkGreyColor),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                buildButtonGoogleLogin(),
+                SizedBox(
+                  height: 15,
+                ),
+                // Wrap(
+                //   spacing: 2,
+                //   crossAxisAlignment: WrapCrossAlignment.center,
+                //   children: [
+                //     Text(
+                //       AppLocalizations.of(context)!.dontHaveAccount,
+                //       style: AppTextStyles.appTitlew400s12(
+                //           ColorValues().darkGreyColor),
+                //     ),
+                //     GestureDetector(
+                //       onTap: () {
+                //         setState(() {
+                //           Navigator.push(
+                //               context,
+                //               MaterialPageRoute(
+                //                   builder: (context) => RegisterPage()));
+                //         });
+                //       },
+                //       child: Text(
+                //         AppLocalizations.of(context)!.signup,
+                //         style: AppTextStyles.appTitlew500s12(
+                //             ColorValues().primaryColor),
+                //       ),
+                //     ),
+                //   ],
+                // )
+              ],
             ),
           ),
         ),
@@ -206,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
 
   buildLoginForm() {
     return Form(
-      key: loginFormKey,
+      // key: loginFormKey,
       child: Column(
         children: [
           BuildTextFormField(
@@ -303,9 +297,9 @@ class _LoginPageState extends State<LoginPage> {
             height: 40,
             child: ElevatedButton(
                 onPressed: () {
-                  if (loginFormKey.currentState!.validate()) {
-                    sendPhoneNumber();
-                  }
+                  // if (loginFormKey.currentState!.validate()) {
+                  sendPhoneNumber();
+                  // }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorValues().primaryColor,

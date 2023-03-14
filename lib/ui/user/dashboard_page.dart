@@ -27,7 +27,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   String role = "";
 
-  Future<bool> _onWillPop(BuildContext context) async {
+Future<bool> _onWillPop(BuildContext context) async {
     bool? exitResult = await showDialog(
       context: context,
       builder: (context) => AlertDialogComponent(
@@ -50,7 +50,7 @@ class _DashboardPageState extends State<DashboardPage> {
       ProfilePage()
     ];
     return WillPopScope(
-      onWillPop: () => _onWillPop(context),
+      onWillPop:() => _onWillPop(context),
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(

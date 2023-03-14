@@ -273,7 +273,13 @@ class _DetailMenu extends State<DetailMenu> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(10)))),
                   onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => DetailPaymentMethod())),
+                      builder: (context) => DetailPaymentMethod(
+                        paymentMethod: (val) {
+                          
+                        },
+                        paymentList: [],
+                        selectedPaymentMethod: "",
+                      ))),
                   child: Text(AppLocalizations.of(context)!.cart)),
             )
           ],

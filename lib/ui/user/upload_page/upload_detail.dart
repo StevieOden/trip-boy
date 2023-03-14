@@ -52,6 +52,8 @@ class _UploadDetailState extends State<UploadDetail> {
   String hintTextRatingName = "";
   String imageUrl = "";
 
+  ValueNotifier<String> ticketPriceNotifier = ValueNotifier<String>("");
+
   List<ImageModelRestaurant> imageRestaurantList = [];
   List<ImageHotel> imageHotelList = [];
   List<ImageDestination> imageDestinationList = [];
@@ -121,6 +123,8 @@ class _UploadDetailState extends State<UploadDetail> {
   late final TextEditingController ratingController;
   late final TextEditingController meetLinkController;
   late final TextEditingController priceEventController;
+
+  static final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -520,7 +524,7 @@ class _UploadDetailState extends State<UploadDetail> {
                       roomList,
                       paymentMethodHotelList)
                   : DatabaseService().addEventData(
-                      timeHeldController.text,
+                      "${SharedCode.dateFormat.format(SharedCode.dateFormat.parse(dateHeldController.text))}, ${timeHeldController.text} - ${timeHeldCloseController.text}",
                       descController.text,
                       imageUrl,
                       ticketType ? googleMapsController.text : "",
@@ -531,6 +535,7 @@ class _UploadDetailState extends State<UploadDetail> {
                       ticketType ? "online" : "offline",
                       paymentMethodEventList);
       clearForm();
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: ColorValues().primaryColor.withOpacity(0.2),
         content: Text(AppLocalizations.of(context)!.dataSave),
@@ -618,7 +623,7 @@ class _UploadDetailState extends State<UploadDetail> {
                       width: MediaQuery.of(context).size.width,
                       child: ElevatedButton(
                           onPressed: () {
-                            if (SharedCode.formKey.currentState!.validate()) {
+                            if (formKey.currentState!.validate()) {
                               addToDatabase();
                             }
                           },
@@ -638,7 +643,7 @@ class _UploadDetailState extends State<UploadDetail> {
   Widget buildRestaurant() {
     return Container(
       child: Form(
-        key: SharedCode.formKey,
+        key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -746,7 +751,7 @@ class _UploadDetailState extends State<UploadDetail> {
                             menuTypeController,
                             (val) => imageUrl = val, () {
                           menuList.add(MenuRestaurant(
-                            type: menuTypeController.text,
+                              type: menuTypeController.text,
                               name: menuNameController.text,
                               desc: menuDescController.text,
                               price: int.parse(menuPriceController.text),
@@ -1120,7 +1125,7 @@ class _UploadDetailState extends State<UploadDetail> {
   Widget buildDestination(List<Facility> facilityList) {
     return Container(
       child: Form(
-        key: SharedCode.formKey,
+        key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1617,7 +1622,7 @@ class _UploadDetailState extends State<UploadDetail> {
   Widget buildHotel(List<Facility> facilityList) {
     return Container(
       child: Form(
-        key: SharedCode.formKey,
+        key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -2161,7 +2166,7 @@ class _UploadDetailState extends State<UploadDetail> {
   Widget buildEvent() {
     return Container(
       child: Form(
-        key: SharedCode.formKey,
+        key: formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -2204,12 +2209,15 @@ class _UploadDetailState extends State<UploadDetail> {
                 ),
               ],
             ),
-            Text(AppLocalizations.of(context)!.ticketPrice),
             BuildTextFormField(
-              isTitle: false,
-              title: "",
+              title: AppLocalizations.of(context)!.ticketPrice,
               hintText: AppLocalizations.of(context)!.fillTicketPrice,
+              keyboardType: TextInputType.number,
               controller: priceEventController,
+              onChanged: (value) {
+                ticketPriceNotifier.value = value;
+                print(ticketPriceNotifier.value);
+              },
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2311,201 +2319,215 @@ class _UploadDetailState extends State<UploadDetail> {
             SizedBox(
               height: 10,
             ),
-            Text(
-              AppLocalizations.of(context)!.paymentMethod,
-              style: AppTextStyles.appTitlew400s12(ColorValues().blackColor),
-            ),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image(
-                        width: 60,
-                        height: 30,
-                        image: AssetImage("assets/png_image/bca-logo.png")),
-                    Switch(
-                      value: bcaValue,
-                      activeColor: ColorValues().primaryColor,
-                      onChanged: (value) {
-                        setState(() {
-                          bcaValue = value;
-                        });
-                      },
-                    )
-                  ],
-                ),
-                bcaValue
-                    ? BuildTextFormField(
-                        keyboardType: TextInputType.number,
-                        isTitle: false,
-                        hintText:
-                            AppLocalizations.of(context)!.enterAccountPhoneNum,
-                        title: "",
-                        controller: bcaAccountNumController,
-                      )
-                    : Container()
-              ],
-            ),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image(
-                        width: 60,
-                        height: 30,
-                        image: AssetImage("assets/png_image/mandiri-logo.png")),
-                    Switch(
-                      value: mandiriValue,
-                      activeColor: ColorValues().primaryColor,
-                      onChanged: (value) {
-                        setState(() {
-                          mandiriValue = value;
-                        });
-                      },
-                    )
-                  ],
-                ),
-                mandiriValue
-                    ? BuildTextFormField(
-                        keyboardType: TextInputType.number,
-                        isTitle: false,
-                        hintText:
-                            AppLocalizations.of(context)!.enterAccountPhoneNum,
-                        title: "",
-                        controller: mandiriAccountNumController,
-                      )
-                    : Container()
-              ],
-            ),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image(
-                        width: 60,
-                        height: 30,
-                        image: AssetImage("assets/png_image/bri-logo.png")),
-                    Switch(
-                      value: briValue,
-                      activeColor: ColorValues().primaryColor,
-                      onChanged: (value) {
-                        setState(() {
-                          briValue = value;
-                        });
-                      },
-                    )
-                  ],
-                ),
-                briValue
-                    ? BuildTextFormField(
-                        keyboardType: TextInputType.number,
-                        isTitle: false,
-                        hintText:
-                            AppLocalizations.of(context)!.enterAccountPhoneNum,
-                        title: "",
-                        controller: briAccountNumController,
-                      )
-                    : Container()
-              ],
-            ),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image(
-                        width: 60,
-                        height: 30,
-                        image: AssetImage("assets/png_image/bni-logo.png")),
-                    Switch(
-                      value: bniValue,
-                      activeColor: ColorValues().primaryColor,
-                      onChanged: (value) {
-                        setState(() {
-                          bniValue = value;
-                        });
-                      },
-                    )
-                  ],
-                ),
-                bniValue
-                    ? BuildTextFormField(
-                        keyboardType: TextInputType.number,
-                        isTitle: false,
-                        hintText:
-                            AppLocalizations.of(context)!.enterAccountPhoneNum,
-                        title: "",
-                        controller: bniAccountNumController,
-                      )
-                    : Container()
-              ],
-            ),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image(
-                        width: 60,
-                        height: 30,
-                        image: AssetImage("assets/png_image/ovo-logo.png")),
-                    Switch(
-                      value: ovoValue,
-                      activeColor: ColorValues().primaryColor,
-                      onChanged: (value) {
-                        setState(() {
-                          ovoValue = value;
-                        });
-                      },
-                    )
-                  ],
-                ),
-                ovoValue
-                    ? BuildTextFormField(
-                        keyboardType: TextInputType.number,
-                        isTitle: false,
-                        hintText:
-                            AppLocalizations.of(context)!.enterAccountPhoneNum,
-                        title: "",
-                        controller: ovoAccountNumController,
-                      )
-                    : Container()
-              ],
-            ),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image(
-                        width: 60,
-                        height: 30,
-                        image: AssetImage("assets/png_image/dana-logo.png")),
-                    Switch(
-                      value: danaValue,
-                      activeColor: ColorValues().primaryColor,
-                      onChanged: (value) {
-                        setState(() {
-                          danaValue = value;
-                        });
-                      },
-                    )
-                  ],
-                ),
-                danaValue
-                    ? BuildTextFormField(
-                        keyboardType: TextInputType.number,
-                        isTitle: false,
-                        hintText:
-                            AppLocalizations.of(context)!.enterAccountPhoneNum,
-                        title: "",
-                        controller: danaAccountNumController,
-                      )
-                    : Container()
-              ],
+            ValueListenableBuilder(
+              valueListenable: ticketPriceNotifier,
+              builder: (context, value, child) => ticketPriceNotifier.value ==
+                      "0"
+                  ? Container()
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.paymentMethod,
+                          style: AppTextStyles.appTitlew400s12(
+                              ColorValues().blackColor),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Image(
+                                width: 60,
+                                height: 30,
+                                image: AssetImage(
+                                    "assets/png_image/bca-logo.png")),
+                            Switch(
+                              value: bcaValue,
+                              activeColor: ColorValues().primaryColor,
+                              onChanged: (value) {
+                                setState(() {
+                                  bcaValue = value;
+                                });
+                              },
+                            )
+                          ],
+                        ),
+                        bcaValue
+                            ? BuildTextFormField(
+                                keyboardType: TextInputType.number,
+                                isTitle: false,
+                                hintText: AppLocalizations.of(context)!
+                                    .enterAccountPhoneNum,
+                                title: "",
+                                controller: bcaAccountNumController,
+                              )
+                            : Container(),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Image(
+                                    width: 60,
+                                    height: 30,
+                                    image: AssetImage(
+                                        "assets/png_image/mandiri-logo.png")),
+                                Switch(
+                                  value: mandiriValue,
+                                  activeColor: ColorValues().primaryColor,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      mandiriValue = value;
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
+                            mandiriValue
+                                ? BuildTextFormField(
+                                    keyboardType: TextInputType.number,
+                                    isTitle: false,
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterAccountPhoneNum,
+                                    title: "",
+                                    controller: mandiriAccountNumController,
+                                  )
+                                : Container()
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Image(
+                                    width: 60,
+                                    height: 30,
+                                    image: AssetImage(
+                                        "assets/png_image/bri-logo.png")),
+                                Switch(
+                                  value: briValue,
+                                  activeColor: ColorValues().primaryColor,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      briValue = value;
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
+                            briValue
+                                ? BuildTextFormField(
+                                    keyboardType: TextInputType.number,
+                                    isTitle: false,
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterAccountPhoneNum,
+                                    title: "",
+                                    controller: briAccountNumController,
+                                  )
+                                : Container()
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Image(
+                                    width: 60,
+                                    height: 30,
+                                    image: AssetImage(
+                                        "assets/png_image/bni-logo.png")),
+                                Switch(
+                                  value: bniValue,
+                                  activeColor: ColorValues().primaryColor,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      bniValue = value;
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
+                            bniValue
+                                ? BuildTextFormField(
+                                    keyboardType: TextInputType.number,
+                                    isTitle: false,
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterAccountPhoneNum,
+                                    title: "",
+                                    controller: bniAccountNumController,
+                                  )
+                                : Container()
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Image(
+                                    width: 60,
+                                    height: 30,
+                                    image: AssetImage(
+                                        "assets/png_image/ovo-logo.png")),
+                                Switch(
+                                  value: ovoValue,
+                                  activeColor: ColorValues().primaryColor,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      ovoValue = value;
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
+                            ovoValue
+                                ? BuildTextFormField(
+                                    keyboardType: TextInputType.number,
+                                    isTitle: false,
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterAccountPhoneNum,
+                                    title: "",
+                                    controller: ovoAccountNumController,
+                                  )
+                                : Container()
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Image(
+                                    width: 60,
+                                    height: 30,
+                                    image: AssetImage(
+                                        "assets/png_image/dana-logo.png")),
+                                Switch(
+                                  value: danaValue,
+                                  activeColor: ColorValues().primaryColor,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      danaValue = value;
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
+                            danaValue
+                                ? BuildTextFormField(
+                                    keyboardType: TextInputType.number,
+                                    isTitle: false,
+                                    hintText: AppLocalizations.of(context)!
+                                        .enterAccountPhoneNum,
+                                    title: "",
+                                    controller: danaAccountNumController,
+                                  )
+                                : Container()
+                          ],
+                        ),
+                      ],
+                    ),
             ),
           ],
         ),

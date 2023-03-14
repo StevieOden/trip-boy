@@ -14,6 +14,7 @@ class VerticalCard extends StatefulWidget {
   bool isElevated;
   bool isUploadedPage;
   List<ContentModel>? listContent;
+  Function() deleteFunction;
   VerticalCard({
     Key? key,
     required this.title,
@@ -21,6 +22,7 @@ class VerticalCard extends StatefulWidget {
     required this.price,
     required this.rating,
     required this.imageUrl,
+    required this.deleteFunction,
     this.isShowRating = false,
     this.isElevated = true,
     this.isUploadedPage = false,
@@ -96,41 +98,47 @@ class _VerticalCardState extends State<VerticalCard> {
                       widget.price.isEmpty
                           ? Container()
                           : Expanded(
-                              child: Text(
-                                "Rp${widget.price.toString()}",
-                                style: AppTextStyles.appTitlew700s12(
-                                    ColorValues().primaryColor),
-                              ),
+                              child: widget.price == "0"
+                                  ? Text(
+                                      "Free",
+                                      style: AppTextStyles.appTitlew700s12(
+                                          ColorValues().primaryColor),
+                                    )
+                                  : Text(
+                                      "Rp${widget.price.toString()}",
+                                      style: AppTextStyles.appTitlew700s12(
+                                          ColorValues().primaryColor),
+                                    ),
                             ),
                       widget.isUploadedPage
                           ? Row(children: [
-                              Container(
-                                height: 25,
-                                child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.green),
-                                    onPressed: () {},
-                                    child: Row(children: [
-                                      Icon(Icons.edit, size: 12),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Text(
-                                        AppLocalizations.of(context)!.edit,
-                                        textScaleFactor: 0.65,
-                                      )
-                                    ])),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
+                              // Container(
+                              //   height: 25,
+                              //   child: ElevatedButton(
+                              //       style: ElevatedButton.styleFrom(
+                              //           backgroundColor: Colors.green),
+                              //       onPressed: () {},
+                              //       child: Row(children: [
+                              //         Icon(Icons.edit, size: 12),
+                              //         SizedBox(
+                              //           width: 5,
+                              //         ),
+                              //         Text(
+                              //           AppLocalizations.of(context)!.edit,
+                              //           textScaleFactor: 0.65,
+                              //         )
+                              //       ])),
+                              // ),
+                              // SizedBox(
+                              //   width: 5,
+                              // ),
                               Container(
                                 height: 25,
                                 child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             ColorValues().redColor),
-                                    onPressed: () {},
+                                    onPressed: widget.deleteFunction,
                                     child: Row(children: [
                                       Icon(Icons.delete, size: 12),
                                       SizedBox(

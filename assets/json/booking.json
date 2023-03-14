@@ -1,0 +1,28 @@
+{
+     "id": "",
+     "user_id": "",
+     "booking":{
+          "content": {
+               "description": "",
+               "name": "",
+               "rating": "",
+               "type": "",
+               "user_id": ""
+          },
+          "booking_date": "",
+          "payment_total":"",
+          "payment_method": "",
+          "note":""
+     },
+     "payment": {
+          "id":"",
+          "payment_method": "",
+          "payment_amount": "",
+          "payment_status": "",
+          "receipt_sent_at": "",
+          "payment_expires_at":""
+     },
+     "payment_status": "",
+     "created_at": "",
+     "updated_at": ""
+}
